@@ -1,5 +1,5 @@
 use dex_types::{
-    DexError, DexFile, FieldId, MethodHandleType, MethodId, ProtoId, Result, TypeItem,
+    DexError, DexFile, EncodedValue, FieldId, MethodHandleType, MethodId, ProtoId, Result, TypeItem,
 };
 
 pub struct Resolver<'a> {
@@ -82,21 +82,30 @@ impl<'a> Resolver<'a> {
                 index,
                 size: self.dex.method_handles.len() as u32,
             })?;
-        match handle.handle_type {
+        let member = match handle.handle_type {
             MethodHandleType::StaticPut
             | MethodHandleType::StaticGet
             | MethodHandleType::InstancePut
-            | MethodHandleType::InstanceGet => self.field_descriptor(handle.member_idx as u32),
+            | MethodHandleType::InstanceGet => self.field_descriptor(handle.member_idx as u32)?,
             MethodHandleType::InvokeStatic
             | MethodHandleType::InvokeInstance
             | MethodHandleType::InvokeConstructor
             | MethodHandleType::InvokeDirect
-            | MethodHandleType::InvokeInterface => self.method_descriptor(handle.member_idx as u32),
-            MethodHandleType::Unknown(value) => Ok(format!(
-                "method_handle_type@{value}:member@{}",
-                handle.member_idx
-            )),
-        }
+            | MethodHandleType::InvokeInterface => {
+                self.method_descriptor(handle.member_idx as u32)?
+            }
+            MethodHandleType::Unknown(value) => {
+                return Ok(format!(
+                    "method_handle_type@{value}:member@{}",
+                    handle.member_idx
+                ));
+            }
+        };
+        Ok(format!(
+            "{}@{}",
+            method_handle_type_name(handle.handle_type),
+            member
+        ))
     }
 
     pub fn call_site_descriptor(&self, index: u32) -> Result<String> {
@@ -109,7 +118,71 @@ impl<'a> Resolver<'a> {
                     index,
                     size: self.dex.call_site_ids.len() as u32,
                 })?;
-        Ok(format!("call_site@0x{:x}", call_site.call_site_off))
+        let (values, _) =
+            dex_reader::parse_encoded_array_at(self.data, call_site.call_site_off as usize)?;
+        self.call_site_descriptor_from_values(&values)
+    }
+
+    fn call_site_descriptor_from_values(&self, values: &[EncodedValue]) -> Result<String> {
+        let Some(EncodedValue::MethodHandle(method_handle_idx)) = values.first() else {
+            return Ok("call_site{}".to_owned());
+        };
+        let method_handle = self.method_handle_descriptor(*method_handle_idx)?;
+        let method_name = match values.get(1) {
+            Some(EncodedValue::String(string_idx)) => self.string(*string_idx)?.to_owned(),
+            _ => "<unknown>".to_owned(),
+        };
+        let method_type = match values.get(2) {
+            Some(EncodedValue::MethodType(proto_idx)) => {
+                self.proto_descriptor_by_index(*proto_idx)?
+            }
+            _ => "<unknown>".to_owned(),
+        };
+        let arguments = values
+            .iter()
+            .skip(3)
+            .map(|value| self.call_site_argument_descriptor(value))
+            .collect::<Result<Vec<_>>>()?
+            .join(", ");
+        if arguments.is_empty() {
+            Ok(format!(
+                "call_site{{{}, \"{}\", {}}}",
+                method_handle,
+                escape_string(&method_name),
+                method_type
+            ))
+        } else {
+            Ok(format!(
+                "call_site{{{}, \"{}\", {}, {}}}",
+                method_handle,
+                escape_string(&method_name),
+                method_type,
+                arguments
+            ))
+        }
+    }
+
+    fn call_site_argument_descriptor(&self, value: &EncodedValue) -> Result<String> {
+        match value {
+            EncodedValue::String(index) => {
+                Ok(format!("\"{}\"", escape_string(self.string(*index)?)))
+            }
+            EncodedValue::Type(index) => Ok(self.type_descriptor(*index)?.to_owned()),
+            EncodedValue::Field(index) | EncodedValue::Enum(index) => self.field_descriptor(*index),
+            EncodedValue::Method(index) => self.method_descriptor(*index),
+            EncodedValue::MethodType(index) => self.proto_descriptor_by_index(*index),
+            EncodedValue::MethodHandle(index) => self.method_handle_descriptor(*index),
+            EncodedValue::Byte(value) => Ok(format!("{value}t")),
+            EncodedValue::Short(value) => Ok(format!("{value}s")),
+            EncodedValue::Char(value) => Ok(format!("'{}'", escape_char(*value))),
+            EncodedValue::Int(value) => Ok(value.to_string()),
+            EncodedValue::Long(value) => Ok(format!("{value}L")),
+            EncodedValue::Float(value) => Ok(format!("{}f", f32::from_bits(*value))),
+            EncodedValue::Double(value) => Ok(format!("{}", f64::from_bits(*value))),
+            EncodedValue::Null => Ok("null".to_owned()),
+            EncodedValue::Boolean(value) => Ok(value.to_string()),
+            EncodedValue::Array(_) | EncodedValue::Annotation(_) => Ok("<complex>".to_owned()),
+        }
     }
 
     pub fn method_parameter_types(&self, method_idx: u32) -> Result<Vec<TypeItem>> {
@@ -193,4 +266,50 @@ impl<'a> Resolver<'a> {
                 size: self.dex.proto_ids.len() as u32,
             })
     }
+}
+
+fn method_handle_type_name(handle_type: MethodHandleType) -> &'static str {
+    match handle_type {
+        MethodHandleType::StaticPut => "static-put",
+        MethodHandleType::StaticGet => "static-get",
+        MethodHandleType::InstancePut => "instance-put",
+        MethodHandleType::InstanceGet => "instance-get",
+        MethodHandleType::InvokeStatic => "invoke-static",
+        MethodHandleType::InvokeInstance => "invoke-instance",
+        MethodHandleType::InvokeConstructor => "invoke-constructor",
+        MethodHandleType::InvokeDirect => "invoke-direct",
+        MethodHandleType::InvokeInterface => "invoke-interface",
+        MethodHandleType::Unknown(_) => "unknown",
+    }
+}
+
+fn escape_char(value: u16) -> String {
+    char::from_u32(value as u32).map_or_else(
+        || format!("\\u{value:04x}"),
+        |value| match value {
+            '\\' => "\\\\".to_owned(),
+            '\'' => "\\'".to_owned(),
+            '\n' => "\\n".to_owned(),
+            '\r' => "\\r".to_owned(),
+            '\t' => "\\t".to_owned(),
+            other if other.is_control() => format!("\\u{:04x}", other as u32),
+            other => other.to_string(),
+        },
+    )
+}
+
+fn escape_string(value: &str) -> String {
+    let mut out = String::new();
+    for ch in value.chars() {
+        match ch {
+            '\\' => out.push_str("\\\\"),
+            '"' => out.push_str("\\\""),
+            '\n' => out.push_str("\\n"),
+            '\r' => out.push_str("\\r"),
+            '\t' => out.push_str("\\t"),
+            ch if ch.is_control() => out.push_str(&format!("\\u{:04x}", ch as u32)),
+            ch => out.push(ch),
+        }
+    }
+    out
 }

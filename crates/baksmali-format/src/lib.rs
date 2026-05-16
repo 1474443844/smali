@@ -995,9 +995,10 @@ fn push_flag(
 mod tests {
     use super::*;
     use dex_types::{
-        AnnotationDirectory, AnnotationElement, ClassDef, DexHeader, EncodedCatchHandler,
-        EncodedCatchHandlerList, EncodedField, EncodedTypeAddrPair, FieldAnnotation, FieldId,
-        MethodAnnotation, MethodId, Opcode, ProtoId, StringId, TryItem, TypeId,
+        AnnotationDirectory, AnnotationElement, CallSiteId, ClassDef, DexHeader,
+        EncodedCatchHandler, EncodedCatchHandlerList, EncodedField, EncodedTypeAddrPair,
+        FieldAnnotation, FieldId, MethodAnnotation, MethodHandle, MethodHandleType, MethodId,
+        Opcode, ProtoId, StringId, TryItem, TypeId,
     };
 
     fn test_dex() -> DexFile {
@@ -1414,21 +1415,47 @@ mod tests {
             formatter
                 .format_encoded_value(&EncodedValue::MethodHandle(0))
                 .unwrap(),
-            "LTest;->method()V"
+            "invoke-static@LTest;->method()V"
+        );
+    }
+
+    #[test]
+    fn formats_method_handle_kinds() {
+        let mut dex = test_dex();
+        dex.method_handles.push(MethodHandle {
+            handle_type: MethodHandleType::StaticGet,
+            member_idx: 0,
+        });
+        dex.method_handles.push(MethodHandle {
+            handle_type: MethodHandleType::InvokeInterface,
+            member_idx: 0,
+        });
+        let formatter = BaksmaliFormatter::new(&dex, &[]);
+
+        assert_eq!(
+            formatter.resolver.method_handle_descriptor(0).unwrap(),
+            "static-get@LTest;->field:I"
+        );
+        assert_eq!(
+            formatter.resolver.method_handle_descriptor(1).unwrap(),
+            "invoke-interface@LTest;->method()V"
         );
     }
 
     #[test]
     fn formats_call_site_reference() {
         let mut dex = test_dex();
-        dex.call_site_ids.push(dex_types::CallSiteId {
-            call_site_off: 0x1234,
+        dex.call_site_ids.push(CallSiteId { call_site_off: 1 });
+        dex.method_handles.push(MethodHandle {
+            handle_type: MethodHandleType::InvokeStatic,
+            member_idx: 0,
         });
-        let formatter = BaksmaliFormatter::new(&dex, &[]);
+        let data = [0, 4, 0x16, 0, 0x17, 1, 0x15, 0, 0x17, 2];
+        let formatter = BaksmaliFormatter::new(&dex, &data);
 
         assert_eq!(
             formatter.format_invoke_reference(0xfc, 0).unwrap(),
-            "call_site@0x1234"
+            "call_site{invoke-static@LTest;->method()V, \"name\", ()V, \"value\"}"
         );
     }
 

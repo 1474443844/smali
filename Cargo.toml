@@ -10,7 +10,7 @@ resolver = "3"
 [workspace.package]
 edition = "2024"
 license = "BSD-3-Clause"
-repository = "https://github.com/JesusFreke/smali"
+repository = "https://github.com/1474443844/smali"
 
 [workspace.dependencies]
 anyhow = "1"
