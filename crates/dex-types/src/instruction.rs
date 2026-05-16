@@ -417,10 +417,14 @@ fn decode_array_payload(code_units: &[u16]) -> Option<PayloadInstruction> {
         bytes.extend_from_slice(&unit.to_le_bytes());
     }
     bytes.truncate(element_width as usize * size);
-    let elements = bytes
-        .chunks(element_width as usize)
-        .map(|chunk| chunk.to_vec())
-        .collect();
+    let elements = if element_width == 0 {
+        Vec::new()
+    } else {
+        bytes
+            .chunks(element_width as usize)
+            .map(|chunk| chunk.to_vec())
+            .collect()
+    };
     Some(PayloadInstruction::Array {
         element_width,
         elements,

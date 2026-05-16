@@ -35,7 +35,13 @@ fn accepts_resolve_resources_argument() {
     fs::create_dir_all(&output).unwrap();
     fs::write(
         &public_xml,
-        r#"<resources><public type="string" name="app.name" id="0x7f010001" /></resources>"#,
+        r#"<resources>
+    <public
+        id = '0x7f010001'
+        name = 'app.name'
+        type = 'string' />
+    <publicity type="string" name="ignored" id="0x7f010002" />
+</resources>"#,
     )
     .unwrap();
 

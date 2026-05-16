@@ -178,6 +178,7 @@ reference 解析当前覆盖：
 - switch payload key：补齐 Java encoded int 风格 key 与 unresolved target fallback。
 - literal/payload likely float/double 注释：开始参照 Java `InstructionMethodItem` / `NumberUtils` 输出常见 named constants。
 - resource-id 注释：开始参照 Java `BaksmaliOptions.loadResourceIds` / `--resolve-resources`，支持从 public.xml 读取映射并输出资源名 comment。
+- resource-id XML 解析：已覆盖 multiline attribute、单引号、`=` 两侧空白，并避免把 `publicity` 这类非 `public` 元素前缀误判为 public。
 
 剩余差异仍集中在 whitespace、复杂 label 插入/排序、resource-id comment、annotation/debug/try-catch 细节和更复杂 instruction formatting。
 
@@ -193,15 +194,15 @@ cargo fmt --all && cargo test --workspace
 
 测试统计：
 
-- `baksmali-cli` integration tests：2 passed。
-- `baksmali-format` unit tests：18 passed。
-- `baksmali-format` fixture tests：2 passed。
+- `baksmali-cli` integration tests：3 passed。
+- `baksmali-format` unit tests：19 passed。
+- `baksmali-format` fixture tests：6 passed。
 - `dex-reader` unit tests：23 passed。
 - `dex-reader` fixture tests：4 passed。
 - `dex-types` opcode tests：7 passed。
 - doc tests：0。
 
-总计当前可见测试：56 passed。
+总计当前可见测试：62 passed。
 
 覆盖重点包括：
 
@@ -218,6 +219,8 @@ cargo fmt --all && cargo test --workspace
 - Java 风格 method handle/call site 输出。
 - Java 风格 section header、当前类成员声明省略、payload label、array/switch 数字格式。
 - Java 风格 likely float/double literal 和 payload 注释。
+- Java 风格 resource-id 注释以及 `--resolve-resources` 常见 public.xml 格式变体解析。
+- 已复制上游 Java baksmali 测试案例到 `tests/fixtures/upstream/baksmali`：包含 `src/test/resources` 和 `src/test/smali` fixture；已用 Rust 移植 `BaksmaliTestUtils` normalization 检查、`MultiSwitchTest` 与 `ZeroArrayPayloadWidthTest`，并删除复制来的 Java 测试源码。
 
 ## 当前风险与问题
 
@@ -225,7 +228,7 @@ cargo fmt --all && cargo test --workspace
    现在已经开始按 Java 源码逐项对齐，但完整 baksmali formatting 包含大量细节：whitespace、label ordering、debug/try/catch、annotation、resource comments、register info 等仍需真实 fixture 驱动。
 
 2. **resource-id XML 解析仍需增强**  
-   Rust 已实现 `--resolve-resources` 基础链路，但当前 public.xml 解析是轻量属性扫描，尚未达到 Java SAX parser 的完整 XML 兼容性。
+   Rust 已改进 `--resolve-resources` 的 public.xml 轻量解析，覆盖 multiline attribute、单引号和属性空白等常见格式，但尚未达到 Java SAX parser 的完整 XML 兼容性。
 
 3. **annotation/encoded value 仍偏基础**  
    subannotation、array、method type、method handle、call site 已有基础输出，但复杂嵌套布局和 Java 多行格式仍未完全对齐。
@@ -248,8 +251,8 @@ cargo fmt --all && cargo test --workspace
    - 对 Java/Rust diff 中仍存在的 whitespace、label ordering、payload placement 逐项收敛。
 
 2. **扩展 resource-id comment parity**
-   - 对 `--resolve-resources` 增加更多 Java public.xml 边界测试。
-   - 必要时替换轻量属性扫描为完整 XML parser，以更接近 Java SAX 行为。
+   - 已补充 `--resolve-resources` 的常见 Java public.xml 格式边界测试。
+   - 如后续遇到 entity、namespace、CDATA 等更完整 XML 边界，再替换轻量属性扫描为完整 XML parser，以更接近 Java SAX 行为.
 
 3. **继续完善 annotation/encoded value parity**
    - 对齐 Java baksmali 对 array、subannotation、method type、method handle、call site 的多行布局。

@@ -34,6 +34,8 @@ tests/fixtures/hello.dex
 tests/fixtures/hello.apk
 tests/fixtures/test.dex
 tests/fixtures/classes2.dex
+tests/fixtures/upstream/baksmali/resources/  # 复制自 Java baksmali src/test/resources 的 fixture
+tests/fixtures/upstream/baksmali/smali/      # 复制自 Java baksmali src/test/smali 的 fixture
 ```
 
 ## 已实现内容
@@ -258,6 +260,9 @@ baksmali list-dex <input.dex|input.apk|input.jar|input.zip>
 - Java-style switch payload key formatting 和 unresolved switch offset fallback。
 - Java-style likely float/double literal 和 payload comment formatting。
 - Java-style configured resource id comment formatting。
+- `--resolve-resources` 解析覆盖 multiline attribute、单引号、`=` 两侧空白，以及避免把非 `public` 元素前缀误判为 public。
+- 已将上游 Java baksmali 测试 fixture 复制到 `tests/fixtures/upstream/baksmali`，并增加 Rust fixture inventory/disassembly 测试覆盖。
+- 已用 Rust 移植 Java `BaksmaliTestUtils` normalization 检查、`MultiSwitchTest` 和 `ZeroArrayPayloadWidthTest`；复制来的 Java 测试源码已删除。
 - real `classes2.dex` fixture formatting coverage for `Lbin/mt/plus/ShortcutActivity;`。
 - baksmali layout parity checks for current-class declaration elision and payload-style labels。
 
@@ -270,7 +275,7 @@ cargo test --workspace
 最新结果：
 
 ```text
-All tests passed: 57 passed.
+All tests passed: 62 passed.
 ```
 
 ## 示例 Fixture 输出
@@ -304,6 +309,7 @@ formatter 当前输出包含：
 - 完整 annotation 和 encoded value formatting parity，尤其是完整 Java 风格 multiline layout 和边界情况。
 - 完整 debug info formatting parity。
 - 完整 try/catch label 和 range formatting parity。
+- configured resource-id XML 解析已支持常见 Java public.xml 格式变体，但仍不是完整 SAX-compatible XML parser。
 - configured resource id 的完整 switch payload comment parity。
 - `.array-data` comment 对 float/double 注释的 Java decimal rendering 边界仍未完全对齐。
 - complex nested call site arguments 的完整 call site rendering parity。
@@ -321,7 +327,7 @@ formatter 当前输出包含：
 
 1. 围绕 `classes2.dex` / `Lbin/mt/plus/ShortcutActivity;` 增加更强 Java baksmali fixture parity tests。
 2. 对齐剩余 Java baksmali whitespace policy 和 label insertion/order 边界情况。
-3. 扩展 baksmali resource-id loading parity，覆盖 Java 边界情况并增加更多 fixture。
+3. 继续扩展 baksmali resource-id loading parity；如果 Java SAX 边界需要，再替换为完整 XML parser。
 4. 改进 annotation 和 encoded value formatting parity 的剩余边界情况。
 5. 基于上游 baksmali fixture 改进 debug info formatting parity。
 6. 继续对照 Java baksmali output 细化 try/catch labels 和 ranges。

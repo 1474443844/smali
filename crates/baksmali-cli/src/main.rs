@@ -118,21 +118,89 @@ fn load_resource_ids(resource_id_files: &[String]) -> Result<BTreeMap<i32, Strin
 }
 
 fn public_xml_entries(text: &str) -> impl Iterator<Item = &str> {
-    text.match_indices("<public").filter_map(|(start, _)| {
-        text[start..]
-            .find('>')
-            .map(|end| &text[start..start + end + 1])
-    })
+    PublicXmlEntries { text, offset: 0 }
+}
+
+struct PublicXmlEntries<'a> {
+    text: &'a str,
+    offset: usize,
+}
+
+impl<'a> Iterator for PublicXmlEntries<'a> {
+    type Item = &'a str;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        while let Some(relative_start) = self.text[self.offset..].find("<public") {
+            let start = self.offset + relative_start;
+            self.offset = start + "<public".len();
+            if !matches!(
+                self.text.as_bytes().get(self.offset),
+                Some(b' ' | b'\t' | b'\r' | b'\n' | b'/' | b'>')
+            ) {
+                continue;
+            }
+            if let Some(relative_end) = self.text[self.offset..].find('>') {
+                let end = self.offset + relative_end + 1;
+                self.offset = end;
+                return Some(&self.text[start..end]);
+            }
+            self.offset = self.text.len();
+            return None;
+        }
+        None
+    }
 }
 
 fn xml_attr(element: &str, name: &str) -> Option<String> {
-    let prefix = format!("{name}=\"");
-    element.find(&prefix).and_then(|start| {
-        let value_start = start + prefix.len();
-        element[value_start..]
-            .find('"')
-            .map(|end| element[value_start..value_start + end].to_owned())
-    })
+    let bytes = element.as_bytes();
+    let mut offset = 0;
+    while offset < bytes.len() {
+        let relative = element[offset..].find(name)?;
+        let start = offset + relative;
+        let end = start + name.len();
+        if start > 0 && is_xml_name_byte(bytes[start - 1]) {
+            offset = end;
+            continue;
+        }
+        if bytes.get(end).is_some_and(|byte| is_xml_name_byte(*byte)) {
+            offset = end;
+            continue;
+        }
+        let mut cursor = end;
+        while bytes
+            .get(cursor)
+            .is_some_and(|byte| byte.is_ascii_whitespace())
+        {
+            cursor += 1;
+        }
+        if bytes.get(cursor) != Some(&b'=') {
+            offset = end;
+            continue;
+        }
+        cursor += 1;
+        while bytes
+            .get(cursor)
+            .is_some_and(|byte| byte.is_ascii_whitespace())
+        {
+            cursor += 1;
+        }
+        let quote = *bytes.get(cursor)?;
+        if quote != b'\'' && quote != b'"' {
+            offset = end;
+            continue;
+        }
+        cursor += 1;
+        let value_start = cursor;
+        while bytes.get(cursor).is_some_and(|byte| *byte != quote) {
+            cursor += 1;
+        }
+        return Some(element[value_start..cursor].to_owned());
+    }
+    None
+}
+
+fn is_xml_name_byte(byte: u8) -> bool {
+    byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'-' | b'.' | b':')
 }
 
 fn parse_resource_id(value: &str) -> Result<i32> {

@@ -34,6 +34,8 @@ tests/fixtures/hello.dex
 tests/fixtures/hello.apk
 tests/fixtures/test.dex
 tests/fixtures/classes2.dex
+tests/fixtures/upstream/baksmali/resources/  # copied Java baksmali src/test/resources fixtures
+tests/fixtures/upstream/baksmali/smali/      # copied Java baksmali src/test/smali fixtures
 ```
 
 ## Implemented So Far
@@ -256,6 +258,11 @@ Current test coverage includes:
 - hexadecimal instruction literal formatting and `const/4` literal regression coverage.
 - Java-style `.array-data` payload element formatting.
 - Java-style switch payload key formatting and unresolved switch offset fallback.
+- Java-style likely float/double literal and payload comment formatting.
+- Java-style configured resource id comment formatting.
+- `--resolve-resources` parsing coverage for multiline attributes, single quotes, whitespace around `=`, and avoiding non-`public` element prefix matches.
+- copied upstream Java baksmali test fixtures are present under `tests/fixtures/upstream/baksmali` and covered by Rust fixture inventory/disassembly tests.
+- Rust ports of Java `BaksmaliTestUtils` normalization checks, `MultiSwitchTest`, and `ZeroArrayPayloadWidthTest` are present; the copied Java test source has been removed.
 - real `classes2.dex` fixture formatting coverage for `Lbin/mt/plus/ShortcutActivity;`.
 - baksmali layout parity checks for current-class declaration elision and payload-style labels.
 
@@ -268,7 +275,7 @@ cargo test --workspace
 Latest result:
 
 ```text
-All tests passed: 54 passed.
+All tests passed: 62 passed.
 ```
 
 ## Example Fixture Output
@@ -302,6 +309,7 @@ This is still an early port. The following are not complete yet:
 - Full annotation and encoded value formatting parity, especially complete Java-style multiline layout and edge cases.
 - Full debug info formatting parity.
 - Full try/catch label and range formatting parity.
+- Configured resource-id XML parsing now handles common Java public.xml formatting variants, but is still not a full SAX-compatible XML parser.
 - Complete switch payload comment parity for configured resource ids.
 - Complete `.array-data` comment parity for exact Java decimal rendering edge cases for float/double comments.
 - Complete call site rendering parity for complex nested call site arguments.
@@ -319,7 +327,7 @@ Recommended next implementation slices:
 
 1. Add stronger Java baksmali fixture parity tests around `classes2.dex` / `Lbin/mt/plus/ShortcutActivity;`.
 2. Match remaining Java baksmali whitespace policy and label insertion/order edge cases.
-3. Expand baksmali resource-id loading parity for Java edge cases and add more fixture coverage.
+3. Expand baksmali resource-id loading parity with a full XML parser if Java SAX edge cases require it.
 4. Improve annotation and encoded value formatting parity for remaining edge cases.
 5. Improve debug info formatting parity against upstream baksmali fixtures.
 6. Continue refining try/catch labels and ranges against Java baksmali output.
