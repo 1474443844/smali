@@ -791,11 +791,19 @@ impl<'a> BaksmaliFormatter<'a> {
                 elements,
             } => {
                 let mut out = format!(".array-data {element_width}");
+                let suffix = match element_width {
+                    1 => "t",
+                    2 => "s",
+                    _ => "",
+                };
                 for element in elements {
-                    out.push_str("\n        0x");
-                    for byte in element.iter().rev() {
-                        write!(out, "{byte:02x}").unwrap();
-                    }
+                    write!(
+                        out,
+                        "\n        {}{}",
+                        format_array_element(*element_width, element),
+                        suffix
+                    )
+                    .unwrap();
                 }
                 out.push_str("\n    .end array-data");
                 out
@@ -875,6 +883,37 @@ fn format_signed_literal(value: i64) -> String {
 
 fn format_wide_literal(value: i64) -> String {
     format!("{}L", format_signed_literal(value))
+}
+
+fn format_signed_int_or_long(value: i64) -> String {
+    if value < 0 {
+        let suffix = if value < i64::from(i32::MIN) { "L" } else { "" };
+        format!("-0x{:x}{suffix}", value.unsigned_abs())
+    } else {
+        let suffix = if value > i64::from(i32::MAX) { "L" } else { "" };
+        format!("0x{value:x}{suffix}")
+    }
+}
+
+fn format_array_element(element_width: u16, element: &[u8]) -> String {
+    match element_width {
+        1 => format_signed_int_or_long(i64::from(i8::from_le_bytes([element[0]]))),
+        2 => format_signed_int_or_long(i64::from(i16::from_le_bytes([element[0], element[1]]))),
+        4 => format_signed_int_or_long(i64::from(i32::from_le_bytes([
+            element[0], element[1], element[2], element[3],
+        ]))),
+        8 => format_signed_int_or_long(i64::from_le_bytes([
+            element[0], element[1], element[2], element[3], element[4], element[5], element[6],
+            element[7],
+        ])),
+        _ => {
+            let mut value = 0i64;
+            for (index, byte) in element.iter().copied().take(8).enumerate() {
+                value |= i64::from(byte) << (index * 8);
+            }
+            format_signed_int_or_long(value)
+        }
+    }
 }
 
 fn parameter_base(code: &CodeItem) -> u32 {
@@ -1411,6 +1450,60 @@ mod tests {
 
         assert_eq!(catch_handler_at(&handlers, 3).unwrap().handlers[0].addr, 4);
         assert!(catch_handler_at(&handlers, 1).is_none());
+    }
+
+    #[test]
+    fn formats_array_payload_elements_like_java_baksmali() {
+        let dex = test_dex();
+        let formatter = BaksmaliFormatter::new(&dex, &[]);
+
+        assert_eq!(
+            formatter.format_payload(
+                &PayloadInstruction::Array {
+                    element_width: 2,
+                    elements: vec![
+                        0x0616i16.to_le_bytes().to_vec(),
+                        (-0xec1i16).to_le_bytes().to_vec()
+                    ],
+                },
+                &BTreeMap::new(),
+            ),
+            concat!(
+                ".array-data 2\n",
+                "        0x616s\n",
+                "        -0xec1s\n",
+                "    .end array-data"
+            )
+        );
+        assert_eq!(
+            formatter.format_payload(
+                &PayloadInstruction::Array {
+                    element_width: 1,
+                    elements: vec![0x7fi8.to_le_bytes().to_vec(), (-1i8).to_le_bytes().to_vec()],
+                },
+                &BTreeMap::new(),
+            ),
+            concat!(
+                ".array-data 1\n",
+                "        0x7ft\n",
+                "        -0x1t\n",
+                "    .end array-data"
+            )
+        );
+        assert_eq!(
+            formatter.format_payload(
+                &PayloadInstruction::Array {
+                    element_width: 8,
+                    elements: vec![0x1_0000_0000i64.to_le_bytes().to_vec()],
+                },
+                &BTreeMap::new(),
+            ),
+            concat!(
+                ".array-data 8\n",
+                "        0x100000000L\n",
+                "    .end array-data"
+            )
+        );
     }
 
     #[test]

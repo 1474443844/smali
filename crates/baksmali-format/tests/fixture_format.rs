@@ -37,4 +37,6 @@ fn formats_shortcut_activity_const4_literals_from_real_fixture() {
 
     assert!(text.contains("    const/4 v1, 0x1"));
     assert!(text.contains("    const/4 v2, 0x2"));
+    assert!(text.contains("    fill-array-data v0, :array_2e6"));
+    assert!(text.contains("        -0xec1s"));
 }
