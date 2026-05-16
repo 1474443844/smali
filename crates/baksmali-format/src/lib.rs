@@ -761,13 +761,18 @@ impl<'a> BaksmaliFormatter<'a> {
     ) -> String {
         match payload {
             PayloadInstruction::PackedSwitch { first_key, targets } => {
-                let mut out = format!(".packed-switch {first_key}");
+                let mut out = format!(
+                    ".packed-switch {}",
+                    format_integral_value(i64::from(*first_key), None)
+                );
+                let mut key = *first_key;
                 for target in targets {
                     let label = label_names
                         .get(&branch_target(0, *target))
                         .cloned()
-                        .unwrap_or_else(|| format!(":addr_{:04x}", branch_target(0, *target)));
+                        .unwrap_or_else(|| format_switch_offset(*target));
                     write!(out, "\n        {label}").unwrap();
+                    key = key.wrapping_add(1);
                 }
                 out.push_str("\n    .end packed-switch");
                 out
@@ -778,10 +783,13 @@ impl<'a> BaksmaliFormatter<'a> {
                     let label = label_names
                         .get(&branch_target(0, element.target))
                         .cloned()
-                        .unwrap_or_else(|| {
-                            format!(":addr_{:04x}", branch_target(0, element.target))
-                        });
-                    write!(out, "\n        {} -> {label}", element.key).unwrap();
+                        .unwrap_or_else(|| format_switch_offset(element.target));
+                    write!(
+                        out,
+                        "\n        {} -> {label}",
+                        format_integral_value(i64::from(element.key), None)
+                    )
+                    .unwrap();
                 }
                 out.push_str("\n    .end sparse-switch");
                 out
@@ -873,16 +881,32 @@ fn type_register_width(descriptor: &str) -> u32 {
     }
 }
 
-fn format_signed_literal(value: i64) -> String {
-    if value < 0 {
+fn format_integral_value(value: i64, suffix: Option<char>) -> String {
+    let mut out = if value < 0 {
         format!("-0x{:x}", value.unsigned_abs())
     } else {
         format!("0x{value:x}")
+    };
+    if let Some(suffix) = suffix {
+        out.push(suffix);
     }
+    out
+}
+
+fn format_signed_literal(value: i64) -> String {
+    format_integral_value(value, None)
 }
 
 fn format_wide_literal(value: i64) -> String {
-    format!("{}L", format_signed_literal(value))
+    format_integral_value(value, Some('L'))
+}
+
+fn format_switch_offset(target: i32) -> String {
+    if target >= 0 {
+        format!("+{target}")
+    } else {
+        target.to_string()
+    }
 }
 
 fn format_signed_int_or_long(value: i64) -> String {
@@ -1502,6 +1526,44 @@ mod tests {
                 ".array-data 8\n",
                 "        0x100000000L\n",
                 "    .end array-data"
+            )
+        );
+    }
+
+    #[test]
+    fn formats_switch_payload_keys_like_java_baksmali() {
+        let dex = test_dex();
+        let formatter = BaksmaliFormatter::new(&dex, &[]);
+        let mut labels = BTreeMap::new();
+        labels.insert(2, ":pswitch_2".to_owned());
+        labels.insert(4, ":sswitch_4".to_owned());
+
+        assert_eq!(
+            formatter.format_payload(
+                &PayloadInstruction::PackedSwitch {
+                    first_key: -1,
+                    targets: vec![2, -3],
+                },
+                &labels,
+            ),
+            concat!(
+                ".packed-switch -0x1\n",
+                "        :pswitch_2\n",
+                "        -3\n",
+                "    .end packed-switch"
+            )
+        );
+        assert_eq!(
+            formatter.format_payload(
+                &PayloadInstruction::SparseSwitch {
+                    elements: vec![dex_types::SparseSwitchElement { key: 10, target: 4 }],
+                },
+                &labels,
+            ),
+            concat!(
+                ".sparse-switch\n",
+                "        0xa -> :sswitch_4\n",
+                "    .end sparse-switch"
             )
         );
     }

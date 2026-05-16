@@ -1,6 +1,6 @@
-# smali Rust Port Progress
+# Samli
 
-This repository is a Rust rewrite of the Java project [`JesusFreke/smali`](https://github.com/JesusFreke/smali.git).
+This repository is a Rust rewrite of the Java project [JesusFreke/smali](https://github.com/JesusFreke/smali.git).
 
 The long-term goal is to fully reimplement the upstream Java project in Rust, including:
 
@@ -174,6 +174,8 @@ Implemented smali text output for:
 - Java baksmali-style section headers for static fields, instance fields, direct methods, and virtual methods.
 - current-class descriptor elision in field and method declarations, such as `<init>()V` instead of `LHello;-><init>()V`.
 - baksmali-style branch and payload labels such as `:goto_23`, `:cond_53`, `:array_2e6`, and `:sswitch_data_29c`.
+- `.array-data` elements formatted according to Java `ArrayDataMethodItem`/`BaksmaliWriter` rules, including `t`/`s` suffixes and `L` for wide out-of-int-range values.
+- `.packed-switch` first keys and `.sparse-switch` keys formatted as Java encoded int values, with unresolved payload targets shown as signed decimal offsets.
 - hexadecimal numeric literal formatting for supported literal instructions, including correct `const/4` narrow literal decoding.
 - fallback raw instruction comments for unknown/unimplemented formats.
 
@@ -243,6 +245,8 @@ Current test coverage includes:
 - nested encoded value formatting.
 - parameter register formatting in debug directives.
 - hexadecimal instruction literal formatting and `const/4` literal regression coverage.
+- Java-style `.array-data` payload element formatting.
+- Java-style switch payload key formatting and unresolved switch offset fallback.
 - real `classes2.dex` fixture formatting coverage for `Lbin/mt/plus/ShortcutActivity;`.
 - baksmali layout parity checks for current-class declaration elision and payload-style labels.
 
@@ -255,7 +259,7 @@ cargo test --workspace
 Latest result:
 
 ```text
-All tests passed: 52 passed.
+All tests passed: 54 passed.
 ```
 
 ## Example Fixture Output
@@ -285,11 +289,12 @@ The formatter currently produces output containing:
 
 This is still an early port. The following are not complete yet:
 
-- Exact Java baksmali formatting parity; section headers, current-class declaration elision, and common branch/payload labels are implemented, but full whitespace and edge-case label ordering parity is still incomplete.
+- Exact Java baksmali formatting parity; section headers, current-class declaration elision, common branch/payload labels, array-data element formatting, and switch key formatting are implemented, but full whitespace and edge-case label ordering parity is still incomplete.
 - Full annotation and encoded value formatting parity, especially complete Java-style multiline layout and edge cases.
 - Full debug info formatting parity.
 - Full try/catch label and range formatting parity.
-- Complete `.array-data` element formatting parity, including width-specific signed suffix conventions.
+- Complete switch payload comment parity for likely resource ids.
+- Complete `.array-data` comment parity for likely float/double/resource values.
 - Complete call site rendering parity for complex nested call site arguments.
 - Broader MUTF-8 edge-case parity with dexlib2.
 - DEX writer.
@@ -305,7 +310,7 @@ Recommended next implementation slices:
 
 1. Add stronger Java baksmali fixture parity tests around `classes2.dex` / `Lbin/mt/plus/ShortcutActivity;`.
 2. Match remaining Java baksmali whitespace policy and label insertion/order edge cases.
-3. Implement width-aware `.array-data` element formatting with Java-style signed suffix conventions.
+3. Port Java baksmali comment helpers for likely resource ids, floats, and doubles in literals and payloads.
 4. Improve annotation and encoded value formatting parity for remaining edge cases.
 5. Improve debug info formatting parity against upstream baksmali fixtures.
 6. Continue refining try/catch labels and ranges against Java baksmali output.
