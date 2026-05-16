@@ -1,4 +1,4 @@
-# Samli
+# Smali
 
 This repository is a Rust rewrite of the Java project [JesusFreke/smali](https://github.com/JesusFreke/smali.git).
 
