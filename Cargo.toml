@@ -1,0 +1,21 @@
+[workspace]
+members = [
+    "crates/dex-types",
+    "crates/dex-reader",
+    "crates/baksmali-format",
+    "crates/baksmali-cli",
+]
+resolver = "3"
+
+[workspace.package]
+edition = "2024"
+license = "BSD-3-Clause"
+repository = "https://github.com/JesusFreke/smali"
+
+[workspace.dependencies]
+anyhow = "1"
+bitflags = "2"
+clap = { version = "4", features = ["derive"] }
+thiserror = "2"
+pretty_assertions = "1"
+zip = { version = "4", default-features = false, features = ["deflate"] }
