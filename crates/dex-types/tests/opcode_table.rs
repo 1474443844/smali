@@ -84,6 +84,15 @@ fn decodes_additional_instruction_formats() {
         }
     );
 
+    let const_4 = RawInstruction::new(0, vec![0x1012]);
+    assert_eq!(
+        const_4.operands,
+        InstructionOperands::RegisterNarrowLiteral {
+            register: 0,
+            literal: 1
+        }
+    );
+
     let add_int_lit8 = RawInstruction::new(0, vec![0x02d8, 0x7f03]);
     assert_eq!(
         add_int_lit8.operands,

@@ -170,7 +170,7 @@ impl InstructionOperands {
             },
             Format::Format11n => Self::RegisterNarrowLiteral {
                 register: (high & 0x0f) as u16,
-                literal: ((high as i8) << 4) >> 4,
+                literal: high as i8 >> 4,
             },
             Format::Format12x => Self::TwoRegisters {
                 a: (high & 0x0f) as u16,

@@ -201,6 +201,7 @@ impl<'a> BaksmaliFormatter<'a> {
             };
             let mut debug_items = debug_items_by_address(debug_info.as_ref());
             let code_labels = collect_code_labels(&code);
+            let label_names = label_names(&code);
             writeln!(out, "    .registers {}", code.registers_size).unwrap();
             self.write_parameter_debug_items(out, method, &code, debug_info.as_ref())?;
             for instruction in &code.instructions {
@@ -214,7 +215,12 @@ impl<'a> BaksmaliFormatter<'a> {
                     debug_items.remove(&instruction.address).unwrap_or_default(),
                     parameter_base(&code),
                 )?;
-                writeln!(out, "    {}", self.format_instruction(instruction)?).unwrap();
+                writeln!(
+                    out,
+                    "    {}",
+                    self.format_instruction(instruction, &label_names)?
+                )
+                .unwrap();
                 let next_address = instruction.address + instruction.code_units.len() as u32;
                 if let Some(labels) = code_labels.get(&next_address) {
                     for label in labels {
@@ -500,7 +506,11 @@ impl<'a> BaksmaliFormatter<'a> {
         }
     }
 
-    fn format_instruction(&self, instruction: &RawInstruction) -> Result<String> {
+    fn format_instruction(
+        &self,
+        instruction: &RawInstruction,
+        label_names: &BTreeMap<u32, String>,
+    ) -> Result<String> {
         let opcode = instruction.opcode.name();
         let text = match &instruction.operands {
             InstructionOperands::None => opcode.to_owned(),
@@ -619,52 +629,68 @@ impl<'a> BaksmaliFormatter<'a> {
             ),
             InstructionOperands::Branch8 { offset } => {
                 format!(
-                    "{opcode} :addr_{:04x}",
-                    branch_target(instruction.address, *offset as i32)
+                    "{opcode} {}",
+                    self.label_for(label_names, instruction.address, *offset as i32)
                 )
             }
             InstructionOperands::Branch16 { offset } => {
                 format!(
-                    "{opcode} :addr_{:04x}",
-                    branch_target(instruction.address, *offset as i32)
+                    "{opcode} {}",
+                    self.label_for(label_names, instruction.address, *offset as i32)
                 )
             }
             InstructionOperands::TwoRegistersBranch { a, b, offset } => {
                 format!(
-                    "{opcode} v{a}, v{b}, :addr_{:04x}",
-                    branch_target(instruction.address, *offset as i32)
+                    "{opcode} v{a}, v{b}, {}",
+                    self.label_for(label_names, instruction.address, *offset as i32)
                 )
             }
             InstructionOperands::RegisterBranch { register, offset } => {
                 format!(
-                    "{opcode} v{register}, :addr_{:04x}",
-                    branch_target(instruction.address, *offset as i32)
+                    "{opcode} v{register}, {}",
+                    self.label_for(label_names, instruction.address, *offset as i32)
                 )
             }
             InstructionOperands::RegisterBranch32 { register, offset } => {
                 format!(
-                    "{opcode} v{register}, :addr_{:04x}",
-                    branch_target(instruction.address, *offset)
+                    "{opcode} v{register}, {}",
+                    self.label_for(label_names, instruction.address, *offset)
                 )
             }
             InstructionOperands::Branch32 { offset } => {
                 format!(
-                    "{opcode} :addr_{:04x}",
-                    branch_target(instruction.address, *offset)
+                    "{opcode} {}",
+                    self.label_for(label_names, instruction.address, *offset)
                 )
             }
-            InstructionOperands::Payload(payload) => self.format_payload(payload),
+            InstructionOperands::Payload(payload) => self.format_payload(payload, label_names),
             InstructionOperands::Raw => self.format_raw_instruction(instruction),
         };
         Ok(text)
     }
 
-    fn format_payload(&self, payload: &PayloadInstruction) -> String {
+    fn label_for(&self, label_names: &BTreeMap<u32, String>, address: u32, offset: i32) -> String {
+        let target = branch_target(address, offset);
+        label_names
+            .get(&target)
+            .cloned()
+            .unwrap_or_else(|| format!(":addr_{target:04x}"))
+    }
+
+    fn format_payload(
+        &self,
+        payload: &PayloadInstruction,
+        label_names: &BTreeMap<u32, String>,
+    ) -> String {
         match payload {
             PayloadInstruction::PackedSwitch { first_key, targets } => {
                 let mut out = format!(".packed-switch {first_key}");
                 for target in targets {
-                    write!(out, "\n        :addr_{target:04x}").unwrap();
+                    let label = label_names
+                        .get(&(*target as u32))
+                        .cloned()
+                        .unwrap_or_else(|| format!(":addr_{target:04x}"));
+                    write!(out, "\n        {label}").unwrap();
                 }
                 out.push_str("\n    .end packed-switch");
                 out
@@ -672,12 +698,11 @@ impl<'a> BaksmaliFormatter<'a> {
             PayloadInstruction::SparseSwitch { elements } => {
                 let mut out = String::from(".sparse-switch");
                 for element in elements {
-                    write!(
-                        out,
-                        "\n        {} -> :addr_{:04x}",
-                        element.key, element.target
-                    )
-                    .unwrap();
+                    let label = label_names
+                        .get(&(element.target as u32))
+                        .cloned()
+                        .unwrap_or_else(|| format!(":addr_{:04x}", element.target));
+                    write!(out, "\n        {} -> {label}", element.key).unwrap();
                 }
                 out.push_str("\n    .end sparse-switch");
                 out
@@ -847,8 +872,83 @@ fn escape_string(value: &str) -> String {
     out
 }
 
+fn label_names(code: &CodeItem) -> BTreeMap<u32, String> {
+    let mut names = BTreeMap::new();
+    for instruction in &code.instructions {
+        match &instruction.operands {
+            InstructionOperands::Branch8 { offset } => {
+                let target = branch_target(instruction.address, *offset as i32);
+                names.entry(target).or_insert_with(|| {
+                    if instruction.opcode.value() == 0x28 || instruction.opcode.value() == 0x29 {
+                        format!(":goto_{target:x}")
+                    } else {
+                        format!(":cond_{target:x}")
+                    }
+                });
+            }
+            InstructionOperands::Branch16 { offset } => {
+                let target = branch_target(instruction.address, *offset as i32);
+                names.entry(target).or_insert_with(|| {
+                    if instruction.opcode.value() == 0x28 || instruction.opcode.value() == 0x29 {
+                        format!(":goto_{target:x}")
+                    } else {
+                        format!(":cond_{target:x}")
+                    }
+                });
+            }
+            InstructionOperands::Branch32 { offset } => {
+                let target = branch_target(instruction.address, *offset);
+                names
+                    .entry(target)
+                    .or_insert_with(|| format!(":goto_{target:x}"));
+            }
+            InstructionOperands::TwoRegistersBranch { offset, .. }
+            | InstructionOperands::RegisterBranch { offset, .. } => {
+                let target = branch_target(instruction.address, *offset as i32);
+                names
+                    .entry(target)
+                    .or_insert_with(|| format!(":cond_{target:x}"));
+            }
+            InstructionOperands::RegisterBranch32 { offset, .. } => {
+                let target = branch_target(instruction.address, *offset);
+                names
+                    .entry(target)
+                    .or_insert_with(|| format!(":cond_{target:x}"));
+            }
+            InstructionOperands::Payload(PayloadInstruction::SparseSwitch { elements }) => {
+                names
+                    .entry(instruction.address)
+                    .or_insert_with(|| format!(":sswitch_data_{:x}", instruction.address));
+                for element in elements {
+                    names
+                        .entry(element.target as u32)
+                        .or_insert_with(|| format!(":sswitch_{:x}", element.target));
+                }
+            }
+            InstructionOperands::Payload(PayloadInstruction::PackedSwitch { targets, .. }) => {
+                names
+                    .entry(instruction.address)
+                    .or_insert_with(|| format!(":pswitch_data_{:x}", instruction.address));
+                for target in targets {
+                    names
+                        .entry(*target as u32)
+                        .or_insert_with(|| format!(":pswitch_{target:x}"));
+                }
+            }
+            InstructionOperands::Payload(PayloadInstruction::Array { .. }) => {
+                names
+                    .entry(instruction.address)
+                    .or_insert_with(|| format!(":array_{:x}", instruction.address));
+            }
+            _ => {}
+        }
+    }
+    names
+}
+
 fn collect_code_labels(code: &CodeItem) -> BTreeMap<u32, Vec<String>> {
     let mut labels = BTreeMap::<u32, Vec<String>>::new();
+    let names = label_names(code);
     for try_item in &code.tries {
         labels
             .entry(try_item.start_addr)
@@ -874,10 +974,11 @@ fn collect_code_labels(code: &CodeItem) -> BTreeMap<u32, Vec<String>> {
         }
     }
     for target in collect_branch_targets(code) {
-        labels
-            .entry(target)
-            .or_default()
-            .push(format!(":addr_{target:04x}"));
+        let label = names
+            .get(&target)
+            .cloned()
+            .unwrap_or_else(|| format!(":addr_{target:04x}"));
+        labels.entry(target).or_default().push(label);
     }
     labels
 }
@@ -1336,43 +1437,52 @@ mod tests {
 
         assert_eq!(
             formatter
-                .format_instruction(&RawInstruction {
-                    address: 0,
-                    opcode: Opcode(0x12),
-                    code_units: Vec::new(),
-                    operands: InstructionOperands::RegisterNarrowLiteral {
-                        register: 1,
-                        literal: -1,
+                .format_instruction(
+                    &RawInstruction {
+                        address: 0,
+                        opcode: Opcode(0x12),
+                        code_units: Vec::new(),
+                        operands: InstructionOperands::RegisterNarrowLiteral {
+                            register: 1,
+                            literal: -1,
+                        },
                     },
-                })
+                    &BTreeMap::new(),
+                )
                 .unwrap(),
             "const/4 v1, -0x1"
         );
         assert_eq!(
             formatter
-                .format_instruction(&RawInstruction {
-                    address: 0,
-                    opcode: Opcode(0x14),
-                    code_units: Vec::new(),
-                    operands: InstructionOperands::RegisterLiteral32 {
-                        register: 2,
-                        literal: 255,
+                .format_instruction(
+                    &RawInstruction {
+                        address: 0,
+                        opcode: Opcode(0x14),
+                        code_units: Vec::new(),
+                        operands: InstructionOperands::RegisterLiteral32 {
+                            register: 2,
+                            literal: 255,
+                        },
                     },
-                })
+                    &BTreeMap::new(),
+                )
                 .unwrap(),
             "const v2, 0xff"
         );
         assert_eq!(
             formatter
-                .format_instruction(&RawInstruction {
-                    address: 0,
-                    opcode: Opcode(0x18),
-                    code_units: Vec::new(),
-                    operands: InstructionOperands::RegisterLiteral64 {
-                        register: 3,
-                        literal: -256,
+                .format_instruction(
+                    &RawInstruction {
+                        address: 0,
+                        opcode: Opcode(0x18),
+                        code_units: Vec::new(),
+                        operands: InstructionOperands::RegisterLiteral64 {
+                            register: 3,
+                            literal: -256,
+                        },
                     },
-                })
+                    &BTreeMap::new(),
+                )
                 .unwrap(),
             "const-wide v3, -0x100L"
         );
