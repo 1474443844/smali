@@ -27,6 +27,7 @@ Fixtures:
 tests/fixtures/hello.dex
 tests/fixtures/hello.apk
 tests/fixtures/test.dex
+tests/fixtures/classes2.dex
 ```
 
 ## Implemented So Far
@@ -170,8 +171,10 @@ Implemented smali text output for:
   - `.packed-switch`
   - `.sparse-switch`
   - `.array-data`
-- branch target labels such as `:addr_0004`.
-- hexadecimal numeric literal formatting for supported literal instructions.
+- Java baksmali-style section headers for static fields, instance fields, direct methods, and virtual methods.
+- current-class descriptor elision in field and method declarations, such as `<init>()V` instead of `LHello;-><init>()V`.
+- baksmali-style branch and payload labels such as `:goto_23`, `:cond_53`, `:array_2e6`, and `:sswitch_data_29c`.
+- hexadecimal numeric literal formatting for supported literal instructions, including correct `const/4` narrow literal decoding.
 - fallback raw instruction comments for unknown/unimplemented formats.
 
 Implemented descriptor/reference resolution for:
@@ -181,8 +184,8 @@ Implemented descriptor/reference resolution for:
 - fields
 - methods
 - protos
-- method handles
-- call sites
+- method handles with handle kind names, such as `invoke-static@LTest;->method()V` and `static-get@LTest;->field:I`
+- call sites rendered from encoded-array data, including bootstrap method handle, method name, method type, and supported arguments
 - odex quick/inline/vtable placeholder references
 
 ### `baksmali-cli`
@@ -236,10 +239,12 @@ Current test coverage includes:
 - debug directive formatting.
 - basic try/catch directive formatting.
 - method handle and call site table parsing.
-- method proto, method handle, and call site reference rendering.
+- method proto, method handle kind, and encoded-array call site reference rendering.
 - nested encoded value formatting.
 - parameter register formatting in debug directives.
-- hexadecimal instruction literal formatting.
+- hexadecimal instruction literal formatting and `const/4` literal regression coverage.
+- real `classes2.dex` fixture formatting coverage for `Lbin/mt/plus/ShortcutActivity;`.
+- baksmali layout parity checks for current-class declaration elision and payload-style labels.
 
 Current test command:
 
@@ -250,7 +255,7 @@ cargo test --workspace
 Latest result:
 
 ```text
-All tests passed: 50 passed.
+All tests passed: 52 passed.
 ```
 
 ## Example Fixture Output
@@ -270,7 +275,7 @@ The formatter currently produces output containing:
 .super Ljava/lang/Object;
 .source "Hello.java"
 
-.method public constructor LHello;-><init>()V
+.method public constructor <init>()V
     .registers 1
     return-void
 .end method
@@ -280,12 +285,12 @@ The formatter currently produces output containing:
 
 This is still an early port. The following are not complete yet:
 
-- Exact Java baksmali formatting parity.
+- Exact Java baksmali formatting parity; section headers, current-class declaration elision, and common branch/payload labels are implemented, but full whitespace and edge-case label ordering parity is still incomplete.
 - Full annotation and encoded value formatting parity, especially complete Java-style multiline layout and edge cases.
 - Full debug info formatting parity.
 - Full try/catch label and range formatting parity.
-- Complete call site structure rendering beyond the current call site offset reference.
-- Complete method handle formatting parity with dexlib2/baksmali conventions.
+- Complete `.array-data` element formatting parity, including width-specific signed suffix conventions.
+- Complete call site rendering parity for complex nested call site arguments.
 - Broader MUTF-8 edge-case parity with dexlib2.
 - DEX writer.
 - mutable builder model.
@@ -298,9 +303,9 @@ This is still an early port. The following are not complete yet:
 
 Recommended next implementation slices:
 
-1. Add upstream baksmali fixture parity tests for MUTF-8, debug info, try/catch, annotations, and invoke-custom/polymorphic output.
-2. Complete call site encoded-array interpretation and Java-style call site rendering.
-3. Improve method handle formatting parity with dexlib2/baksmali conventions.
+1. Add stronger Java baksmali fixture parity tests around `classes2.dex` / `Lbin/mt/plus/ShortcutActivity;`.
+2. Match remaining Java baksmali whitespace policy and label insertion/order edge cases.
+3. Implement width-aware `.array-data` element formatting with Java-style signed suffix conventions.
 4. Improve annotation and encoded value formatting parity for remaining edge cases.
 5. Improve debug info formatting parity against upstream baksmali fixtures.
 6. Continue refining try/catch labels and ranges against Java baksmali output.

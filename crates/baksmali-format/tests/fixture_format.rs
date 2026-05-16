@@ -15,7 +15,7 @@ fn formats_real_hello_dex_fixture() {
     assert!(text.contains(".class public LHello;"));
     assert!(text.contains(".super Ljava/lang/Object;"));
     assert!(text.contains(".source \"Hello.java\""));
-    assert!(text.contains(".method public constructor LHello;-><init>()V"));
+    assert!(text.contains(".method public constructor <init>()V"));
     assert!(text.contains("    .registers 1"));
     assert!(text.contains("    return-void"));
     assert!(text.contains(".end method"));

@@ -102,26 +102,53 @@ impl<'a> BaksmaliFormatter<'a> {
             } else {
                 Vec::new()
             };
-            for (index, field) in class_data.static_fields.iter().enumerate() {
-                self.format_field(
-                    &mut out,
-                    field,
-                    static_values.get(index),
-                    annotation_directory.as_ref(),
-                )?;
+            if !class_data.static_fields.is_empty() {
+                writeln!(out, "# static fields").unwrap();
+                for (index, field) in class_data.static_fields.iter().enumerate() {
+                    self.format_field(
+                        &mut out,
+                        field,
+                        static_values.get(index),
+                        annotation_directory.as_ref(),
+                        class_descriptor,
+                    )?;
+                    writeln!(out).unwrap();
+                }
             }
-            for field in &class_data.instance_fields {
-                self.format_field(&mut out, field, None, annotation_directory.as_ref())?;
+            if !class_data.instance_fields.is_empty() {
+                writeln!(out, "# instance fields").unwrap();
+                for field in &class_data.instance_fields {
+                    self.format_field(
+                        &mut out,
+                        field,
+                        None,
+                        annotation_directory.as_ref(),
+                        class_descriptor,
+                    )?;
+                    writeln!(out).unwrap();
+                }
             }
-            if !class_data.static_fields.is_empty() || !class_data.instance_fields.is_empty() {
-                writeln!(out).unwrap();
+            if !class_data.direct_methods.is_empty() {
+                writeln!(out, "# direct methods").unwrap();
+                for method in &class_data.direct_methods {
+                    self.format_method(
+                        &mut out,
+                        method,
+                        annotation_directory.as_ref(),
+                        class_descriptor,
+                    )?;
+                }
             }
-            for method in class_data
-                .direct_methods
-                .iter()
-                .chain(&class_data.virtual_methods)
-            {
-                self.format_method(&mut out, method, annotation_directory.as_ref())?;
+            if !class_data.virtual_methods.is_empty() {
+                writeln!(out, "# virtual methods").unwrap();
+                for method in &class_data.virtual_methods {
+                    self.format_method(
+                        &mut out,
+                        method,
+                        annotation_directory.as_ref(),
+                        class_descriptor,
+                    )?;
+                }
             }
         }
 
@@ -134,6 +161,7 @@ impl<'a> BaksmaliFormatter<'a> {
         field: &EncodedField,
         static_value: Option<&EncodedValue>,
         annotation_directory: Option<&AnnotationDirectory>,
+        current_class: &str,
     ) -> Result<()> {
         let annotations_off = annotation_directory
             .and_then(|directory| {
@@ -152,7 +180,7 @@ impl<'a> BaksmaliFormatter<'a> {
                 out,
                 ".field {}{}{}",
                 format_access_flags(field.access_flags, FlagContext::Field),
-                self.resolver.field_descriptor(field.field_idx)?,
+                self.field_declaration_descriptor(field.field_idx, current_class)?,
                 value
             )
             .unwrap();
@@ -161,7 +189,7 @@ impl<'a> BaksmaliFormatter<'a> {
                 out,
                 ".field {}{}{}",
                 format_access_flags(field.access_flags, FlagContext::Field),
-                self.resolver.field_descriptor(field.field_idx)?,
+                self.field_declaration_descriptor(field.field_idx, current_class)?,
                 value
             )
             .unwrap();
@@ -176,12 +204,13 @@ impl<'a> BaksmaliFormatter<'a> {
         out: &mut String,
         method: &EncodedMethod,
         annotation_directory: Option<&AnnotationDirectory>,
+        current_class: &str,
     ) -> Result<()> {
         writeln!(
             out,
             ".method {}{}",
             format_access_flags(method.access_flags, FlagContext::Method),
-            self.resolver.method_descriptor(method.method_idx)?
+            self.method_declaration_descriptor(method.method_idx, current_class)?
         )
         .unwrap();
         if let Some(annotations_off) =
@@ -218,7 +247,7 @@ impl<'a> BaksmaliFormatter<'a> {
                 writeln!(
                     out,
                     "    {}",
-                    self.format_instruction(instruction, &label_names)?
+                    self.format_instruction(instruction, &label_names, &code)?
                 )
                 .unwrap();
                 let next_address = instruction.address + instruction.code_units.len() as u32;
@@ -510,6 +539,7 @@ impl<'a> BaksmaliFormatter<'a> {
         &self,
         instruction: &RawInstruction,
         label_names: &BTreeMap<u32, String>,
+        code: &CodeItem,
     ) -> Result<String> {
         let opcode = instruction.opcode.name();
         let text = match &instruction.operands {
@@ -652,10 +682,12 @@ impl<'a> BaksmaliFormatter<'a> {
                 )
             }
             InstructionOperands::RegisterBranch32 { register, offset } => {
-                format!(
-                    "{opcode} v{register}, {}",
+                let label = if matches!(instruction.opcode.value(), 0x26..=0x2c) {
+                    self.payload_label_for(label_names, code, instruction.address, *offset)
+                } else {
                     self.label_for(label_names, instruction.address, *offset)
-                )
+                };
+                format!("{opcode} v{register}, {label}")
             }
             InstructionOperands::Branch32 { offset } => {
                 format!(
@@ -669,12 +701,57 @@ impl<'a> BaksmaliFormatter<'a> {
         Ok(text)
     }
 
+    fn field_declaration_descriptor(&self, field_idx: u32, current_class: &str) -> Result<String> {
+        let descriptor = self.resolver.field_descriptor(field_idx)?;
+        let member = descriptor
+            .strip_prefix(current_class)
+            .and_then(|value| value.strip_prefix("->"));
+        Ok(member.map_or(descriptor.clone(), ToOwned::to_owned))
+    }
+
+    fn method_declaration_descriptor(
+        &self,
+        method_idx: u32,
+        current_class: &str,
+    ) -> Result<String> {
+        let descriptor = self.resolver.method_descriptor(method_idx)?;
+        let member = descriptor
+            .strip_prefix(current_class)
+            .and_then(|value| value.strip_prefix("->"));
+        Ok(member.map_or(descriptor.clone(), ToOwned::to_owned))
+    }
+
     fn label_for(&self, label_names: &BTreeMap<u32, String>, address: u32, offset: i32) -> String {
         let target = branch_target(address, offset);
         label_names
             .get(&target)
             .cloned()
             .unwrap_or_else(|| format!(":addr_{target:04x}"))
+    }
+
+    fn payload_label_for(
+        &self,
+        label_names: &BTreeMap<u32, String>,
+        code: &CodeItem,
+        address: u32,
+        offset: i32,
+    ) -> String {
+        let target = branch_target(address, offset);
+        payload_instruction(code, target).map_or_else(
+            || self.label_for(label_names, address, offset),
+            |instruction| match &instruction.operands {
+                InstructionOperands::Payload(PayloadInstruction::SparseSwitch { .. }) => {
+                    format!(":sswitch_data_{target:x}")
+                }
+                InstructionOperands::Payload(PayloadInstruction::PackedSwitch { .. }) => {
+                    format!(":pswitch_data_{target:x}")
+                }
+                InstructionOperands::Payload(PayloadInstruction::Array { .. }) => {
+                    format!(":array_{target:x}")
+                }
+                _ => self.label_for(label_names, address, offset),
+            },
+        )
     }
 
     fn format_payload(
@@ -687,9 +764,9 @@ impl<'a> BaksmaliFormatter<'a> {
                 let mut out = format!(".packed-switch {first_key}");
                 for target in targets {
                     let label = label_names
-                        .get(&(*target as u32))
+                        .get(&branch_target(0, *target))
                         .cloned()
-                        .unwrap_or_else(|| format!(":addr_{target:04x}"));
+                        .unwrap_or_else(|| format!(":addr_{:04x}", branch_target(0, *target)));
                     write!(out, "\n        {label}").unwrap();
                 }
                 out.push_str("\n    .end packed-switch");
@@ -699,9 +776,11 @@ impl<'a> BaksmaliFormatter<'a> {
                 let mut out = String::from(".sparse-switch");
                 for element in elements {
                     let label = label_names
-                        .get(&(element.target as u32))
+                        .get(&branch_target(0, element.target))
                         .cloned()
-                        .unwrap_or_else(|| format!(":addr_{:04x}", element.target));
+                        .unwrap_or_else(|| {
+                            format!(":addr_{:04x}", branch_target(0, element.target))
+                        });
                     write!(out, "\n        {} -> {label}", element.key).unwrap();
                 }
                 out.push_str("\n    .end sparse-switch");
@@ -911,18 +990,43 @@ fn label_names(code: &CodeItem) -> BTreeMap<u32, String> {
             }
             InstructionOperands::RegisterBranch32 { offset, .. } => {
                 let target = branch_target(instruction.address, *offset);
-                names
-                    .entry(target)
-                    .or_insert_with(|| format!(":cond_{target:x}"));
+                names.entry(target).or_insert_with(|| {
+                    if matches!(instruction.opcode.value(), 0x26..=0x2c) {
+                        payload_instruction(code, target).map_or_else(
+                            || format!(":addr_{target:04x}"),
+                            |instruction| match &instruction.operands {
+                                InstructionOperands::Payload(
+                                    PayloadInstruction::SparseSwitch { .. },
+                                ) => {
+                                    format!(":sswitch_data_{target:x}")
+                                }
+                                InstructionOperands::Payload(
+                                    PayloadInstruction::PackedSwitch { .. },
+                                ) => {
+                                    format!(":pswitch_data_{target:x}")
+                                }
+                                InstructionOperands::Payload(PayloadInstruction::Array {
+                                    ..
+                                }) => {
+                                    format!(":array_{target:x}")
+                                }
+                                _ => format!(":addr_{target:04x}"),
+                            },
+                        )
+                    } else {
+                        format!(":cond_{target:x}")
+                    }
+                });
             }
             InstructionOperands::Payload(PayloadInstruction::SparseSwitch { elements }) => {
                 names
                     .entry(instruction.address)
                     .or_insert_with(|| format!(":sswitch_data_{:x}", instruction.address));
                 for element in elements {
+                    let target = branch_target(instruction.address, element.target);
                     names
-                        .entry(element.target as u32)
-                        .or_insert_with(|| format!(":sswitch_{:x}", element.target));
+                        .entry(target)
+                        .or_insert_with(|| format!(":sswitch_{target:x}"));
                 }
             }
             InstructionOperands::Payload(PayloadInstruction::PackedSwitch { targets, .. }) => {
@@ -930,8 +1034,9 @@ fn label_names(code: &CodeItem) -> BTreeMap<u32, String> {
                     .entry(instruction.address)
                     .or_insert_with(|| format!(":pswitch_data_{:x}", instruction.address));
                 for target in targets {
+                    let target = branch_target(instruction.address, *target);
                     names
-                        .entry(*target as u32)
+                        .entry(target)
                         .or_insert_with(|| format!(":pswitch_{target:x}"));
                 }
             }
@@ -944,6 +1049,13 @@ fn label_names(code: &CodeItem) -> BTreeMap<u32, String> {
         }
     }
     names
+}
+
+fn payload_instruction(code: &CodeItem, address: u32) -> Option<&RawInstruction> {
+    code.instructions.iter().find(|instruction| {
+        instruction.address == address
+            && matches!(instruction.operands, InstructionOperands::Payload(_))
+    })
 }
 
 fn collect_code_labels(code: &CodeItem) -> BTreeMap<u32, Vec<String>> {
@@ -1178,6 +1290,19 @@ mod tests {
         }
     }
 
+    fn empty_code() -> CodeItem {
+        CodeItem {
+            registers_size: 0,
+            ins_size: 0,
+            outs_size: 0,
+            tries_size: 0,
+            debug_info_off: 0,
+            instructions: Vec::new(),
+            tries: Vec::new(),
+            handlers: EncodedCatchHandlerList::empty(),
+        }
+    }
+
     #[test]
     fn formats_class_interfaces() {
         let dex = test_dex();
@@ -1317,17 +1442,17 @@ mod tests {
         let mut out = String::new();
 
         formatter
-            .format_field(&mut out, &field, None, Some(&directory))
+            .format_field(&mut out, &field, None, Some(&directory), "LTest;")
             .unwrap();
         formatter
-            .format_method(&mut out, &method, Some(&directory))
+            .format_method(&mut out, &method, Some(&directory), "LTest;")
             .unwrap();
 
-        assert!(out.contains(".field public LTest;->field:I"));
+        assert!(out.contains(".field public field:I"));
         assert!(out.contains("    .annotation runtime LAnno;"));
         assert!(out.contains("        name = \"value\""));
         assert!(out.contains(".end field"));
-        assert!(out.contains(".method public LTest;->method()V"));
+        assert!(out.contains(".method public method()V"));
         assert!(out.contains(".end method"));
     }
 
@@ -1448,6 +1573,7 @@ mod tests {
                         },
                     },
                     &BTreeMap::new(),
+                    &empty_code(),
                 )
                 .unwrap(),
             "const/4 v1, -0x1"
@@ -1465,6 +1591,7 @@ mod tests {
                         },
                     },
                     &BTreeMap::new(),
+                    &empty_code(),
                 )
                 .unwrap(),
             "const v2, 0xff"
@@ -1482,6 +1609,7 @@ mod tests {
                         },
                     },
                     &BTreeMap::new(),
+                    &empty_code(),
                 )
                 .unwrap(),
             "const-wide v3, -0x100L"
@@ -1580,10 +1708,16 @@ mod tests {
         let mut out = String::new();
 
         formatter
-            .format_field(&mut out, &field, Some(&EncodedValue::Int(42)), None)
+            .format_field(
+                &mut out,
+                &field,
+                Some(&EncodedValue::Int(42)),
+                None,
+                "LTest;",
+            )
             .unwrap();
 
-        assert_eq!(out, ".field public static LTest;->field:I = 42\n");
+        assert_eq!(out, ".field public static field:I = 42\n");
     }
 
     #[test]

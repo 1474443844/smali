@@ -10,75 +10,75 @@
     .registers 21
     const/16 v0, 0x184
     new-array v0, v0, [S
-    fill-array-data v0, :addr_02e6
+    fill-array-data v0, :cond_2e6
     sput-object v0, Lbin/mt/plus/ShortcutActivity;->۠ܶۧ:[S
     const/4 v0, 0x0
-    const/4 v1, 0x1
-    const/4 v2, 0x2
-    const/4 v3, 0x3
-    const/4 v4, 0x4
-    const/4 v5, 0x5
-    const/4 v6, 0x6
-    const/4 v7, 0x7
-    const/4 v8, -0x8
-    const/4 v9, -0x7
-    const/4 v10, -0x6
-    const/4 v11, -0x5
-    const/4 v12, -0x4
-    const/4 v13, -0x3
+    const/4 v1, 0x0
+    const/4 v2, 0x0
+    const/4 v3, 0x0
+    const/4 v4, 0x0
+    const/4 v5, 0x0
+    const/4 v6, 0x0
+    const/4 v7, 0x0
+    const/4 v8, 0x0
+    const/4 v9, 0x0
+    const/4 v10, 0x0
+    const/4 v11, 0x0
+    const/4 v12, 0x0
+    const/4 v13, 0x0
     sget v14, Ll/ܳܺ;->۫ܿ᩵:I
     sget v15, Ll/ܽۛ;->۠ܺ۟:I
     const-string v16, "ۛۖۙ"
     invoke-static/range {v16 .. v16}, Ll/ۙۘ;->ۙᩴ۫(Ljava/lang/Object;)I
     move-result v16
     xor-int v16, v16, v14
-    :addr_0023
-    sparse-switch v16, :addr_029c
+    :goto_23
+    sparse-switch v16, :cond_29c
     move-object/from16 v16, v0
     move-object/from16 v17, v1
     move/from16 v18, v2
     const v0, 0x9b80
     const v10, 0x9b80
-    goto/16 :addr_0293
+    goto/16 :goto_293
     .line 265
     invoke-static {}, Ll/ᩴ᩵;->ۡۨܶ()Z
     sget v16, Ll/ܽ᩵;->᩻ۗ֨:I
-    if-gez v16, :addr_006c
+    if-gez v16, :cond_6c
     move-object/from16 v16, v0
     move-object/from16 v17, v1
     move/from16 v18, v2
-    goto/16 :addr_0214
+    goto/16 :goto_214
     .line 268
     sget-object v16, Lbin/mt/plus/ShortcutActivity;->۠ܶۧ:[S
     invoke-static {}, Ll/᩹;->ۖ᩷֫()I
     move-result v17
-    if-eqz v17, :addr_0053
+    if-eqz v17, :cond_53
     move-object/from16 v16, v0
     move-object/from16 v17, v1
     move/from16 v18, v2
-    goto/16 :addr_01ec
-    :addr_0053
+    goto/16 :goto_1ec
+    :cond_53
     const-string v1, "۠᩶ۧ"
     invoke-static {v1}, Ll/ۤ֨;->۬ۚᩴ(Ljava/lang/Object;)I
     move-result v1
     xor-int/2addr v1, v15
-    const/4 v2, 0x2
+    const/4 v2, 0x0
     move-object/from16 v20, v16
     move-object/from16 v16, v0
     move v0, v1
     move-object/from16 v1, v20
-    goto/16 :addr_028b
+    goto/16 :goto_28b
     .line 267
     aget-short v16, v1, v2
     .line 268
     invoke-static {}, Ll/ᩴ;->ۙ֨ᩴ()I
     move-result v17
-    if-eqz v17, :addr_0071
-    :addr_006c
+    if-eqz v17, :cond_71
+    :cond_6c
     move-object/from16 v17, v1
     move/from16 v18, v2
-    goto :addr_00a6
-    :addr_0071
+    goto :goto_a6
+    :cond_71
     const-string v3, "۠ܿ᩷"
     move-object/from16 v17, v1
     const/4 v1, 0x1
@@ -90,7 +90,7 @@
     move-result v2
     mul-int v1, v1, v2
     xor-int/2addr v1, v14
-    const/4 v2, 0x2
+    const/4 v2, 0x0
     invoke-static {v3, v2}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
     add-int/2addr v2, v1
@@ -98,7 +98,7 @@
     move-object/from16 v1, v17
     move-object/from16 v16, v0
     move v0, v2
-    goto/16 :addr_0289
+    goto/16 :goto_289
     .line 265
     invoke-static {v11, v12, v13, v10}, Ll/ܰۡ;->ܳۧۤ([SIII)Ljava/lang/String;
     move-result-object v1
@@ -110,10 +110,10 @@
     move/from16 v18, v2
     .line 268
     sget v1, Ll/ۗ۬;->᩵᩻ܽ:I
-    if-ltz v1, :addr_00be
-    :addr_00a6
+    if-ltz v1, :cond_be
+    :goto_a6
     const-string v1, "ۡ۫ܰ"
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v1, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     xor-int/2addr v2, v14
@@ -122,17 +122,17 @@
     invoke-static {v1, v0}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
     mul-int v2, v2, v0
-    const/4 v0, 0x0
+    const/4 v0, 0x2
     invoke-static {v1, v0}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
-    goto/16 :addr_0229
-    :addr_00be
+    goto/16 :goto_229
+    :cond_be
     move-object/from16 v16, v0
     const-string v0, "ۚۗۢ"
     invoke-static {v0}, Ll/ۙۘ;->ۙᩴ۫(Ljava/lang/Object;)I
     move-result v0
     xor-int/2addr v0, v15
-    goto/16 :addr_01a8
+    goto/16 :goto_1a8
     move-object/from16 v16, v0
     move-object/from16 v17, v1
     move/from16 v18, v2
@@ -142,11 +142,11 @@
     .line 268
     invoke-static {}, Ll/֨ۖ;->ۤᩴۤ()Z
     move-result v2
-    if-eqz v2, :addr_00db
-    goto/16 :addr_0201
-    :addr_00db
+    if-eqz v2, :cond_db
+    goto/16 :goto_201
+    :cond_db
     const-string/jumbo v2, "᩸᩷ᩳ"
-    const/4 v11, -0x5
+    const/4 v11, 0x1
     invoke-static {v2, v11}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v11
     xor-int/2addr v11, v15
@@ -155,7 +155,7 @@
     invoke-static {v2, v0}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     mul-int v11, v11, v0
-    const/4 v0, 0x0
+    const/4 v0, 0x2
     invoke-static {v2, v0}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
     sub-int v16, v11, v0
@@ -163,7 +163,7 @@
     move-object/from16 v1, v17
     move/from16 v2, v18
     move-object/from16 v0, v19
-    goto/16 :addr_0023
+    goto/16 :goto_23
     move-object/from16 v16, v0
     move-object/from16 v17, v1
     move/from16 v18, v2
@@ -171,19 +171,19 @@
     .line 266
     invoke-static {}, Ll/᩻᩷;->ܺ᩻᩺()I
     move-result v1
-    if-ltz v1, :addr_010d
-    goto/16 :addr_025a
-    :addr_010d
+    if-ltz v1, :cond_10d
+    goto/16 :goto_25a
+    :cond_10d
     const-string v1, "᩷۠᩵"
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v1, v2}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
     xor-int/2addr v2, v15
-    const/4 v5, 0x5
+    const/4 v5, 0x0
     invoke-static {v1, v5}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v5
     mul-int v2, v2, v5
-    const/4 v5, 0x5
+    const/4 v5, 0x2
     invoke-static {v1, v5}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v1
     sub-int/2addr v2, v1
@@ -192,57 +192,57 @@
     move v0, v2
     move-object/from16 v1, v17
     move/from16 v2, v18
-    const/4 v6, 0x6
-    goto/16 :addr_028b
+    const/4 v6, 0x1
+    goto/16 :goto_28b
     move-object/from16 v16, v0
     move-object/from16 v17, v1
     move/from16 v18, v2
     sget v0, Ll/ܽۛ;->۠ܺ۟:I
-    if-ltz v0, :addr_0138
-    goto/16 :addr_01ec
-    :addr_0138
+    if-ltz v0, :cond_138
+    goto/16 :goto_1ec
+    :cond_138
     const-string v0, "ۨۖ֡"
     invoke-static {v0}, Ll/ۤ֨;->۬ۚᩴ(Ljava/lang/Object;)I
     move-result v0
     xor-int/2addr v0, v15
     const/16 v13, 0x9
-    goto/16 :addr_0287
+    goto/16 :goto_287
     move-object/from16 v16, v0
     move-object/from16 v17, v1
     move/from16 v18, v2
     add-int v0, v5, v6
     sget-boolean v1, Ll/ۛܶ;->ۙ᩵᩶:Z
-    if-nez v1, :addr_0151
-    goto/16 :addr_0214
-    :addr_0151
+    if-nez v1, :cond_151
+    goto/16 :goto_214
+    :cond_151
     const-string/jumbo v1, "᩻᩶᩶"
-    const/4 v2, 0x2
+    const/4 v2, 0x0
     invoke-static {v1, v2}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
     mul-int/lit16 v2, v2, 0x3c1
-    const/4 v7, 0x7
+    const/4 v7, 0x1
     invoke-static {v1, v7}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v7
     mul-int/lit8 v7, v7, 0x1f
     add-int/2addr v2, v7
     xor-int/2addr v2, v15
-    const/4 v7, 0x7
+    const/4 v7, 0x2
     invoke-static {v1, v7}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v1
     add-int/2addr v1, v2
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     move v7, v0
     move v0, v1
     move-object/from16 v1, v17
     move/from16 v2, v18
-    const/4 v8, -0x8
-    goto/16 :addr_028b
+    const/4 v8, 0x1
+    goto/16 :goto_28b
     move-object/from16 v16, v0
     move-object/from16 v17, v1
     move/from16 v18, v2
     const v0, 0xf14c
     const v10, 0xf14c
-    goto/16 :addr_0293
+    goto/16 :goto_293
     move-object/from16 v16, v0
     move-object/from16 v17, v1
     move/from16 v18, v2
@@ -250,45 +250,45 @@
     .line 268
     invoke-static {}, Ll/֨֡;->ۘ۠ۘ()I
     move-result v1
-    if-ltz v1, :addr_0191
-    goto :addr_01ec
-    :addr_0191
+    if-ltz v1, :cond_191
+    goto :goto_1ec
+    :cond_191
     const-string v1, "ۨ۫ܺ"
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v1, v2}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
     xor-int/2addr v2, v14
-    const/4 v9, -0x7
+    const/4 v9, 0x0
     invoke-static {v1, v9}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v9
     mul-int v2, v2, v9
-    const/4 v9, -0x7
+    const/4 v9, 0x2
     invoke-static {v1, v9}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v1
     sub-int/2addr v2, v1
     move v9, v0
     move v0, v2
-    :addr_01a8
+    :goto_1a8
     move-object/from16 v1, v17
-    goto/16 :addr_0289
+    goto/16 :goto_289
     move-object/from16 v16, v0
     move-object/from16 v17, v1
     move/from16 v18, v2
     .line 265
     invoke-static {}, Ll/ܽۘ;->᩻ۙܰ()Z
-    goto :addr_0214
+    goto :goto_214
     move-object/from16 v16, v0
     move-object/from16 v17, v1
     move/from16 v18, v2
     sget v0, Ll/ۤۛ;->᩺᩻ۘ:I
-    if-gez v0, :addr_01ec
-    goto :addr_0214
+    if-gez v0, :goto_1ec
+    goto :goto_214
     move-object/from16 v16, v0
     move-object/from16 v17, v1
     move/from16 v18, v2
     mul-int v0, v9, v9
     sub-int/2addr v0, v7
-    if-gez v0, :addr_01dd
+    if-gez v0, :cond_1dd
     const-string v0, "ۢ᩶ܶ"
     const/4 v1, 0x1
     .line 268
@@ -299,62 +299,62 @@
     move-result v2
     mul-int v1, v1, v2
     xor-int/2addr v1, v15
-    goto/16 :addr_0269
-    :addr_01dd
+    goto/16 :goto_269
+    :cond_1dd
     const-string/jumbo v0, "᩺ۢܶ"
-    goto/16 :addr_0295
+    goto/16 :goto_295
     move-object/from16 v16, v0
     move-object/from16 v17, v1
     move/from16 v18, v2
     .line 265
     sget v0, Ll/ۚۙ;->ܽ۟֡:I
-    if-lez v0, :addr_0201
-    :addr_01ec
+    if-lez v0, :goto_201
+    :goto_1ec
     const-string/jumbo v0, "᩻᩵ܽ"
-    const/4 v1, 0x1
+    const/4 v1, 0x0
     .line 268
     invoke-static {v0, v1}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v1
     mul-int/lit16 v1, v1, 0x3c1
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v0, v2}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
     mul-int/lit8 v2, v2, 0x1f
     add-int/2addr v1, v2
     xor-int/2addr v1, v15
     const/4 v2, 0x2
-    goto :addr_026a
-    :addr_0201
+    goto :goto_26a
+    :goto_201
     const-string v0, "֨ۖ֡"
     const/4 v1, 0x1
     invoke-static {v0, v1}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v1
     xor-int/2addr v1, v15
-    goto :addr_021d
+    goto :goto_21d
     move-object/from16 v16, v0
     move-object/from16 v17, v1
     move/from16 v18, v2
     .line 267
     sget v0, Ll/ۙۘ;->ۖۢۙ:I
-    if-eqz v0, :addr_022d
-    :addr_0214
+    if-eqz v0, :cond_22d
+    :goto_214
     const-string/jumbo v0, "᩻ۖ֨"
     const/4 v1, 0x1
     invoke-static {v0, v1}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v1
     xor-int/2addr v1, v14
-    :addr_021d
-    const/4 v2, 0x2
+    :goto_21d
+    const/4 v2, 0x0
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     mul-int v2, v2, v1
-    const/4 v1, 0x1
+    const/4 v1, 0x2
     invoke-static {v0, v1}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
-    :addr_0229
+    :goto_229
     sub-int v0, v2, v0
-    goto/16 :addr_01a8
-    :addr_022d
+    goto/16 :goto_1a8
+    :cond_22d
     const-string v0, "۟ۗۖ"
     const/4 v1, 0x1
     invoke-static {v0, v1}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
@@ -364,12 +364,12 @@
     move-result v2
     mul-int v1, v1, v2
     xor-int/2addr v1, v14
-    const/4 v2, 0x2
+    const/4 v2, 0x0
     invoke-static {v0, v2}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
     add-int/2addr v0, v1
-    const/4 v4, 0x4
-    goto :addr_0287
+    const/4 v4, 0x2
+    goto :goto_287
     .line 265
     invoke-static {}, Ll/᩻᩺;->ۨ۠֡()I
     invoke-static {}, Ll/ۙۘ;->ۚۜۧ()I
@@ -381,8 +381,8 @@
     move/from16 v18, v2
     .line 267
     sget v0, Ll/ۗ۬;->᩵᩻ܽ:I
-    if-ltz v0, :addr_0271
-    :addr_025a
+    if-ltz v0, :cond_271
+    :goto_25a
     const-string v0, "ۧ֫᩶"
     const/4 v1, 0x1
     .line 266
@@ -393,15 +393,15 @@
     move-result v2
     mul-int v1, v1, v2
     xor-int/2addr v1, v14
-    :addr_0269
-    const/4 v2, 0x2
-    :addr_026a
+    :goto_269
+    const/4 v2, 0x0
+    :goto_26a
     .line 268
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     add-int/2addr v0, v1
-    goto/16 :addr_01a8
-    :addr_0271
+    goto/16 :goto_1a8
+    :cond_271
     const-string v0, "ܽۗ۠"
     const/4 v1, 0x1
     .line 267
@@ -412,50 +412,50 @@
     move-result v2
     mul-int v1, v1, v2
     xor-int/2addr v1, v14
-    const/4 v2, 0x2
+    const/4 v2, 0x0
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     add-int/2addr v0, v1
-    const/4 v12, -0x4
-    :addr_0287
+    const/4 v12, 0x1
+    :goto_287
     move-object/from16 v1, v17
-    :addr_0289
+    :goto_289
     move/from16 v2, v18
-    :addr_028b
+    :goto_28b
     move-object/from16 v20, v16
     move/from16 v16, v0
     move-object/from16 v0, v20
-    goto/16 :addr_0023
-    :addr_0293
+    goto/16 :goto_23
+    :goto_293
     const-string v0, "۠᩸֨"
-    :addr_0295
+    :goto_295
     .line 268
     invoke-static {v0}, Ll/ۙۘ;->ۙᩴ۫(Ljava/lang/Object;)I
     move-result v0
     xor-int/2addr v0, v14
-    goto/16 :addr_01a8
-    :addr_029c
+    goto/16 :goto_1a8
+    :cond_29c
     .sparse-switch
-        -54079251 -> :addr_022d
-        -33557498 -> :addr_0221
-        -12569323 -> :addr_01e7
-        -9824363 -> :addr_01bf
-        -8787042 -> :addr_019e
-        -8752249 -> :addr_0193
-        -6723454 -> :addr_0189
-        -6717156 -> :addr_015f
-        -6575374 -> :addr_0151
-        -6490448 -> :addr_0120
-        -3083367 -> :addr_0109
-        -3067227 -> :addr_00da
-        -1907860 -> :addr_00a6
-        -1904462 -> :addr_007b
-        -1753904 -> :addr_0070
-        -1742362 -> :addr_0041
-        -1737566 -> :addr_0020
-        -1314777 -> :addr_0011
+        -54079251 -> :cond_22d
+        -33557498 -> :sswitch_221
+        -12569323 -> :sswitch_1e7
+        -9824363 -> :sswitch_1bf
+        -8787042 -> :sswitch_19e
+        -8752249 -> :sswitch_193
+        -6723454 -> :sswitch_189
+        -6717156 -> :sswitch_15f
+        -6575374 -> :cond_151
+        -6490448 -> :sswitch_120
+        -3083367 -> :sswitch_109
+        -3067227 -> :sswitch_da
+        -1907860 -> :goto_a6
+        -1904462 -> :sswitch_7b
+        -1753904 -> :sswitch_70
+        -1742362 -> :sswitch_41
+        -1737566 -> :sswitch_20
+        -1314777 -> :sswitch_11
     .end sparse-switch
-    :addr_02e6
+    :cond_2e6
     .array-data 2
         0x0616
         0xf13f
@@ -858,79 +858,79 @@
 .method public static Lbin/mt/plus/ShortcutActivity;->ۖ(Ljava/lang/String;)Landroid/graphics/Bitmap;
     .registers 14
     const/4 v0, 0x0
-    const/4 v1, 0x1
-    const/4 v2, 0x2
-    const/4 v3, 0x3
-    const/4 v4, 0x4
-    const/4 v5, 0x5
-    const/4 v6, 0x6
+    const/4 v1, 0x0
+    const/4 v2, 0x0
+    const/4 v3, 0x0
+    const/4 v4, 0x0
+    const/4 v5, 0x0
+    const/4 v6, 0x0
     sget v7, Ll/ܰۙ;->ۘۢ֫:I
     sget v8, Ll/ۚۘ;->᩹᩺ۨ:I
     const-string v9, "ۘ᩷ᩳ"
-    const/4 v10, -0x6
+    const/4 v10, 0x0
     invoke-static {v9, v10}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v10
     mul-int/lit16 v10, v10, 0x3c1
-    const/4 v11, -0x5
+    const/4 v11, 0x1
     invoke-static {v9, v11}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v11
     mul-int/lit8 v11, v11, 0x1f
     add-int/2addr v10, v11
     xor-int/2addr v10, v8
-    :addr_001d
-    const/4 v11, -0x5
-    :addr_001e
+    :goto_1d
+    const/4 v11, 0x2
+    :goto_1e
     invoke-static {v9, v11}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v9
-    :addr_0022
+    :goto_22
     add-int/2addr v10, v9
-    :addr_0023
-    sparse-switch v10, :addr_0214
+    :goto_23
+    sparse-switch v10, :cond_214
     .line 77
     invoke-static {}, Ll/ۤۙ;->ᩴ֫֫()I
     sget-boolean v9, Ll/ۛܶ;->ۙ᩵᩶:Z
-    if-eqz v9, :addr_0197
-    goto/16 :addr_016f
+    if-eqz v9, :cond_197
+    goto/16 :goto_16f
     .line 171
     invoke-static {}, Ll/ܽ᩶;->ۖܶ᩹()I
     invoke-static {}, Ll/ۛܰ;->ᩴ᩶ᩴ()I
     move-result v9
-    if-eqz v9, :addr_003a
-    goto/16 :addr_01ea
-    :addr_003a
+    if-eqz v9, :cond_3a
+    goto/16 :goto_1ea
+    :cond_3a
     const-string v9, "ۗ۠ۤ"
-    const/4 v10, -0x6
+    const/4 v10, 0x1
     invoke-static {v9, v10}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v10
-    const/4 v11, -0x5
+    const/4 v11, 0x2
     invoke-static {v9, v11}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v11
     mul-int v10, v10, v11
     xor-int/2addr v10, v8
-    goto/16 :addr_00d0
+    goto/16 :goto_d0
     .line 243
     invoke-static {}, Ll/ܽۛ;->ܺۢᩴ()I
     invoke-static {}, Ll/ۘ᩹;->᩶᩵᩵()I
     move-result v9
-    if-lez v9, :addr_01ea
-    goto/16 :addr_016f
+    if-lez v9, :goto_1ea
+    goto/16 :goto_16f
     .line 7
     invoke-static {}, Ll/ۘ;->۬ۖ۬()I
     sget-boolean v9, Ll/᩻᩷;->ܰ۫ۡ:Z
-    if-eqz v9, :addr_01d1
-    goto/16 :addr_016f
+    if-eqz v9, :cond_1d1
+    goto/16 :goto_16f
     .line 25
     invoke-static {}, Ll/ۤܿ;->۬ܽܳ()I
     invoke-static {}, Ll/ۤ۟;->ܺ᩷ᩴ()I
-    goto/16 :addr_016f
+    goto/16 :goto_16f
     .line 248
     invoke-static {}, Ll/ܰۡ;->᩷۫֡()I
-    const/4 v13, -0x3
+    const/4 v13, 0x0
     return-object v13
     :try_start_006c
     .line 273
     invoke-static {v5, v6}, Ll/ۤۙ;->ᩳۡۚ(Ljava/lang/Object;Ljava/lang/Object;)V
-    goto :addr_0074
+    goto :goto_74
     throw v5
     :try_end_006c
     :try_end_006c
@@ -938,23 +938,23 @@
     invoke-virtual {v3}, Ljava/io/BufferedInputStream;->close()V
     :try_end_0071
     :try_end_0071
-    :addr_0074
+    :goto_74
     const-string v9, "᩷ۙ֫"
-    const/4 v10, -0x6
+    const/4 v10, 0x1
     invoke-static {v9, v10}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v10
     xor-int/2addr v10, v7
-    const/4 v11, -0x5
+    const/4 v11, 0x0
     invoke-static {v9, v11}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v11
     mul-int v10, v10, v11
-    const/4 v11, -0x5
+    const/4 v11, 0x2
     invoke-static {v9, v11}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v9
-    goto/16 :addr_018e
+    goto/16 :goto_18e
     move-exception v6
     const-string v9, "ۧۚ۬"
-    goto/16 :addr_01a7
+    goto/16 :goto_1a7
     return-object v4
     return-object v2
     :try_start_0091
@@ -980,382 +980,382 @@
     move-object v12, v10
     move v10, v4
     move-object v4, v12
-    goto/16 :addr_0023
+    goto/16 :goto_23
     move-exception v5
     const-string v3, "ۤۨۨ"
-    const/4 v10, -0x6
+    const/4 v10, 0x1
     invoke-static {v3, v10}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v10
     xor-int/2addr v10, v8
-    const/4 v11, -0x5
+    const/4 v11, 0x0
     invoke-static {v3, v11}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v11
     mul-int v10, v10, v11
-    const/4 v11, -0x5
+    const/4 v11, 0x2
     invoke-static {v3, v11}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
     sub-int/2addr v10, v3
     move-object v3, v9
-    goto/16 :addr_0023
+    goto/16 :goto_23
     const-string v9, "ۛ۠۠"
-    const/4 v10, -0x6
+    const/4 v10, 0x1
     invoke-static {v9, v10}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v10
-    const/4 v11, -0x5
+    const/4 v11, 0x2
     invoke-static {v9, v11}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v11
-    :addr_00cd
+    :goto_cd
     mul-int v10, v10, v11
     xor-int/2addr v10, v7
-    :addr_00d0
-    const/4 v11, -0x5
-    goto/16 :addr_01c7
+    :goto_d0
+    const/4 v11, 0x0
+    goto/16 :goto_1c7
     .line 270
     invoke-virtual {v1}, Ll/۠᩺۟;->ܰۖ()Z
     move-result v2
-    const/4 v9, -0x7
-    if-nez v2, :addr_00f0
+    const/4 v9, 0x0
+    if-nez v2, :cond_f0
     const-string v2, "۠ܶۧ"
-    const/4 v10, -0x6
+    const/4 v10, 0x1
     invoke-static {v2, v10}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v10
     xor-int/2addr v10, v8
-    const/4 v11, -0x5
+    const/4 v11, 0x0
     invoke-static {v2, v11}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v11
     mul-int v10, v10, v11
-    const/4 v11, -0x5
+    const/4 v11, 0x2
     invoke-static {v2, v11}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     sub-int/2addr v10, v2
-    goto :addr_0105
-    :addr_00f0
+    goto :goto_105
+    :cond_f0
     const-string v2, "ܺ᩷᩺"
-    const/4 v10, -0x6
+    const/4 v10, 0x1
     invoke-static {v2, v10}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v10
-    const/4 v11, -0x5
+    const/4 v11, 0x2
     invoke-static {v2, v11}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v11
     mul-int v10, v10, v11
     xor-int/2addr v10, v7
-    const/4 v11, -0x5
+    const/4 v11, 0x0
     invoke-static {v2, v11}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
     add-int/2addr v10, v2
-    :addr_0105
+    :goto_105
     move-object v2, v9
-    goto/16 :addr_0023
+    goto/16 :goto_23
     .line 269
     invoke-static {v0, v13}, Ll/֫;->ܳܶ᩹(Ljava/lang/Object;Ljava/lang/Object;)Ll/۠᩺۟;
     move-result-object v9
     .line 230
     invoke-static {}, Ll/᩺ܳ;->ۜܺܶ()I
     move-result v10
-    if-gtz v10, :addr_0113
-    goto :addr_012f
-    :addr_0113
+    if-gtz v10, :cond_113
+    goto :goto_12f
+    :cond_113
     const-string v1, "᩶ܳ۫"
-    const/4 v10, -0x6
+    const/4 v10, 0x1
     invoke-static {v1, v10}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v10
     xor-int/2addr v10, v8
-    const/4 v11, -0x5
+    const/4 v11, 0x0
     invoke-static {v1, v11}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v11
     mul-int v10, v10, v11
-    const/4 v11, -0x5
+    const/4 v11, 0x2
     invoke-static {v1, v11}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v1
     sub-int/2addr v10, v1
     move-object v1, v9
-    goto/16 :addr_0023
+    goto/16 :goto_23
     .line 234
     sget v9, Ll/ۤ֫;->᩻ܺ᩵:I
-    if-gtz v9, :addr_0143
-    :addr_012f
+    if-gtz v9, :cond_143
+    :goto_12f
     const-string v9, "ۘ᩵᩶"
-    const/4 v10, -0x6
+    const/4 v10, 0x0
     invoke-static {v9, v10}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v10
     mul-int/lit16 v10, v10, 0x3c1
-    const/4 v11, -0x5
+    const/4 v11, 0x1
     invoke-static {v9, v11}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v11
     mul-int/lit8 v11, v11, 0x1f
     add-int/2addr v10, v11
     xor-int/2addr v10, v7
-    goto/16 :addr_001d
-    :addr_0143
+    goto/16 :goto_1d
+    :cond_143
     const-string v9, "۟᩻ᩳ"
-    const/4 v10, -0x6
+    const/4 v10, 0x1
     invoke-static {v9, v10}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v10
-    const/4 v11, -0x5
+    const/4 v11, 0x2
     invoke-static {v9, v11}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v11
     mul-int v10, v10, v11
     xor-int/2addr v10, v8
-    const/4 v11, -0x5
-    goto/16 :addr_001e
+    const/4 v11, 0x0
+    goto/16 :goto_1e
     .line 222
     sget-boolean v9, Ll/ܽۘ;->ᩳᩳ᩻:Z
-    if-eqz v9, :addr_015a
-    goto :addr_016f
-    :addr_015a
+    if-eqz v9, :cond_15a
+    goto :goto_16f
+    :cond_15a
     const-string v9, "ۖۘܰ"
-    goto/16 :addr_01dc
+    goto/16 :goto_1dc
     sget v9, Ll/᩻ᩴ;->ۤ᩹ۜ:I
-    if-gtz v9, :addr_0164
-    goto/16 :addr_01ea
-    :addr_0164
+    if-gtz v9, :cond_164
+    goto/16 :goto_1ea
+    :cond_164
     const-string v9, "ᩳۖܳ"
-    :addr_0166
+    :goto_166
     invoke-static {v9}, Ll/ۙۘ;->ۙᩴ۫(Ljava/lang/Object;)I
     move-result v9
-    goto :addr_01ab
+    goto :goto_1ab
     .line 82
     sget v9, Ll/ۗۤ;->ܺ᩷ۡ:I
-    if-gtz v9, :addr_0172
-    :addr_016f
+    if-gtz v9, :cond_172
+    :goto_16f
     const-string v9, "۬ۧ֡"
-    goto :addr_0166
-    :addr_0172
+    goto :goto_166
+    :cond_172
     const-string v9, "ۛ᩵ۜ"
-    goto :addr_01dc
+    goto :goto_1dc
     sget v9, Ll/ۙۘ;->ۖۢۙ:I
-    if-eqz v9, :addr_017a
-    goto :addr_0197
-    :addr_017a
+    if-eqz v9, :cond_17a
+    goto :cond_197
+    :cond_17a
     const-string v9, "ܽۚ֫"
-    const/4 v10, -0x6
+    const/4 v10, 0x1
     invoke-static {v9, v10}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v10
     xor-int/2addr v10, v7
-    :addr_0182
-    const/4 v11, -0x5
+    :goto_182
+    const/4 v11, 0x0
     invoke-static {v9, v11}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v11
-    :addr_0187
+    :goto_187
     mul-int v10, v10, v11
-    const/4 v11, -0x5
+    const/4 v11, 0x2
     invoke-static {v9, v11}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v9
-    :addr_018e
+    :goto_18e
     sub-int/2addr v10, v9
-    goto/16 :addr_0023
+    goto/16 :goto_23
     invoke-static {}, Ll/᩹;->ۖ᩷֫()I
     move-result v9
-    if-eqz v9, :addr_01a5
-    :addr_0197
+    if-eqz v9, :cond_1a5
+    :cond_197
     const-string v9, "᩷᩵ۙ"
-    const/4 v10, -0x6
+    const/4 v10, 0x1
     invoke-static {v9, v10}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v10
-    const/4 v11, -0x5
+    const/4 v11, 0x2
     invoke-static {v9, v11}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v11
-    goto/16 :addr_00cd
-    :addr_01a5
+    goto/16 :goto_cd
+    :cond_1a5
     const-string v9, "۬᩸۫"
-    :addr_01a7
+    :goto_1a7
     invoke-static {v9}, Ll/ۤ֨;->۬ۚᩴ(Ljava/lang/Object;)I
     move-result v9
-    :addr_01ab
+    :goto_1ab
     xor-int v10, v9, v8
-    goto/16 :addr_0023
+    goto/16 :goto_23
     .line 186
     sget v9, Ll/ۢۨ;->ᩳۨܶ:I
-    if-ltz v9, :addr_01b4
-    goto :addr_01ea
-    :addr_01b4
+    if-ltz v9, :cond_1b4
+    goto :goto_1ea
+    :cond_1b4
     const-string v9, "᩸ᩳܶ"
-    const/4 v10, -0x6
+    const/4 v10, 0x0
     invoke-static {v9, v10}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v10
     mul-int/lit16 v10, v10, 0x3c1
-    const/4 v11, -0x5
+    const/4 v11, 0x1
     invoke-static {v9, v11}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v11
     mul-int/lit8 v11, v11, 0x1f
     add-int/2addr v10, v11
     xor-int/2addr v10, v8
-    const/4 v11, -0x5
-    :addr_01c7
+    const/4 v11, 0x2
+    :goto_1c7
     invoke-static {v9, v11}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v9
-    goto/16 :addr_0022
+    goto/16 :goto_22
     .line 122
     sget v9, Ll/ۗۤ;->ܺ᩷ۡ:I
-    if-gtz v9, :addr_01da
-    :addr_01d1
+    if-gtz v9, :cond_1da
+    :cond_1d1
     const-string v9, "֫ۜܽ"
-    const/4 v10, -0x6
+    const/4 v10, 0x1
     invoke-static {v9, v10}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v10
     xor-int/2addr v10, v8
-    goto :addr_0182
-    :addr_01da
+    goto :goto_182
+    :cond_1da
     const-string v9, "ۘۢۛ"
-    :addr_01dc
+    :goto_1dc
     invoke-static {v9}, Ll/ۙۘ;->ۙᩴ۫(Ljava/lang/Object;)I
     move-result v9
     xor-int v10, v9, v7
-    goto/16 :addr_0023
+    goto/16 :goto_23
     .line 269
     sget-object v9, Lbin/mt/plus/ShortcutActivity;->ܽۖ:Ll/۠᩺۟;
     .line 28
     sget v10, Ll/ۘᩳ;->ܰ֡۫:I
-    if-ltz v10, :addr_01f8
-    :addr_01ea
+    if-ltz v10, :cond_1f8
+    :goto_1ea
     const-string v9, "ۜۡᩳ"
-    const/4 v10, -0x6
+    const/4 v10, 0x1
     invoke-static {v9, v10}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v10
     xor-int/2addr v10, v7
-    const/4 v11, -0x5
+    const/4 v11, 0x0
     invoke-static {v9, v11}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v11
-    goto :addr_0187
-    :addr_01f8
+    goto :goto_187
+    :cond_1f8
     const-string v0, "ۚᩳܳ"
-    const/4 v10, -0x6
+    const/4 v10, 0x0
     invoke-static {v0, v10}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v10
     mul-int/lit16 v10, v10, 0x3c1
-    const/4 v11, -0x5
+    const/4 v11, 0x1
     invoke-static {v0, v11}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v11
     mul-int/lit8 v11, v11, 0x1f
     add-int/2addr v10, v11
     xor-int/2addr v10, v7
-    const/4 v11, -0x5
+    const/4 v11, 0x2
     invoke-static {v0, v11}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
     add-int/2addr v10, v0
     move-object v0, v9
-    goto/16 :addr_0023
+    goto/16 :goto_23
     nop
-    :addr_0214
+    :cond_214
     .sparse-switch
-        -45905535 -> :addr_00e5
-        -43680523 -> :addr_00b0
-        -11341447 -> :addr_006d
-        -11271964 -> :addr_004e
-        -6719300 -> :addr_016e
-        -6568653 -> :addr_0132
-        -3095238 -> :addr_0028
-        -1911108 -> :addr_0152
-        -1892587 -> :addr_01c1
-        -1759846 -> :addr_0049
-        -1755547 -> :addr_0044
-        1737145 -> :addr_018c
-        1738758 -> :addr_0108
-        1763878 -> :addr_006c
-        1894434 -> :addr_01aa
-        1899402 -> :addr_013b
-        1901601 -> :addr_000c
-        3100547 -> :addr_006d
-        4616777 -> :addr_0033
-        4953471 -> :addr_0148
-        11878908 -> :addr_003c
-        18108124 -> :addr_004d
-        45925720 -> :addr_006e
+        -45905535 -> :sswitch_e5
+        -43680523 -> :sswitch_b0
+        -11341447 -> :sswitch_6d
+        -11271964 -> :sswitch_4e
+        -6719300 -> :sswitch_16e
+        -6568653 -> :sswitch_132
+        -3095238 -> :sswitch_28
+        -1911108 -> :sswitch_152
+        -1892587 -> :sswitch_1c1
+        -1759846 -> :sswitch_49
+        -1755547 -> :sswitch_44
+        1737145 -> :sswitch_18c
+        1738758 -> :sswitch_108
+        1763878 -> :sswitch_6c
+        1894434 -> :sswitch_1aa
+        1899402 -> :sswitch_13b
+        1901601 -> :sswitch_c
+        3100547 -> :sswitch_6d
+        4616777 -> :sswitch_33
+        4953471 -> :sswitch_148
+        11878908 -> :sswitch_3c
+        18108124 -> :sswitch_4d
+        45925720 -> :sswitch_6e
     .end sparse-switch
 .end method
 
 .method public static Lbin/mt/plus/ShortcutActivity;->ۖ(Ljava/lang/String;Landroid/graphics/Bitmap;)V
     .registers 10
     const/4 v0, 0x0
-    const/4 v1, 0x1
-    const/4 v2, 0x2
+    const/4 v1, 0x0
+    const/4 v2, 0x0
     sget v3, Ll/ܳܺ;->۫ܿ᩵:I
     sget v4, Ll/᩺ܶ;->ۨ۬۠:I
     const-string v5, "֫ۤ۬"
-    const/4 v6, 0x6
+    const/4 v6, 0x0
     invoke-static {v5, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
     mul-int/lit16 v6, v6, 0x3c1
-    const/4 v7, 0x7
+    const/4 v7, 0x1
     invoke-static {v5, v7}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v7
-    :addr_0015
+    :goto_15
     mul-int/lit8 v7, v7, 0x1f
     add-int/2addr v6, v7
     xor-int/2addr v6, v3
-    :addr_0019
-    const/4 v7, 0x7
-    :addr_001a
+    :goto_19
+    const/4 v7, 0x2
+    :goto_1a
     invoke-static {v5, v7}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v5
-    :addr_001e
+    :goto_1e
     add-int/2addr v6, v5
-    :addr_001f
-    sparse-switch v6, :addr_01e6
+    :goto_1f
+    sparse-switch v6, :cond_1e6
     .line 17
     sget v5, Ll/ۘ᩹;->ۛۡ᩵:I
-    if-gez v5, :addr_0137
-    goto :addr_0049
+    if-gez v5, :cond_137
+    goto :goto_49
     .line 237
     invoke-static {}, Ll/ܰۡ;->᩷۫֡()I
     move-result v5
-    if-gez v5, :addr_0118
-    goto/16 :addr_0190
+    if-gez v5, :cond_118
+    goto/16 :goto_190
     .line 177
     sget-boolean v5, Ll/ۤۙ;->۫ᩳ۬:Z
-    if-eqz v5, :addr_01cd
-    goto/16 :addr_0190
+    if-eqz v5, :cond_1cd
+    goto/16 :goto_190
     .line 32
     sget v5, Ll/ܽ᩶;->ܺ᩵֨:I
-    if-gtz v5, :addr_0174
-    goto :addr_0049
+    if-gtz v5, :cond_174
+    goto :goto_49
     .line 131
     sget-boolean v5, Ll/ۤۙ;->۫ᩳ۬:Z
-    if-eqz v5, :addr_0190
-    goto/16 :addr_0159
+    if-eqz v5, :goto_190
+    goto/16 :goto_159
     invoke-static {}, Ll/᩻᩷;->ܺ᩻᩺()I
     sget v5, Ll/ۤۛ;->᩺᩻ۘ:I
-    if-ltz v5, :addr_0049
-    goto/16 :addr_0159
-    :addr_0049
+    if-ltz v5, :goto_49
+    goto/16 :goto_159
+    :goto_49
     const-string v5, "֨ۜۧ"
-    const/4 v6, 0x6
+    const/4 v6, 0x0
     invoke-static {v5, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
     mul-int/lit16 v6, v6, 0x3c1
-    const/4 v7, 0x7
+    const/4 v7, 0x1
     invoke-static {v5, v7}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v7
     mul-int/lit8 v7, v7, 0x1f
     add-int/2addr v6, v7
     xor-int/2addr v6, v4
-    goto :addr_0019
+    goto :goto_19
     .line 26
     invoke-static {}, Ll/ۤۚ;->ܶۘ֨()I
     sget v5, Ll/ܽۛ;->۠ܺ۟:I
-    if-ltz v5, :addr_0159
-    goto :addr_006a
+    if-ltz v5, :goto_159
+    goto :goto_6a
     .line 200
     invoke-static {}, Ll/ۤۚ;->ܶۘ֨()I
     invoke-static {}, Ll/ۘ;->۬ۖ۬()I
-    :addr_006a
+    :goto_6a
     const-string v5, "ۚ᩷᩺"
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v5, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
-    :addr_0071
+    :goto_71
     xor-int/2addr v6, v3
-    const/4 v7, 0x7
+    const/4 v7, 0x0
     invoke-static {v5, v7}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v7
-    goto/16 :addr_0129
+    goto/16 :goto_129
     .line 179
     invoke-static {}, Ll/ܰۙ;->᩶ۡۤ()I
     return-void
     :try_start_007d
     .line 283
     invoke-static {v1, v2}, Ll/ۤۙ;->ᩳۡۚ(Ljava/lang/Object;Ljava/lang/Object;)V
-    goto :addr_0086
+    goto :goto_86
     throw v1
     :try_end_007d
     :try_end_007d
@@ -1364,31 +1364,31 @@
     invoke-static {v0}, Ll/۬ۨ;->ۜۜܿ(Ljava/lang/Object;)V
     :try_end_0083
     :try_end_0083
-    :addr_0086
+    :goto_86
     const-string v5, "۟ܽۢ"
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v5, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
     xor-int/2addr v6, v4
-    const/4 v7, 0x7
+    const/4 v7, 0x0
     invoke-static {v5, v7}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v7
-    :addr_0093
+    :goto_93
     mul-int v6, v6, v7
-    const/4 v7, 0x7
+    const/4 v7, 0x2
     invoke-static {v5, v7}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v5
-    goto/16 :addr_0130
+    goto/16 :goto_130
     move-exception v2
     const-string v5, "ۧܶ۠"
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v5, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
     xor-int/2addr v6, v3
-    const/4 v7, 0x7
+    const/4 v7, 0x0
     invoke-static {v5, v7}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v7
-    goto :addr_0093
+    goto :goto_93
     return-void
     :try_start_00ac
     .line 282
@@ -1416,9 +1416,9 @@
     const-string/jumbo v5, "᩺ۚۢ"
     invoke-static {v5}, Ll/ۤ֨;->۬ۚᩴ(Ljava/lang/Object;)I
     move-result v5
-    :addr_00ca
+    :goto_ca
     xor-int v6, v5, v3
-    goto/16 :addr_001f
+    goto/16 :goto_1f
     move-exception v0
     move-object v1, v0
     const-string v0, "ܰۧ᩸"
@@ -1426,244 +1426,244 @@
     move-result v0
     xor-int v6, v0, v4
     move-object v0, v5
-    goto/16 :addr_001f
+    goto/16 :goto_1f
     const-string v5, "۠۟ۖ"
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v5, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
-    :addr_00e2
-    const/4 v7, 0x7
+    :goto_e2
+    const/4 v7, 0x2
     invoke-static {v5, v7}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v7
     mul-int v6, v6, v7
     xor-int/2addr v6, v4
-    const/4 v7, 0x7
-    goto/16 :addr_001a
+    const/4 v7, 0x0
+    goto/16 :goto_1a
     .line 96
     sget v5, Ll/᩺ܶ;->ۨ۬۠:I
-    if-gtz v5, :addr_00f3
-    goto/16 :addr_01b2
-    :addr_00f3
+    if-gtz v5, :cond_f3
+    goto/16 :goto_1b2
+    :cond_f3
     const-string v5, "᩵ۗۙ"
-    const/4 v6, 0x6
+    const/4 v6, 0x0
     invoke-static {v5, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
     mul-int/lit16 v6, v6, 0x3c1
-    const/4 v7, 0x7
+    const/4 v7, 0x1
     invoke-static {v5, v7}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v7
-    goto/16 :addr_0015
+    goto/16 :goto_15
     .line 23
     invoke-static {}, Ll/ᩴᩴ;->ۡۙ۬()I
     move-result v5
-    if-ltz v5, :addr_010a
-    goto :addr_0137
-    :addr_010a
+    if-ltz v5, :cond_10a
+    goto :cond_137
+    :cond_10a
     const-string v5, "֫ܺ᩻"
-    :addr_010c
+    :goto_10c
     invoke-static {v5}, Ll/ۤ֨;->۬ۚᩴ(Ljava/lang/Object;)I
     move-result v5
-    :addr_0110
+    :goto_110
     xor-int v6, v5, v4
-    goto/16 :addr_001f
+    goto/16 :goto_1f
     .line 117
     sget v5, Ll/ۢۨ;->ᩳۨܶ:I
-    if-ltz v5, :addr_011c
-    :addr_0118
+    if-ltz v5, :cond_11c
+    :cond_118
     const-string/jumbo v5, "᩻۠ۖ"
-    goto :addr_010c
-    :addr_011c
+    goto :goto_10c
+    :cond_11c
     const-string v5, "᩵֫᩹"
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v5, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
     xor-int/2addr v6, v3
-    const/4 v7, 0x7
+    const/4 v7, 0x0
     invoke-static {v5, v7}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v7
-    :addr_0129
+    :goto_129
     mul-int v6, v6, v7
-    const/4 v7, 0x7
+    const/4 v7, 0x2
     invoke-static {v5, v7}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v5
-    :addr_0130
+    :goto_130
     sub-int/2addr v6, v5
-    goto/16 :addr_001f
+    goto/16 :goto_1f
     .line 77
     sget-boolean v5, Ll/ܽۜ;->ۖۙۖ:Z
-    if-eqz v5, :addr_013e
-    :addr_0137
+    if-eqz v5, :cond_13e
+    :cond_137
     const-string v5, "ۤۡ۠"
-    :addr_0139
+    :goto_139
     invoke-static {v5}, Ll/ۙۘ;->ۙᩴ۫(Ljava/lang/Object;)I
     move-result v5
-    goto :addr_0110
-    :addr_013e
+    goto :goto_110
+    :cond_13e
     const-string v5, "ۢۨܺ"
-    const/4 v6, 0x6
+    const/4 v6, 0x0
     invoke-static {v5, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
-    goto :addr_0184
+    goto :goto_184
     .line 220
     sget v5, Ll/ܽ֫;->ۡᩴ᩻:I
-    if-ltz v5, :addr_014b
-    goto :addr_0190
-    :addr_014b
+    if-ltz v5, :cond_14b
+    goto :goto_190
+    :cond_14b
     const-string v5, "ۚۚ֡"
-    const/4 v6, 0x6
+    const/4 v6, 0x0
     invoke-static {v5, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
-    goto :addr_01bc
+    goto :goto_1bc
     .line 221
     invoke-static {}, Ll/ܰۙ;->᩶ۡۤ()I
     move-result v5
-    if-eqz v5, :addr_0161
-    :addr_0159
+    if-eqz v5, :cond_161
+    :goto_159
     const-string v5, "ۛۖۙ"
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v5, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
-    goto :addr_00e2
-    :addr_0161
+    goto :goto_e2
+    :cond_161
     const-string v5, "ܺܿۧ"
-    const/4 v6, 0x6
+    const/4 v6, 0x0
     invoke-static {v5, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
     mul-int/lit16 v6, v6, 0x3c1
-    const/4 v7, 0x7
+    const/4 v7, 0x1
     invoke-static {v5, v7}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v7
-    goto :addr_01c3
+    goto :goto_1c3
     .line 84
     sget-boolean v5, Ll/ۛܰ;->ۗ᩻֨:Z
-    if-nez v5, :addr_017d
-    :addr_0174
+    if-nez v5, :cond_17d
+    :cond_174
     const-string/jumbo v5, "᩺ۧ᩻"
-    :addr_0177
+    :goto_177
     invoke-static {v5}, Ll/ۙۘ;->ۙᩴ۫(Ljava/lang/Object;)I
     move-result v5
-    goto/16 :addr_00ca
-    :addr_017d
+    goto/16 :goto_ca
+    :cond_17d
     const-string v5, "᩸ۖ᩻"
-    const/4 v6, 0x6
+    const/4 v6, 0x0
     invoke-static {v5, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
-    :addr_0184
+    :goto_184
     mul-int/lit16 v6, v6, 0x3c1
-    const/4 v7, 0x7
+    const/4 v7, 0x1
     invoke-static {v5, v7}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v7
-    goto :addr_01a7
+    goto :goto_1a7
     sget v5, Ll/֫;->᩺ܽ֫:I
-    if-gtz v5, :addr_0199
-    :addr_0190
+    if-gtz v5, :cond_199
+    :goto_190
     const-string v5, "᩸֨᩹"
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v5, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
-    goto/16 :addr_0071
-    :addr_0199
+    goto/16 :goto_71
+    :cond_199
     const-string v5, "ܿܳ᩵"
-    const/4 v6, 0x6
+    const/4 v6, 0x0
     invoke-static {v5, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
     mul-int/lit16 v6, v6, 0x3c1
-    const/4 v7, 0x7
+    const/4 v7, 0x1
     invoke-static {v5, v7}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v7
-    :addr_01a7
+    :goto_1a7
     mul-int/lit8 v7, v7, 0x1f
     add-int/2addr v6, v7
     xor-int/2addr v6, v3
-    goto :addr_01c7
+    goto :goto_1c7
     invoke-static {}, Ll/ۤۛ;->ۚۨ᩶()Z
     move-result v5
-    if-nez v5, :addr_01b5
-    :addr_01b2
+    if-nez v5, :cond_1b5
+    :goto_1b2
     const-string v5, "۫ۙۤ"
-    goto :addr_0139
-    :addr_01b5
+    goto :goto_139
+    :cond_1b5
     const-string v5, "ۙۜۛ"
-    const/4 v6, 0x6
+    const/4 v6, 0x0
     invoke-static {v5, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
-    :addr_01bc
+    :goto_1bc
     mul-int/lit16 v6, v6, 0x3c1
-    const/4 v7, 0x7
+    const/4 v7, 0x1
     invoke-static {v5, v7}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v7
-    :addr_01c3
+    :goto_1c3
     mul-int/lit8 v7, v7, 0x1f
     add-int/2addr v6, v7
     xor-int/2addr v6, v4
-    :addr_01c7
-    const/4 v7, 0x7
-    goto :addr_01e0
+    :goto_1c7
+    const/4 v7, 0x2
+    goto :goto_1e0
     .line 118
     sget v5, Ll/ۘ۟;->᩻ܿ۟:I
-    if-gtz v5, :addr_01d0
-    :addr_01cd
+    if-gtz v5, :cond_1d0
+    :cond_1cd
     const-string v5, "ۘܺܿ"
-    goto :addr_0177
-    :addr_01d0
+    goto :goto_177
+    :cond_1d0
     const-string v5, "ۙ᩻֨"
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v5, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
-    const/4 v7, 0x7
+    const/4 v7, 0x2
     invoke-static {v5, v7}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v7
     mul-int v6, v6, v7
     xor-int/2addr v6, v4
-    const/4 v7, 0x7
-    :addr_01e0
+    const/4 v7, 0x0
+    :goto_1e0
     invoke-static {v5, v7}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v5
-    goto/16 :addr_001e
-    :addr_01e6
+    goto/16 :goto_1e
+    :cond_1e6
     .sparse-switch
-        -28059417 -> :addr_0021
-        -28026678 -> :addr_00e4
-        -8465690 -> :addr_005e
-        -7171868 -> :addr_005a
-        -6570478 -> :addr_001b
-        -6564546 -> :addr_0063
-        -6564325 -> :addr_008d
-        -6556519 -> :addr_0134
-        -1830075 -> :addr_0151
-        -1749696 -> :addr_00f5
-        -1442329 -> :addr_01aa
-        1445542 -> :addr_003d
-        1463967 -> :addr_00ce
-        1745108 -> :addr_0114
-        1746345 -> :addr_016d
-        1748464 -> :addr_0016
-        1754277 -> :addr_0008
-        1834066 -> :addr_0064
-        1842575 -> :addr_0127
-        3071856 -> :addr_0045
-        3077753 -> :addr_008c
-        6575170 -> :addr_0010
-        7565456 -> :addr_0062
-        9819940 -> :addr_018d
+        -28059417 -> :sswitch_21
+        -28026678 -> :sswitch_e4
+        -8465690 -> :sswitch_5e
+        -7171868 -> :sswitch_5a
+        -6570478 -> :sswitch_1b
+        -6564546 -> :sswitch_63
+        -6564325 -> :sswitch_8d
+        -6556519 -> :sswitch_134
+        -1830075 -> :sswitch_151
+        -1749696 -> :sswitch_f5
+        -1442329 -> :sswitch_1aa
+        1445542 -> :sswitch_3d
+        1463967 -> :sswitch_ce
+        1745108 -> :sswitch_114
+        1746345 -> :sswitch_16d
+        1748464 -> :sswitch_16
+        1754277 -> :sswitch_8
+        1834066 -> :sswitch_64
+        1842575 -> :sswitch_127
+        3071856 -> :sswitch_45
+        3077753 -> :sswitch_8c
+        6575170 -> :sswitch_10
+        7565456 -> :sswitch_62
+        9819940 -> :sswitch_18d
     .end sparse-switch
 .end method
 
 .method public static Lbin/mt/plus/ShortcutActivity;->ۖ(Ll/۠ᩴۡ;Z)V
     .registers 88
     move-object/from16 v0, v86
-    const/4 v4, 0x4
-    const/4 v5, 0x5
-    const/4 v6, 0x6
-    const/4 v7, 0x7
-    const/4 v8, -0x8
-    const/4 v9, -0x7
-    const/4 v10, -0x6
-    const/4 v11, -0x5
-    const/4 v12, -0x4
-    const/4 v13, -0x3
-    const/4 v14, -0x2
-    const/4 v15, -0x1
+    const/4 v4, 0x0
+    const/4 v5, 0x0
+    const/4 v6, 0x0
+    const/4 v7, 0x0
+    const/4 v8, 0x0
+    const/4 v9, 0x0
+    const/4 v10, 0x0
+    const/4 v11, 0x0
+    const/4 v12, 0x0
+    const/4 v13, 0x0
+    const/4 v14, 0x0
+    const/4 v15, 0x0
     const/16 v16, 0x0
     const/16 v17, 0x0
     const/16 v18, 0x0
@@ -1713,17 +1713,17 @@
     sget v62, Ll/ۘ᩹;->ۛۡ᩵:I
     sget v63, Ll/ۤ֫;->᩻ܺ᩵:I
     const-string v1, "۟ܿۙ"
-    const/4 v2, 0x2
+    const/4 v2, 0x0
     invoke-static {v1, v2}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
     mul-int/lit16 v2, v2, 0x3c1
-    const/4 v3, 0x3
+    const/4 v3, 0x1
     invoke-static {v1, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
     mul-int/lit8 v3, v3, 0x1f
     add-int/2addr v2, v3
     xor-int v2, v2, v62
-    const/4 v3, 0x3
+    const/4 v3, 0x2
     invoke-static {v1, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v1
     add-int/2addr v2, v1
@@ -1740,8 +1740,8 @@
     move-object/from16 v8, v60
     move-object/from16 v10, v61
     const/4 v0, 0x0
-    const/4 v1, 0x1
-    const/4 v3, 0x3
+    const/4 v1, 0x0
+    const/4 v3, 0x0
     const/16 v17, 0x0
     const/16 v29, 0x0
     const/16 v30, 0x0
@@ -1768,49 +1768,49 @@
     move-object/from16 v85, v25
     move-object/from16 v25, v14
     move-object/from16 v14, v85
-    :addr_00d6
-    sparse-switch v2, :addr_1628
+    :goto_d6
+    sparse-switch v2, :cond_1628
     move/from16 v45, v0
     move/from16 v44, v3
     invoke-static {}, Ll/ۙۙ;->ܳܶۖ()I
     invoke-static {}, Ll/ۛܶ;->ܶۖۚ()Z
     move-result v0
-    if-eqz v0, :addr_0286
-    goto/16 :addr_02a3
+    if-eqz v0, :cond_286
+    goto/16 :goto_2a3
     .line 27
     invoke-static {}, Ll/ۙ᩻;->ۧ۫᩺()I
     sget v2, Ll/ۢۨ;->ᩳۨܶ:I
-    if-ltz v2, :addr_00f5
+    if-ltz v2, :cond_f5
     move/from16 v45, v0
     move/from16 v44, v3
-    goto/16 :addr_0286
-    :addr_00f5
+    goto/16 :cond_286
+    :cond_f5
     const-string/jumbo v2, "᩻ܽ۟"
     move/from16 v44, v3
-    const/4 v3, 0x3
+    const/4 v3, 0x0
     invoke-static {v2, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
     mul-int/lit16 v3, v3, 0x3c1
     move/from16 v45, v0
-    const/4 v0, 0x0
+    const/4 v0, 0x1
     invoke-static {v2, v0}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
     mul-int/lit8 v0, v0, 0x1f
     add-int/2addr v3, v0
     xor-int v0, v3, v63
-    const/4 v3, 0x3
+    const/4 v3, 0x2
     invoke-static {v2, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
-    goto/16 :addr_0408
+    goto/16 :goto_408
     move/from16 v45, v0
     move/from16 v44, v3
     .line 245
     invoke-static {}, Ll/᩹;->ۖ᩷֫()I
     invoke-static {}, Ll/ᩴᩳ;->ۛܰܶ()I
     move-result v0
-    if-lez v0, :addr_0123
-    goto/16 :addr_02a3
-    :addr_0123
+    if-lez v0, :cond_123
+    goto/16 :goto_2a3
+    :cond_123
     move-object/from16 v46, v6
     move-object/from16 v6, v23
     move-object/from16 v50, v24
@@ -1836,13 +1836,13 @@
     move-object/from16 v29, v7
     move/from16 v7, v68
     move-object/from16 v4, v79
-    goto/16 :addr_117b
+    goto/16 :goto_117b
     move/from16 v45, v0
     move/from16 v44, v3
     .line 198
     sget v0, Ll/ܳܺ;->۫ܿ᩵:I
-    if-ltz v0, :addr_0199
-    :addr_015f
+    if-ltz v0, :cond_199
+    :cond_15f
     move-object/from16 v46, v6
     move-object/from16 v6, v23
     move-object/from16 v50, v24
@@ -1871,8 +1871,8 @@
     move-object/from16 v29, v7
     move/from16 v7, v68
     move-object/from16 v4, v79
-    goto/16 :addr_15b6
-    :addr_0199
+    goto/16 :goto_15b6
+    :cond_199
     move-object/from16 v46, v6
     move-object/from16 v6, v23
     move-object/from16 v50, v24
@@ -1900,15 +1900,15 @@
     move-object/from16 v29, v7
     move/from16 v7, v68
     move-object/from16 v4, v79
-    goto/16 :addr_1232
+    goto/16 :goto_1232
     move/from16 v45, v0
     move/from16 v44, v3
     .line 239
     invoke-static {}, Ll/ۚۘ;->᩸֨᩺()Z
     invoke-static {}, Ll/ۙ֫;->ۛ֫۬()I
     move-result v0
-    if-gez v0, :addr_015f
-    :addr_01de
+    if-gez v0, :cond_15f
+    :cond_1de
     move-object/from16 v46, v6
     move-object/from16 v6, v23
     move-object/from16 v50, v24
@@ -1929,14 +1929,14 @@
     move-object/from16 v29, v7
     move/from16 v7, v68
     move-object/from16 v4, v79
-    goto/16 :addr_0f5b
+    goto/16 :goto_f5b
     move/from16 v45, v0
     move/from16 v44, v3
     .line 44
     invoke-static {}, Ll/ܽۛ;->ܺۢᩴ()I
     sget-boolean v0, Ll/ۛܰ;->ۗ᩻֨:Z
-    if-nez v0, :addr_01de
-    :addr_0213
+    if-nez v0, :cond_1de
+    :cond_213
     move-object/from16 v46, v6
     move-object/from16 v6, v23
     move-object/from16 v50, v24
@@ -1959,13 +1959,13 @@
     move-object/from16 v29, v7
     move/from16 v7, v68
     move-object/from16 v4, v79
-    goto/16 :addr_101b
+    goto/16 :goto_101b
     move/from16 v45, v0
     move/from16 v44, v3
     invoke-static {}, Ll/ۙۙ;->ܳܶۖ()I
     sget v0, Ll/ᩴᩳ;->۟֡ۛ:I
-    if-ltz v0, :addr_0213
-    :addr_024c
+    if-ltz v0, :cond_213
+    :goto_24c
     move-object/from16 v46, v6
     move-object/from16 v6, v23
     move-object/from16 v50, v24
@@ -1994,32 +1994,32 @@
     move-object/from16 v29, v7
     move/from16 v7, v68
     move-object/from16 v4, v79
-    goto/16 :addr_1513
-    :addr_0286
+    goto/16 :goto_1513
+    :cond_286
     const-string/jumbo v0, "᩹᩶ۨ"
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     xor-int v2, v2, v63
-    const/4 v3, 0x3
+    const/4 v3, 0x0
     invoke-static {v0, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v3
-    goto/16 :addr_0483
+    goto/16 :goto_483
     move/from16 v45, v0
     move/from16 v44, v3
     .line 161
     invoke-static {}, Ll/᩻ᩴ;->۟ᩳܳ()Z
     sget v0, Ll/ۙ᩻;->ܿۨ֡:I
-    if-gtz v0, :addr_02a3
-    goto :addr_024c
-    :addr_02a3
+    if-gtz v0, :goto_2a3
+    goto :goto_24c
+    :goto_2a3
     const-string v0, "ۜ۠ܶ"
-    goto/16 :addr_043d
+    goto/16 :goto_43d
     move/from16 v45, v0
     move/from16 v44, v3
     .line 226
     invoke-static {}, Ll/ۘ;->۬ۖ۬()I
-    goto :addr_024c
+    goto :goto_24c
     invoke-static {}, Ll/᩺ܳ;->ۜܺܶ()I
     invoke-static {}, Ll/ܽ֫;->᩺ۙ۬()Z
     return-void
@@ -2029,58 +2029,58 @@
     invoke-static/range {v42 .. v42}, Ll/ۚ۫;->ۜ(Landroid/graphics/Bitmap;)Ll/ۚ۫;
     move-result-object v0
     invoke-virtual {v15, v0}, Ll/۟᩺;->ۖ(Ll/ۚ۫;)V
-    goto :addr_02f5
+    goto :goto_2f5
     move/from16 v45, v0
     move/from16 v44, v3
     .line 189
     invoke-virtual {v15}, Ll/۟᩺;->ۖ()Ll/ۢ᩺;
     move-result-object v0
     invoke-static {v1, v0}, Ll/ᩴᩳ;->ᩴܺ᩸(Ljava/lang/Object;Ljava/lang/Object;)Z
-    goto :addr_0319
+    goto :goto_319
     move/from16 v45, v0
     move/from16 v44, v3
     .line 235
     invoke-static {v7}, Ll/۟۠ۢ;->ۖ(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v0
-    if-eqz v0, :addr_0438
+    if-eqz v0, :cond_438
     move-object v10, v0
-    goto/16 :addr_043a
+    goto/16 :goto_43a
     move/from16 v45, v0
     move/from16 v44, v3
     .line 184
     invoke-virtual {v15, v8}, Ll/۟᩺;->ۖ(Ljava/lang/CharSequence;)V
-    goto/16 :addr_0350
+    goto/16 :goto_350
     move/from16 v45, v0
     move/from16 v44, v3
-    if-eqz v42, :addr_02f5
+    if-eqz v42, :goto_2f5
     const-string v0, "ۨ᩻ۧ"
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     xor-int v2, v2, v63
-    goto/16 :addr_047e
-    :addr_02f5
+    goto/16 :goto_47e
+    :goto_2f5
     const-string v0, "ܽ֨ۛ"
-    goto/16 :addr_043d
+    goto/16 :goto_43d
     move/from16 v45, v0
     move/from16 v44, v3
     .line 234
     invoke-static {v7, v4}, Ll/᩶ۤ;->ܿ᩶ۘ(Ljava/lang/Object;Ljava/lang/Object;)Z
     move-result v0
-    if-eqz v0, :addr_0438
+    if-eqz v0, :cond_438
     const-string v0, "ܶܽᩳ"
-    goto/16 :addr_04a9
+    goto/16 :goto_4a9
     move/from16 v45, v0
     move/from16 v44, v3
     .line 177
     invoke-static/range {v35 .. v35}, Ll/۟۠ۢ;->ۖ(Ljava/lang/String;)Ljava/lang/String;
     move-result-object v0
-    goto/16 :addr_0474
+    goto/16 :goto_474
     move/from16 v45, v0
     move/from16 v44, v3
-    if-eqz v42, :addr_0319
-    goto/16 :addr_040d
-    :addr_0319
+    if-eqz v42, :goto_319
+    goto/16 :goto_40d
+    :goto_319
     move-object/from16 v46, v6
     move-object/from16 v6, v23
     move-object/from16 v2, v24
@@ -2094,36 +2094,36 @@
     move-object/from16 v18, v4
     move-object/from16 v29, v7
     move/from16 v7, v68
-    goto/16 :addr_0d87
+    goto/16 :goto_d87
     move/from16 v45, v0
     move/from16 v44, v3
     .line 182
     new-instance v15, Ll/۟᩺;
     invoke-direct {v15, v9}, Ll/۟᩺;-><init>(Ll/ۢ᩺;)V
-    if-eqz v8, :addr_0350
+    if-eqz v8, :goto_350
     const-string v0, "ᩳ᩻᩷"
-    const/4 v2, 0x2
+    const/4 v2, 0x0
     invoke-static {v0, v2}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
     mul-int/lit16 v2, v2, 0x3c1
-    const/4 v3, 0x3
+    const/4 v3, 0x1
     invoke-static {v0, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v3
-    goto/16 :addr_04cd
-    :addr_0350
+    goto/16 :goto_4cd
+    :goto_350
     const-string v0, "᩷ᩳܶ"
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v0, v2}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
-    const/4 v3, 0x3
+    const/4 v3, 0x2
     invoke-static {v0, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
     mul-int v2, v2, v3
     xor-int v2, v2, v63
-    const/4 v3, 0x3
+    const/4 v3, 0x0
     invoke-static {v0, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
-    goto/16 :addr_04d7
+    goto/16 :goto_4d7
     move/from16 v44, v3
     move/from16 v45, v0
     move-object/from16 v46, v6
@@ -2140,30 +2140,30 @@
     move-object/from16 v18, v4
     move-object/from16 v29, v7
     move/from16 v7, v68
-    goto/16 :addr_0dc9
+    goto/16 :goto_dc9
     move/from16 v45, v0
     move/from16 v44, v3
     .line 233
     invoke-static {v13, v5}, Ll/ܽۘ;->֫֫ۨ(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/String;
     move-result-object v0
-    if-eqz v0, :addr_0438
+    if-eqz v0, :cond_438
     const-string v2, "ᩴۘ᩹"
-    const/4 v3, 0x3
+    const/4 v3, 0x0
     invoke-static {v2, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v3
     mul-int/lit16 v3, v3, 0x3c1
-    const/4 v7, 0x7
+    const/4 v7, 0x1
     invoke-static {v2, v7}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v7
     mul-int/lit8 v7, v7, 0x1f
     add-int/2addr v3, v7
     xor-int v3, v3, v62
-    const/4 v7, 0x7
+    const/4 v7, 0x2
     invoke-static {v2, v7}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     add-int/2addr v2, v3
     move-object v7, v0
-    goto/16 :addr_0611
+    goto/16 :goto_611
     move/from16 v45, v0
     move/from16 v44, v3
     .line 241
@@ -2180,128 +2180,128 @@
     move-result-object v0
     .line 241
     invoke-static {v1, v0}, Ll/ۘ۟;->ܰۨܶ(Ljava/lang/Object;Ljava/lang/Object;)Z
-    goto :addr_0419
+    goto :goto_419
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v0, v35
     .line 176
     invoke-static {v0, v4}, Ll/᩶ۤ;->ܿ᩶ۘ(Ljava/lang/Object;Ljava/lang/Object;)Z
     move-result v2
-    if-eqz v2, :addr_03e2
+    if-eqz v2, :cond_3e2
     const-string v2, "۫ۚܶ"
     invoke-static {v2}, Ll/ۙۘ;->ۙᩴ۫(Ljava/lang/Object;)I
     move-result v2
     xor-int v2, v2, v63
     move-object/from16 v35, v0
-    goto/16 :addr_0611
-    :addr_03e2
+    goto/16 :goto_611
+    :cond_3e2
     move-object/from16 v35, v0
-    goto/16 :addr_04ec
+    goto/16 :goto_4ec
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v0, v35
-    if-nez v8, :addr_040b
+    if-nez v8, :cond_40b
     const-string v2, "ۘۨۤ"
-    const/4 v3, 0x3
+    const/4 v3, 0x0
     invoke-static {v2, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
     mul-int/lit16 v3, v3, 0x3c1
     move-object/from16 v35, v0
-    const/4 v0, 0x0
+    const/4 v0, 0x1
     invoke-static {v2, v0}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     mul-int/lit8 v0, v0, 0x1f
     add-int/2addr v3, v0
     xor-int v0, v3, v63
-    const/4 v3, 0x3
+    const/4 v3, 0x2
     invoke-static {v2, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
-    :addr_0408
+    :goto_408
     add-int/2addr v2, v0
-    goto/16 :addr_0611
-    :addr_040b
+    goto/16 :goto_611
+    :cond_40b
     move-object/from16 v35, v0
-    :addr_040d
+    :goto_40d
     const-string v0, "ۧ֡᩶"
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
-    goto :addr_047c
+    goto :goto_47c
     move/from16 v45, v0
     move/from16 v44, v3
-    :addr_0419
+    :goto_419
     const-string v0, "ܳܰۜ"
-    goto :addr_043d
+    goto :goto_43d
     move/from16 v45, v0
     move/from16 v44, v3
     const/4 v0, 0x0
     .line 232
     invoke-virtual {v13, v6, v0}, Landroid/content/Intent;->getBooleanExtra(Ljava/lang/String;Z)Z
     move-result v0
-    if-eqz v0, :addr_0438
+    if-eqz v0, :cond_438
     const-string/jumbo v0, "᩺᩷ۖ"
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v0, v2}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
     xor-int v2, v2, v63
-    const/4 v3, 0x3
+    const/4 v3, 0x0
     invoke-static {v0, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
-    goto/16 :addr_04b5
-    :addr_0438
+    goto/16 :goto_4b5
+    :cond_438
     move-object/from16 v10, v20
-    :addr_043a
+    :goto_43a
     const-string/jumbo v0, "᩺۬ܽ"
-    :addr_043d
+    :goto_43d
     invoke-static {v0}, Ll/ۤ֨;->۬ۚᩴ(Ljava/lang/Object;)I
     move-result v0
     xor-int v2, v0, v62
-    goto/16 :addr_0611
+    goto/16 :goto_611
     move/from16 v45, v0
     move/from16 v44, v3
     .line 175
     invoke-static {v14, v5}, Ll/ۙ֫;->ܶܳᩴ(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/String;
     move-result-object v0
-    if-eqz v0, :addr_04ec
+    if-eqz v0, :goto_4ec
     const-string v2, "ܺۛۢ"
-    const/4 v3, 0x3
+    const/4 v3, 0x1
     invoke-static {v2, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v3
     move-object/from16 v46, v0
-    const/4 v0, 0x0
+    const/4 v0, 0x2
     invoke-static {v2, v0}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     mul-int v3, v3, v0
     xor-int v0, v3, v63
-    const/4 v3, 0x3
+    const/4 v3, 0x0
     invoke-static {v2, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     add-int/2addr v2, v0
     move/from16 v3, v44
     move/from16 v0, v45
     move-object/from16 v35, v46
-    goto/16 :addr_00d6
+    goto/16 :goto_d6
     move/from16 v45, v0
     move/from16 v44, v3
     const/4 v0, 0x0
-    :addr_0474
+    :goto_474
     move-object v8, v0
     const-string v0, "ܳܰۗ"
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v0, v2}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
-    :addr_047c
+    :goto_47c
     xor-int v2, v2, v62
-    :addr_047e
-    const/4 v3, 0x3
+    :goto_47e
+    const/4 v3, 0x0
     invoke-static {v0, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
-    :addr_0483
+    :goto_483
     mul-int v2, v2, v3
-    const/4 v3, 0x3
+    const/4 v3, 0x2
     invoke-static {v0, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
-    goto :addr_04bc
+    goto :goto_4bc
     move/from16 v45, v0
     move/from16 v44, v3
     .line 227
@@ -2313,63 +2313,63 @@
     move/from16 v38, v43
     move-object/from16 v18, v4
     move-object/from16 v43, v5
-    goto/16 :addr_05b0
+    goto/16 :goto_5b0
     move/from16 v45, v0
     move/from16 v44, v3
-    if-nez v51, :addr_04bf
+    if-nez v51, :cond_4bf
     const-string v0, "ܺۡܽ"
-    :addr_04a9
-    const/4 v2, 0x2
+    :goto_4a9
+    const/4 v2, 0x1
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     xor-int v2, v2, v63
-    const/4 v3, 0x3
+    const/4 v3, 0x0
     invoke-static {v0, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v3
-    :addr_04b5
+    :goto_4b5
     mul-int v2, v2, v3
-    const/4 v3, 0x3
+    const/4 v3, 0x2
     invoke-static {v0, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
-    :addr_04bc
+    :goto_4bc
     sub-int/2addr v2, v0
-    goto/16 :addr_0611
-    :addr_04bf
+    goto/16 :goto_611
+    :cond_4bf
     const-string v0, "ۛۗۙ"
-    const/4 v2, 0x2
+    const/4 v2, 0x0
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     mul-int/lit16 v2, v2, 0x3c1
-    const/4 v3, 0x3
+    const/4 v3, 0x1
     invoke-static {v0, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
-    :addr_04cd
+    :goto_4cd
     mul-int/lit8 v3, v3, 0x1f
     add-int/2addr v2, v3
     xor-int v2, v2, v62
-    const/4 v3, 0x3
+    const/4 v3, 0x2
     invoke-static {v0, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
-    :addr_04d7
+    :goto_4d7
     add-int/2addr v2, v0
-    goto/16 :addr_0611
+    goto/16 :goto_611
     move/from16 v45, v0
     move/from16 v44, v3
     .line 174
     invoke-virtual {v14, v6, v12}, Landroid/content/Intent;->getBooleanExtra(Ljava/lang/String;Z)Z
     move-result v0
-    if-eqz v0, :addr_04ec
+    if-eqz v0, :goto_4ec
     const-string/jumbo v0, "᩻֫ۡ"
     invoke-static {v0}, Ll/ۙۘ;->ۙᩴ۫(Ljava/lang/Object;)I
     move-result v0
-    goto :addr_04f2
-    :addr_04ec
+    goto :goto_4f2
+    :goto_4ec
     const-string v0, "ۤ۬᩻"
     invoke-static {v0}, Ll/ۤ֨;->۬ۚᩴ(Ljava/lang/Object;)I
     move-result v0
-    :addr_04f2
+    :goto_4f2
     xor-int v2, v0, v63
-    goto/16 :addr_0611
+    goto/16 :goto_611
     move/from16 v45, v0
     move/from16 v44, v3
     .line 168
@@ -2380,7 +2380,7 @@
     invoke-static {v0, v2, v12}, Ll/᩵᩸֨;->ۖ(IIZ)Landroid/graphics/Bitmap;
     move-result-object v0
     move-object/from16 v42, v0
-    goto :addr_0520
+    goto :goto_520
     move v2, v0
     move/from16 v44, v3
     .line 171
@@ -2395,21 +2395,21 @@
     move-result-object v0
     move-object/from16 v42, v0
     move/from16 v45, v2
-    :addr_0520
+    :goto_520
     move-object/from16 v2, v18
     move/from16 v3, v38
     move/from16 v38, v43
     move-object/from16 v18, v4
     move-object/from16 v43, v5
     move/from16 v4, v30
-    goto/16 :addr_05fc
+    goto/16 :goto_5fc
     move/from16 v44, v3
     .line 195
     invoke-static/range {v44 .. v44}, Ll/۟᩸;->ܿ᩵֨(I)V
     return-void
     move v2, v0
     move/from16 v44, v3
-    const/4 v0, 0x0
+    const/4 v0, 0x1
     move/from16 v45, v2
     move-object/from16 v46, v6
     move/from16 v3, v38
@@ -2424,7 +2424,7 @@
     move-object/from16 v18, v4
     move/from16 v4, v28
     move-object/from16 v28, v83
-    goto/16 :addr_07b0
+    goto/16 :goto_7b0
     move v2, v0
     move/from16 v44, v3
     .line 221
@@ -2448,50 +2448,50 @@
     move/from16 v5, v29
     move-object/from16 v29, v7
     move/from16 v7, v68
-    goto/16 :addr_0726
+    goto/16 :goto_726
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v2, v18
     move/from16 v3, v38
     move/from16 v38, v43
-    if-nez v34, :addr_05aa
+    if-nez v34, :cond_5aa
     const-string v0, "ۗܶ֫"
     move-object/from16 v18, v4
-    const/4 v4, 0x4
+    const/4 v4, 0x1
     invoke-static {v0, v4}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v4
     xor-int v4, v4, v62
     move-object/from16 v43, v5
-    const/4 v5, 0x5
+    const/4 v5, 0x0
     invoke-static {v0, v5}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v5
     mul-int v4, v4, v5
-    const/4 v5, 0x5
+    const/4 v5, 0x2
     invoke-static {v0, v5}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     sub-int v0, v4, v0
-    goto :addr_0606
-    :addr_05aa
+    goto :goto_606
+    :cond_5aa
     move-object/from16 v18, v4
     move-object/from16 v43, v5
     move-object/from16 v51, v34
-    :addr_05b0
+    :goto_5b0
     const-string v0, "ۧۗۢ"
-    const/4 v4, 0x4
+    const/4 v4, 0x0
     invoke-static {v0, v4}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v4
     mul-int/lit16 v4, v4, 0x3c1
-    const/4 v5, 0x5
+    const/4 v5, 0x1
     invoke-static {v0, v5}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v5
     mul-int/lit8 v5, v5, 0x1f
     add-int/2addr v4, v5
     xor-int v4, v4, v63
-    const/4 v5, 0x5
+    const/4 v5, 0x2
     invoke-static {v0, v5}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
     add-int/2addr v0, v4
-    goto :addr_0606
+    goto :goto_606
     .line 249
     invoke-static/range {v33 .. v33}, Ll/ۘ᩺;->ۛۘܿ(I)V
     return-void
@@ -2509,7 +2509,7 @@
     move/from16 v4, v30
     invoke-static {v0, v4, v12}, Ll/᩵᩸֨;->ۖ(IIZ)Landroid/graphics/Bitmap;
     move-result-object v0
-    goto :addr_05fa
+    goto :goto_5fa
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v2, v18
@@ -2519,25 +2519,25 @@
     move-object/from16 v43, v5
     move/from16 v4, v30
     const/4 v0, 0x0
-    :addr_05fa
+    :goto_5fa
     move-object/from16 v42, v0
-    :addr_05fc
+    :goto_5fc
     const-string v0, "ۢ᩻ܿ"
     invoke-static {v0}, Ll/ۙۘ;->ۙᩴ۫(Ljava/lang/Object;)I
     move-result v0
     xor-int v0, v0, v62
     move/from16 v30, v4
-    :addr_0606
+    :goto_606
     move-object/from16 v4, v18
     move-object/from16 v5, v43
     move-object/from16 v18, v2
     move/from16 v43, v38
     move v2, v0
     move/from16 v38, v3
-    :addr_0611
+    :goto_611
     move/from16 v3, v44
     move/from16 v0, v45
-    goto/16 :addr_00d6
+    goto/16 :goto_d6
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v2, v18
@@ -2550,22 +2550,22 @@
     invoke-static/range {v27 .. v27}, Ll/ᩳܳۢ;->ۖ(Ljava/lang/String;)I
     move-result v0
     move/from16 v5, v29
-    if-eq v0, v5, :addr_065f
+    if-eq v0, v5, :cond_65f
     move/from16 v29, v0
     const-string v0, "ۖ֫᩶"
     move/from16 v30, v4
-    const/4 v4, 0x4
+    const/4 v4, 0x0
     invoke-static {v0, v4}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v4
     mul-int/lit16 v4, v4, 0x3c1
     move-object/from16 v46, v6
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v0, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
     mul-int/lit8 v6, v6, 0x1f
     add-int/2addr v4, v6
     xor-int v4, v4, v62
-    const/4 v6, 0x6
+    const/4 v6, 0x2
     invoke-static {v0, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
     add-int/2addr v0, v4
@@ -2577,14 +2577,14 @@
     move/from16 v29, v5
     move-object/from16 v5, v43
     move/from16 v43, v38
-    goto/16 :addr_06ef
-    :addr_065f
+    goto/16 :goto_6ef
+    :cond_65f
     move/from16 v30, v4
     move-object/from16 v46, v6
     move-object/from16 v29, v7
     move/from16 v4, v28
     move/from16 v7, v68
-    goto :addr_06a7
+    goto :goto_6a7
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -2597,7 +2597,7 @@
     .line 168
     sget-object v0, Lbin/mt/plus/ShortcutActivity;->۠ܶۧ:[S
     const/16 v4, 0x4b
-    const/4 v6, 0x6
+    const/4 v6, 0x5
     move-object/from16 v29, v7
     move/from16 v7, v68
     invoke-static {v0, v4, v6, v7}, Ll/ۤۛ;->ܳ᩺۫([SIII)Ljava/lang/String;
@@ -2605,25 +2605,25 @@
     .line 170
     invoke-virtual {v14, v0, v12}, Landroid/content/Intent;->getBooleanExtra(Ljava/lang/String;Z)Z
     move-result v0
-    if-eqz v0, :addr_06a5
+    if-eqz v0, :cond_6a5
     const-string v0, "ܰ᩷᩷"
-    const/4 v4, 0x4
+    const/4 v4, 0x1
     invoke-static {v0, v4}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v4
-    const/4 v6, 0x6
+    const/4 v6, 0x2
     invoke-static {v0, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
     mul-int v4, v4, v6
     xor-int v4, v4, v63
-    const/4 v6, 0x6
+    const/4 v6, 0x0
     invoke-static {v0, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
-    goto :addr_06db
-    :addr_06a5
+    goto :goto_6db
+    :cond_6a5
     move/from16 v4, v28
-    :addr_06a7
+    :goto_6a7
     move-object/from16 v28, v2
-    goto/16 :addr_0863
+    goto/16 :goto_863
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -2635,22 +2635,22 @@
     move/from16 v5, v29
     move-object/from16 v29, v7
     move/from16 v7, v68
-    if-eqz v87, :addr_06f5
+    if-eqz v87, :cond_6f5
     const-string v0, "ܳ᩺᩹"
-    const/4 v4, 0x4
+    const/4 v4, 0x0
     invoke-static {v0, v4}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v4
     mul-int/lit16 v4, v4, 0x3c1
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v0, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
     mul-int/lit8 v6, v6, 0x1f
     add-int/2addr v4, v6
     xor-int v4, v4, v62
-    const/4 v6, 0x6
+    const/4 v6, 0x2
     invoke-static {v0, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
-    :addr_06db
+    :goto_6db
     add-int/2addr v0, v4
     move/from16 v68, v7
     move-object/from16 v4, v18
@@ -2662,16 +2662,16 @@
     move v2, v0
     move/from16 v43, v38
     move/from16 v0, v45
-    :addr_06ef
+    :goto_6ef
     move/from16 v38, v3
     move/from16 v3, v44
-    goto/16 :addr_00d6
-    :addr_06f5
+    goto/16 :goto_d6
+    :cond_6f5
     move-object/from16 v0, v86
     move/from16 v47, v3
     move/from16 v4, v28
     move-object/from16 v28, v2
-    goto/16 :addr_0a1f
+    goto/16 :goto_a1f
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -2693,14 +2693,14 @@
     .line 215
     invoke-static {v2, v0}, Lbin/mt/plus/ShortcutActivity;->ۖ(Ljava/lang/String;Landroid/graphics/Bitmap;)V
     move-object/from16 v40, v0
-    :addr_0726
+    :goto_726
     const-string v0, "ۢܿۜ"
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v0, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
     xor-int v6, v6, v63
     move-object/from16 v28, v2
-    const/4 v2, 0x2
+    const/4 v2, 0x0
     invoke-static {v0, v2}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
     mul-int v6, v6, v2
@@ -2708,7 +2708,7 @@
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     sub-int v2, v6, v0
-    goto/16 :addr_08dc
+    goto/16 :goto_8dc
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -2725,18 +2725,18 @@
     .line 219
     invoke-static/range {v22 .. v22}, Ll/ᩳܳۢ;->ۖ(Ljava/lang/String;)I
     move-result v0
-    if-eq v0, v5, :addr_078d
+    if-eq v0, v5, :cond_78d
     const-string v2, "᩵ۚۛ"
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v2, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
     move/from16 v47, v0
-    const/4 v0, 0x0
+    const/4 v0, 0x2
     invoke-static {v2, v0}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
     mul-int v6, v6, v0
     xor-int v0, v6, v63
-    const/4 v6, 0x6
+    const/4 v6, 0x0
     invoke-static {v2, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     add-int/2addr v2, v0
@@ -2749,10 +2749,10 @@
     move/from16 v29, v5
     move-object/from16 v5, v43
     move/from16 v43, v47
-    goto/16 :addr_0a47
-    :addr_078d
+    goto/16 :goto_a47
+    :cond_78d
     move-object/from16 v0, v86
-    goto/16 :addr_09a2
+    goto/16 :goto_9a2
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -2769,18 +2769,18 @@
     const/4 v0, 0x0
     move-object/from16 v34, v0
     move/from16 v17, v16
-    :addr_07b0
+    :goto_7b0
     const-string v0, "۬ۧۨ"
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
-    const/4 v6, 0x6
+    const/4 v6, 0x2
     invoke-static {v0, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
     mul-int v2, v2, v6
     xor-int v2, v2, v62
-    const/4 v6, 0x6
-    goto/16 :addr_08ac
+    const/4 v6, 0x0
+    goto/16 :goto_8ac
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -2794,12 +2794,12 @@
     move-object/from16 v18, v4
     move/from16 v4, v28
     move-object/from16 v28, v83
-    if-eqz v87, :addr_0817
+    if-eqz v87, :cond_817
     const-string v0, "ۖۢ᩶"
     invoke-static {v0}, Ll/ۤ֨;->۬ۚᩴ(Ljava/lang/Object;)I
     move-result v0
     xor-int v2, v0, v63
-    goto/16 :addr_08dc
+    goto/16 :goto_8dc
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -2816,7 +2816,7 @@
     .line 249
     sget-object v0, Lbin/mt/plus/ShortcutActivity;->۠ܶۧ:[S
     const/16 v2, 0x48
-    const/4 v6, 0x6
+    const/4 v6, 0x3
     invoke-static {v0, v2, v6, v7}, Ll/ۤ֫;->᩻᩸ۘ([SIII)Ljava/lang/String;
     move-result-object v0
     invoke-static {v0}, Ll/ۤ֨;->۬ۚᩴ(Ljava/lang/Object;)I
@@ -2825,10 +2825,10 @@
     xor-int/2addr v0, v2
     .line 254
     invoke-static {v0}, Ll/ۘ᩺;->ۛۘܿ(I)V
-    :addr_0817
+    :cond_817
     move-object/from16 v0, v86
     move/from16 v47, v3
-    goto/16 :addr_0a1f
+    goto/16 :goto_a1f
     return-void
     move/from16 v45, v0
     move/from16 v44, v3
@@ -2846,9 +2846,9 @@
     .line 161
     invoke-static/range {v26 .. v26}, Ll/ᩳܳۢ;->ۖ(Ljava/lang/String;)I
     move-result v0
-    if-eq v0, v5, :addr_0863
+    if-eq v0, v5, :goto_863
     const-string v2, "֫᩷᩶"
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v2, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
     xor-int v6, v6, v62
@@ -2857,7 +2857,7 @@
     invoke-static {v2, v0}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
     mul-int v6, v6, v0
-    const/4 v0, 0x0
+    const/4 v0, 0x2
     invoke-static {v2, v0}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
     sub-int v2, v6, v0
@@ -2866,13 +2866,13 @@
     move/from16 v0, v45
     move-object/from16 v6, v46
     move/from16 v30, v47
-    goto/16 :addr_08e4
-    :addr_0863
+    goto/16 :goto_8e4
+    :goto_863
     const-string v0, "۫ۖܽ"
     invoke-static {v0}, Ll/ۙۘ;->ۙᩴ۫(Ljava/lang/Object;)I
     move-result v0
     xor-int v2, v0, v62
-    goto/16 :addr_08dc
+    goto/16 :goto_8dc
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -2886,35 +2886,35 @@
     move-object/from16 v18, v4
     move/from16 v4, v28
     move-object/from16 v28, v83
-    if-eqz v27, :addr_0898
+    if-eqz v27, :cond_898
     const-string v0, "۟ۙۚ"
-    const/4 v2, 0x2
+    const/4 v2, 0x0
     invoke-static {v0, v2}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
     mul-int/lit16 v2, v2, 0x3c1
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v0, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
-    goto :addr_08a6
-    :addr_0898
+    goto :goto_8a6
+    :cond_898
     const-string v0, "ܽ֡ܰ"
-    const/4 v2, 0x2
+    const/4 v2, 0x0
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     mul-int/lit16 v2, v2, 0x3c1
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v0, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
-    :addr_08a6
+    :goto_8a6
     mul-int/lit8 v6, v6, 0x1f
     add-int/2addr v2, v6
     xor-int v2, v2, v63
-    const/4 v6, 0x6
-    :addr_08ac
+    const/4 v6, 0x2
+    :goto_8ac
     invoke-static {v0, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
     add-int/2addr v2, v0
-    goto :addr_08dc
+    goto :goto_8dc
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -2932,29 +2932,29 @@
     .line 193
     invoke-static {v0, v1}, Ll/֨᩺;->ۜ(Ll/۠ᩴۡ;Ljava/util/ArrayList;)Z
     move-result v2
-    if-nez v2, :addr_08f0
+    if-nez v2, :cond_8f0
     const-string v2, "ۗ᩸ܶ"
     invoke-static {v2}, Ll/ۤ֨;->۬ۚᩴ(Ljava/lang/Object;)I
     move-result v2
     xor-int v2, v2, v62
-    :addr_08dc
+    :goto_8dc
     move/from16 v68, v7
     move-object/from16 v7, v29
     move/from16 v0, v45
     move-object/from16 v6, v46
-    :addr_08e4
+    :goto_8e4
     move/from16 v29, v5
     move-object/from16 v5, v43
     move/from16 v43, v38
     move/from16 v38, v3
     move/from16 v3, v44
-    goto/16 :addr_0a47
-    :addr_08f0
+    goto/16 :goto_a47
+    :cond_8f0
     move/from16 v47, v3
     move/from16 v48, v4
     move-object/from16 v6, v23
     move-object/from16 v2, v24
-    goto/16 :addr_0b09
+    goto/16 :goto_b09
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -2978,7 +2978,7 @@
     move/from16 v3, v82
     move-object/from16 v24, v1
     move-object/from16 v1, v81
-    goto/16 :addr_0e54
+    goto/16 :goto_e54
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -2996,7 +2996,7 @@
     .line 212
     invoke-static/range {v21 .. v21}, Ll/ᩳܳۢ;->ۖ(Ljava/lang/String;)I
     move-result v2
-    if-eq v2, v5, :addr_09a2
+    if-eq v2, v5, :goto_9a2
     const-string v4, "ۗ۟۟"
     invoke-static {v4}, Ll/ۤ֨;->۬ۚᩴ(Ljava/lang/Object;)I
     move-result v4
@@ -3013,7 +3013,7 @@
     move-object/from16 v83, v28
     move/from16 v28, v2
     move v2, v4
-    goto/16 :addr_0a4b
+    goto/16 :goto_a4b
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -3028,28 +3028,28 @@
     move-object/from16 v18, v4
     move/from16 v4, v28
     move-object/from16 v28, v83
-    if-eqz v22, :addr_09a2
+    if-eqz v22, :goto_9a2
     const-string v2, "ᩳܶᩴ"
-    const/4 v6, 0x6
+    const/4 v6, 0x0
     invoke-static {v2, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
     mul-int/lit16 v6, v6, 0x3c1
     move/from16 v47, v3
-    const/4 v3, 0x3
+    const/4 v3, 0x1
     invoke-static {v2, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
     mul-int/lit8 v3, v3, 0x1f
     add-int/2addr v6, v3
     xor-int v3, v6, v63
-    const/4 v6, 0x6
-    goto/16 :addr_0a1a
-    :addr_09a2
+    const/4 v6, 0x2
+    goto/16 :goto_a1a
+    :goto_9a2
     move/from16 v47, v3
     const-string v2, "ۘᩴۘ"
     invoke-static {v2}, Ll/ۤ֨;->۬ۚᩴ(Ljava/lang/Object;)I
     move-result v2
     xor-int v2, v2, v62
-    goto/16 :addr_0a35
+    goto/16 :goto_a35
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -3067,23 +3067,23 @@
     .line 247
     invoke-static {v0, v1}, Ll/֨᩺;->ۖ(Ll/۠ᩴۡ;Ljava/util/ArrayList;)Z
     move-result v2
-    if-nez v2, :addr_09e1
+    if-nez v2, :cond_9e1
     const-string v2, "ۚۤᩴ"
-    const/4 v3, 0x3
+    const/4 v3, 0x1
     invoke-static {v2, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
-    const/4 v6, 0x6
+    const/4 v6, 0x2
     invoke-static {v2, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
     mul-int v3, v3, v6
     xor-int v3, v3, v63
-    goto :addr_0a2f
-    :addr_09e1
+    goto :goto_a2f
+    :cond_9e1
     move/from16 v48, v4
     move-object/from16 v6, v23
     move-object/from16 v2, v24
     move-object/from16 v24, v1
-    goto/16 :addr_0cbc
+    goto/16 :goto_cbc
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -3098,38 +3098,38 @@
     move-object/from16 v18, v4
     move/from16 v4, v28
     move-object/from16 v28, v83
-    if-eqz v87, :addr_0a1f
+    if-eqz v87, :goto_a1f
     const-string v2, "ۡ֫۠"
-    const/4 v3, 0x3
+    const/4 v3, 0x1
     invoke-static {v2, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v3
-    const/4 v6, 0x6
+    const/4 v6, 0x2
     invoke-static {v2, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
     mul-int v3, v3, v6
     xor-int v3, v3, v63
-    const/4 v6, 0x6
-    :addr_0a1a
+    const/4 v6, 0x0
+    :goto_a1a
     invoke-static {v2, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
-    goto :addr_0a34
-    :addr_0a1f
+    goto :goto_a34
+    :goto_a1f
     const-string v2, "᩷ܿۤ"
-    const/4 v3, 0x3
+    const/4 v3, 0x1
     invoke-static {v2, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v3
-    const/4 v6, 0x6
+    const/4 v6, 0x2
     invoke-static {v2, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
     mul-int v3, v3, v6
     xor-int v3, v3, v62
-    :addr_0a2f
-    const/4 v6, 0x6
+    :goto_a2f
+    const/4 v6, 0x0
     invoke-static {v2, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
-    :addr_0a34
+    :goto_a34
     add-int/2addr v2, v3
-    :addr_0a35
+    :goto_a35
     move/from16 v68, v7
     move-object/from16 v7, v29
     move/from16 v3, v44
@@ -3139,13 +3139,13 @@
     move-object/from16 v5, v43
     move/from16 v43, v38
     move/from16 v38, v47
-    :addr_0a47
+    :goto_a47
     move-object/from16 v83, v28
     move/from16 v28, v4
-    :addr_0a4b
+    :goto_a4b
     move-object/from16 v4, v18
     move-object/from16 v18, v83
-    goto/16 :addr_00d6
+    goto/16 :goto_d6
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -3176,19 +3176,19 @@
     .line 157
     invoke-static {v14, v6}, Ll/ۙ֫;->ܶܳᩴ(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/String;
     move-result-object v23
-    if-eqz v3, :addr_0aaa
+    if-eqz v3, :cond_aaa
     const-string v0, "ۛᩳ۟"
     move-object/from16 v24, v3
-    const/4 v3, 0x3
+    const/4 v3, 0x1
     invoke-static {v0, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
     move/from16 v48, v4
-    const/4 v4, 0x4
+    const/4 v4, 0x2
     invoke-static {v0, v4}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v4
     mul-int v3, v3, v4
     xor-int v3, v3, v62
-    const/4 v4, 0x4
+    const/4 v4, 0x0
     invoke-static {v0, v4}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     add-int/2addr v0, v3
@@ -3196,19 +3196,19 @@
     move/from16 v68, v7
     move-object/from16 v4, v18
     move-object/from16 v26, v24
-    goto/16 :addr_0de8
-    :addr_0aaa
+    goto/16 :goto_de8
+    :cond_aaa
     move/from16 v48, v4
     const-string v0, "᩷ܺۜ"
-    const/4 v3, 0x3
+    const/4 v3, 0x1
     invoke-static {v0, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v3
-    const/4 v4, 0x4
+    const/4 v4, 0x2
     invoke-static {v0, v4}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v4
     mul-int v3, v3, v4
     xor-int v3, v3, v63
-    const/4 v4, 0x4
+    const/4 v4, 0x0
     invoke-static {v0, v4}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
     add-int/2addr v0, v3
@@ -3220,13 +3220,13 @@
     move-object/from16 v7, v29
     move/from16 v3, v44
     move/from16 v28, v48
-    :addr_0ad2
+    :goto_ad2
     move v2, v0
     move/from16 v29, v5
     move-object/from16 v23, v6
     move-object/from16 v5, v43
     move/from16 v0, v45
-    goto/16 :addr_1620
+    goto/16 :goto_1620
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -3244,25 +3244,25 @@
     .line 192
     invoke-static {v1}, Ll/ۤۙ;->ܽܶۡ(Ljava/lang/Object;)Z
     move-result v0
-    if-nez v0, :addr_0b09
+    if-nez v0, :goto_b09
     const-string v0, "᩷᩹᩷"
-    const/4 v3, 0x3
+    const/4 v3, 0x1
     invoke-static {v0, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v3
     xor-int v3, v3, v62
-    goto :addr_0b12
-    :addr_0b09
+    goto :goto_b12
+    :goto_b09
     const-string v0, "᩷ۘ۬"
-    const/4 v3, 0x3
+    const/4 v3, 0x1
     invoke-static {v0, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v3
     xor-int v3, v3, v63
-    :addr_0b12
-    const/4 v4, 0x4
+    :goto_b12
+    const/4 v4, 0x0
     invoke-static {v0, v4}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v4
     mul-int v3, v3, v4
-    const/4 v4, 0x4
+    const/4 v4, 0x2
     invoke-static {v0, v4}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     sub-int v0, v3, v0
@@ -3279,7 +3279,7 @@
     move/from16 v29, v5
     move-object/from16 v5, v43
     move/from16 v0, v45
-    goto/16 :addr_1622
+    goto/16 :goto_1622
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -3302,20 +3302,20 @@
     .line 210
     invoke-static {v13, v6}, Ll/ۙ֫;->ܶܳᩴ(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/String;
     move-result-object v3
-    if-eqz v0, :addr_0b88
+    if-eqz v0, :cond_b88
     const-string/jumbo v3, "᩹֨᩵"
-    const/4 v4, 0x4
+    const/4 v4, 0x0
     invoke-static {v3, v4}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v4
     mul-int/lit16 v4, v4, 0x3c1
     move-object/from16 v24, v0
-    const/4 v0, 0x0
+    const/4 v0, 0x1
     invoke-static {v3, v0}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     mul-int/lit8 v0, v0, 0x1f
     add-int/2addr v4, v0
     xor-int v0, v4, v63
-    const/4 v4, 0x4
+    const/4 v4, 0x2
     invoke-static {v3, v4}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
     add-int/2addr v0, v3
@@ -3323,10 +3323,10 @@
     move/from16 v68, v7
     move-object/from16 v4, v18
     move-object/from16 v21, v24
-    goto :addr_0bad
-    :addr_0b88
+    goto :goto_bad
+    :cond_b88
     const-string v0, "ۛܶۗ"
-    const/4 v4, 0x4
+    const/4 v4, 0x0
     invoke-static {v0, v4}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v4
     mul-int/lit16 v4, v4, 0x3c1
@@ -3337,7 +3337,7 @@
     mul-int/lit8 v1, v1, 0x1f
     add-int/2addr v4, v1
     xor-int v1, v4, v62
-    const/4 v4, 0x4
+    const/4 v4, 0x2
     invoke-static {v0, v4}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     add-int/2addr v0, v1
@@ -3346,7 +3346,7 @@
     move/from16 v68, v7
     move-object/from16 v4, v18
     move-object/from16 v1, v24
-    :addr_0bad
+    :goto_bad
     move-object/from16 v18, v28
     move-object/from16 v7, v29
     move/from16 v3, v44
@@ -3359,7 +3359,7 @@
     move/from16 v43, v38
     move/from16 v0, v45
     const/16 v38, 0x1
-    goto/16 :addr_00d6
+    goto/16 :goto_d6
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -3387,7 +3387,7 @@
     move-result-object v3
     .line 240
     sget v4, Ll/ۘ;->ۢۤᩳ:I
-    if-ltz v4, :addr_0c12
+    if-ltz v4, :cond_c12
     move-object/from16 v50, v2
     move-object/from16 v58, v71
     move/from16 v59, v72
@@ -3401,18 +3401,18 @@
     move/from16 v49, v80
     move-object/from16 v23, v81
     move/from16 v3, v82
-    goto/16 :addr_117b
-    :addr_0c12
+    goto/16 :goto_117b
+    :cond_c12
     const-string v4, "ۢܽܶ"
-    const/4 v11, -0x5
+    const/4 v11, 0x1
     invoke-static {v4, v11}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v11
-    const/4 v13, -0x3
+    const/4 v13, 0x2
     invoke-static {v4, v13}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v13
     mul-int v11, v11, v13
     xor-int v11, v11, v62
-    const/4 v13, -0x3
+    const/4 v13, 0x0
     invoke-static {v4, v13}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v4
     add-int/2addr v4, v11
@@ -3435,7 +3435,7 @@
     move-object/from16 v24, v2
     move v2, v4
     move-object/from16 v4, v83
-    goto/16 :addr_00d6
+    goto/16 :goto_d6
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -3461,19 +3461,19 @@
     move-result v0
     const v1, 0x7d500627
     xor-int/2addr v0, v1
-    if-eqz v16, :addr_0cbc
+    if-eqz v16, :goto_cbc
     const-string v1, "ܰۘܳ"
-    const/4 v3, 0x3
+    const/4 v3, 0x0
     invoke-static {v1, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v3
     mul-int/lit16 v3, v3, 0x3c1
-    const/4 v4, 0x4
+    const/4 v4, 0x1
     invoke-static {v1, v4}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v4
     mul-int/lit8 v4, v4, 0x1f
     add-int/2addr v3, v4
     xor-int v3, v3, v62
-    const/4 v4, 0x4
+    const/4 v4, 0x2
     invoke-static {v1, v4}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v1
     add-int/2addr v1, v3
@@ -3495,17 +3495,17 @@
     move v2, v1
     move-object/from16 v1, v24
     move-object/from16 v24, v83
-    goto/16 :addr_00d6
-    :addr_0cbc
+    goto/16 :goto_d6
+    :goto_cbc
     const-string v0, "᩵۟ܳ"
-    const/4 v1, 0x1
+    const/4 v1, 0x0
     invoke-static {v0, v1}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v1
     mul-int/lit16 v1, v1, 0x3c1
-    const/4 v3, 0x3
+    const/4 v3, 0x1
     invoke-static {v0, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
-    goto :addr_0cfd
+    goto :goto_cfd
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -3524,35 +3524,35 @@
     .line 154
     invoke-static/range {v25 .. v25}, Ll/ۤۚ;->ۙܶۨ(Ljava/lang/Object;)Z
     move-result v0
-    if-eqz v0, :addr_0d04
+    if-eqz v0, :cond_d04
     const-string v0, "֡ܰۧ"
-    const/4 v1, 0x1
+    const/4 v1, 0x0
     invoke-static {v0, v1}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v1
     mul-int/lit16 v1, v1, 0x3c1
-    const/4 v3, 0x3
+    const/4 v3, 0x1
     invoke-static {v0, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v3
-    :addr_0cfd
+    :goto_cfd
     mul-int/lit8 v3, v3, 0x1f
     add-int/2addr v1, v3
     xor-int v1, v1, v63
-    const/4 v3, 0x3
-    goto :addr_0d5a
-    :addr_0d04
+    const/4 v3, 0x2
+    goto :goto_d5a
+    :cond_d04
     const-string v0, "ۧ֨ܶ"
     const/4 v1, 0x1
     invoke-static {v0, v1}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v1
     xor-int v1, v1, v62
-    const/4 v3, 0x3
+    const/4 v3, 0x0
     invoke-static {v0, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v3
     mul-int v1, v1, v3
-    const/4 v3, 0x3
+    const/4 v3, 0x2
     invoke-static {v0, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
-    goto/16 :addr_0dde
+    goto/16 :goto_dde
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -3571,27 +3571,27 @@
     .line 204
     invoke-static/range {v19 .. v19}, Ll/ۤۚ;->ۙܶۨ(Ljava/lang/Object;)Z
     move-result v0
-    if-eqz v0, :addr_0d49
+    if-eqz v0, :cond_d49
     const-string v0, "ۖۨܺ"
     invoke-static {v0}, Ll/ۤ֨;->۬ۚᩴ(Ljava/lang/Object;)I
     move-result v0
     xor-int v0, v0, v63
-    goto/16 :addr_0de0
-    :addr_0d49
+    goto/16 :goto_de0
+    :cond_d49
     const-string v0, "᩷۫᩻"
     const/4 v1, 0x1
     invoke-static {v0, v1}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v1
-    const/4 v3, 0x3
+    const/4 v3, 0x2
     invoke-static {v0, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
     mul-int v1, v1, v3
     xor-int v1, v1, v62
-    const/4 v3, 0x3
-    :addr_0d5a
+    const/4 v3, 0x0
+    :goto_d5a
     invoke-static {v0, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
-    goto :addr_0d9c
+    goto :goto_d9c
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -3614,22 +3614,22 @@
     invoke-static {v0}, Ll/᩹;->ܽ᩹᩷(Ljava/lang/Object;)Ljava/util/Iterator;
     move-result-object v0
     move-object/from16 v25, v0
-    :addr_0d87
+    :goto_d87
     const-string v0, "ۢۡ֫"
     const/4 v1, 0x1
     invoke-static {v0, v1}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v1
-    const/4 v3, 0x3
+    const/4 v3, 0x2
     invoke-static {v0, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v3
     mul-int v1, v1, v3
     xor-int v1, v1, v63
-    const/4 v3, 0x3
+    const/4 v3, 0x0
     invoke-static {v0, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
-    :addr_0d9c
+    :goto_d9c
     add-int/2addr v0, v1
-    goto :addr_0de0
+    goto :goto_de0
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -3651,36 +3651,36 @@
     .line 204
     invoke-static {v0}, Ll/ۛܰ;->ۖۘ᩶(Ljava/lang/Object;)Ljava/util/Iterator;
     move-result-object v0
-    const/4 v1, 0x1
+    const/4 v1, 0x0
     move-object/from16 v19, v0
     const/16 v16, 0x0
-    :addr_0dc9
+    :goto_dc9
     const-string v0, "ۨܽۤ"
     const/4 v1, 0x1
     invoke-static {v0, v1}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v1
     xor-int v1, v1, v62
-    const/4 v3, 0x3
+    const/4 v3, 0x0
     invoke-static {v0, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v3
     mul-int v1, v1, v3
-    const/4 v3, 0x3
+    const/4 v3, 0x2
     invoke-static {v0, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
-    :addr_0dde
+    :goto_dde
     sub-int v0, v1, v0
-    :addr_0de0
+    :goto_de0
     move-object/from16 v23, v6
     move/from16 v68, v7
     move-object/from16 v4, v18
     move-object/from16 v1, v24
-    :addr_0de8
+    :goto_de8
     move-object/from16 v18, v28
     move-object/from16 v7, v29
     move/from16 v3, v44
     move-object/from16 v6, v46
     move/from16 v28, v48
-    goto/16 :addr_0f14
+    goto/16 :goto_f14
     move/from16 v45, v0
     move-object/from16 v24, v1
     move/from16 v44, v3
@@ -3700,20 +3700,20 @@
     .line 152
     invoke-static {v1, v3, v0, v7}, Ll/ۚۙ;->֫ۖۛ([SIII)Ljava/lang/String;
     move-result-object v0
-    const/4 v4, 0x4
-    if-eqz v65, :addr_0e53
+    const/4 v4, 0x0
+    if-eqz v65, :cond_e53
     const-string v5, "ܰۖ۠"
-    const/4 v12, -0x4
+    const/4 v12, 0x0
     invoke-static {v5, v12}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v12
     mul-int/lit16 v12, v12, 0x3c1
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v5, v2}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
     mul-int/lit8 v2, v2, 0x1f
     add-int/2addr v12, v2
     xor-int v2, v12, v63
-    const/4 v12, -0x4
+    const/4 v12, 0x2
     invoke-static {v5, v12}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v5
     add-int/2addr v2, v5
@@ -3729,26 +3729,26 @@
     move/from16 v3, v44
     move-object/from16 v6, v46
     move/from16 v28, v48
-    const/4 v12, -0x4
+    const/4 v12, 0x0
     const/16 v29, -0x1
     move-object/from16 v24, v0
-    goto/16 :addr_0f1b
-    :addr_0e53
-    const/4 v5, 0x5
-    :addr_0e54
+    goto/16 :goto_f1b
+    :cond_e53
+    const/4 v5, -0x1
+    :goto_e54
     const-string v2, "ܽ֨ܶ"
-    const/4 v4, 0x4
+    const/4 v4, 0x0
     invoke-static {v2, v4}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v4
     mul-int/lit16 v4, v4, 0x3c1
     move-object/from16 v23, v0
-    const/4 v0, 0x0
+    const/4 v0, 0x1
     invoke-static {v2, v0}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
     mul-int/lit8 v0, v0, 0x1f
     add-int/2addr v4, v0
     xor-int v0, v4, v63
-    const/4 v4, 0x4
+    const/4 v4, 0x2
     invoke-static {v2, v4}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     add-int/2addr v2, v0
@@ -3768,7 +3768,7 @@
     move-object/from16 v23, v6
     move/from16 v43, v38
     move-object/from16 v6, v46
-    goto/16 :addr_1624
+    goto/16 :goto_1624
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -3797,7 +3797,7 @@
     .line 219
     invoke-static {}, Ll/᩶ۤ;->᩺֨ۡ()I
     move-result v49
-    if-ltz v49, :addr_0ee3
+    if-ltz v49, :cond_ee3
     move/from16 v49, v1
     move-object/from16 v50, v2
     move-object/from16 v64, v69
@@ -3810,21 +3810,21 @@
     move-object/from16 v53, v76
     move/from16 v54, v77
     move/from16 v55, v78
-    goto/16 :addr_1306
-    :addr_0ee3
+    goto/16 :goto_1306
+    :cond_ee3
     const-string v3, "ܰ֡ۙ"
-    const/4 v6, 0x6
+    const/4 v6, 0x0
     invoke-static {v3, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
     mul-int/lit16 v6, v6, 0x3c1
     move-object/from16 v49, v0
-    const/4 v0, 0x0
+    const/4 v0, 0x1
     invoke-static {v3, v0}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
     mul-int/lit8 v0, v0, 0x1f
     add-int/2addr v6, v0
     xor-int v0, v6, v62
-    const/4 v6, 0x6
+    const/4 v6, 0x2
     invoke-static {v3, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
     add-int/2addr v0, v3
@@ -3839,15 +3839,15 @@
     move-object/from16 v6, v46
     move/from16 v28, v48
     move-object/from16 v23, v49
-    :addr_0f14
+    :goto_f14
     move-object/from16 v24, v2
     move/from16 v29, v5
     move-object/from16 v5, v43
     move v2, v0
-    :addr_0f1b
+    :goto_f1b
     move/from16 v43, v38
     move/from16 v0, v45
-    goto/16 :addr_1624
+    goto/16 :goto_1624
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -3877,9 +3877,9 @@
     const/16 v80, 0x27
     .line 58
     sget v53, Ll/ۘᩳ;->ܰ֡۫:I
-    if-ltz v53, :addr_0f98
+    if-ltz v53, :cond_f98
     move-object/from16 v53, v0
-    :addr_0f5b
+    :goto_f5b
     const-string v0, "᩵ۜ֫"
     move/from16 v54, v1
     const/4 v1, 0x1
@@ -3891,7 +3891,7 @@
     move-result v2
     mul-int v1, v1, v2
     xor-int v1, v1, v63
-    const/4 v2, 0x2
+    const/4 v2, 0x0
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     add-int v2, v1, v0
@@ -3911,8 +3911,8 @@
     move-object/from16 v76, v53
     move/from16 v77, v54
     move/from16 v78, v55
-    goto/16 :addr_161a
-    :addr_0f98
+    goto/16 :goto_161a
+    :cond_f98
     move-object/from16 v53, v0
     move/from16 v54, v1
     move/from16 v55, v2
@@ -3921,7 +3921,7 @@
     invoke-static {v0, v1}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v1
     xor-int v1, v1, v62
-    const/4 v2, 0x2
+    const/4 v2, 0x0
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     mul-int v1, v1, v2
@@ -3947,7 +3947,7 @@
     move-object/from16 v23, v6
     move-object/from16 v5, v43
     move-object/from16 v6, v52
-    goto/16 :addr_1622
+    goto/16 :goto_1622
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -3980,8 +3980,8 @@
     const/16 v77, 0x1c
     const/16 v78, 0xb
     sget v52, Ll/ܰۙ;->ۘۢ֫:I
-    if-gtz v52, :addr_105d
-    :addr_101b
+    if-gtz v52, :cond_105d
+    :goto_101b
     const-string/jumbo v0, "᩺۬ۜ"
     move-object/from16 v52, v1
     const/4 v1, 0x1
@@ -3993,7 +3993,7 @@
     move-result v2
     mul-int v1, v1, v2
     xor-int v1, v1, v62
-    const/4 v2, 0x2
+    const/4 v2, 0x0
     invoke-static {v0, v2}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
     add-int v2, v1, v0
@@ -4015,21 +4015,21 @@
     move/from16 v77, v54
     move/from16 v78, v55
     move/from16 v75, v56
-    goto/16 :addr_161a
-    :addr_105d
+    goto/16 :goto_161a
+    :cond_105d
     move-object/from16 v52, v1
     move/from16 v56, v2
     const-string v1, "ۙۛۢ"
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v1, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     move-object/from16 v57, v0
-    const/4 v0, 0x0
+    const/4 v0, 0x2
     invoke-static {v1, v0}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     mul-int v2, v2, v0
     xor-int v0, v2, v63
-    const/4 v2, 0x2
+    const/4 v2, 0x0
     invoke-static {v1, v2}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v1
     add-int v2, v0, v1
@@ -4054,7 +4054,7 @@
     move-object/from16 v23, v6
     move-object/from16 v6, v46
     move-object/from16 v5, v57
-    goto/16 :addr_00d6
+    goto/16 :goto_d6
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -4088,14 +4088,14 @@
     const/16 v75, 0x13
     .line 247
     sget v58, Ll/ᩴᩴ;->᩻᩵֡:I
-    if-ltz v58, :addr_10f4
+    if-ltz v58, :cond_10f4
     move-object/from16 v58, v0
     move/from16 v59, v1
     move/from16 v60, v2
     move-object/from16 v64, v69
     move/from16 v66, v70
-    goto/16 :addr_1306
-    :addr_10f4
+    goto/16 :goto_1306
+    :cond_10f4
     move-object/from16 v58, v0
     const-string v0, "ܺۙۘ"
     move/from16 v59, v1
@@ -4104,7 +4104,7 @@
     move-result v1
     xor-int v1, v1, v63
     move/from16 v60, v2
-    const/4 v2, 0x2
+    const/4 v2, 0x0
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     mul-int v1, v1, v2
@@ -4128,11 +4128,11 @@
     move/from16 v77, v54
     move/from16 v78, v55
     move-object/from16 v4, v57
-    :addr_1131
+    :goto_1131
     move-object/from16 v71, v58
     move/from16 v72, v59
     move/from16 v73, v60
-    goto/16 :addr_161a
+    goto/16 :goto_161a
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -4167,8 +4167,8 @@
     const/16 v73, 0x5
     .line 33
     sget-boolean v1, Ll/ۤ֨;->ۢ᩵۠:Z
-    if-eqz v1, :addr_11a8
-    :addr_117b
+    if-eqz v1, :cond_11a8
+    :goto_117b
     const-string v0, "ܿᩴ۫"
     invoke-static {v0}, Ll/ۙۘ;->ۙᩴ۫(Ljava/lang/Object;)I
     move-result v0
@@ -4191,10 +4191,10 @@
     move/from16 v77, v54
     move/from16 v78, v55
     move/from16 v75, v56
-    goto :addr_1131
-    :addr_11a8
+    goto :goto_1131
+    :cond_11a8
     const-string v1, "ܰۡ֡"
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v1, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     xor-int v2, v2, v62
@@ -4203,7 +4203,7 @@
     invoke-static {v1, v0}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     mul-int v2, v2, v0
-    const/4 v0, 0x0
+    const/4 v0, 0x2
     invoke-static {v1, v0}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
     sub-int/2addr v2, v0
@@ -4225,7 +4225,7 @@
     move/from16 v78, v55
     move/from16 v75, v56
     move/from16 v3, v57
-    goto/16 :addr_161a
+    goto/16 :goto_161a
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -4253,7 +4253,7 @@
     move-object/from16 v29, v7
     move/from16 v7, v68
     move-object/from16 v4, v79
-    const/4 v0, 0x0
+    const/4 v0, 0x3
     move-object/from16 v1, v69
     move/from16 v2, v70
     .line 152
@@ -4265,8 +4265,8 @@
     .line 154
     invoke-static {}, Ll/ۛܶ;->ܶۖۚ()Z
     move-result v61
-    if-eqz v61, :addr_1269
-    :addr_1232
+    if-eqz v61, :cond_1269
+    :goto_1232
     const-string/jumbo v0, "᩺᩺֡"
     invoke-static {v0}, Ll/ۙۘ;->ۙᩴ۫(Ljava/lang/Object;)I
     move-result v0
@@ -4293,8 +4293,8 @@
     move-object/from16 v71, v58
     move/from16 v72, v59
     move/from16 v73, v60
-    goto/16 :addr_0ad2
-    :addr_1269
+    goto/16 :goto_ad2
+    :cond_1269
     move/from16 v61, v0
     const-string v0, "ܰ᩷᩸"
     move-object/from16 v64, v1
@@ -4307,7 +4307,7 @@
     move-result v2
     mul-int v1, v1, v2
     xor-int v1, v1, v63
-    const/4 v2, 0x2
+    const/4 v2, 0x0
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     add-int v2, v1, v0
@@ -4336,7 +4336,7 @@
     move-object/from16 v69, v64
     move/from16 v70, v66
     const v32, 0x7ed98637
-    goto/16 :addr_161a
+    goto/16 :goto_161a
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -4376,8 +4376,8 @@
     const/16 v70, 0xb
     .line 236
     sget v0, Ll/ۘ;->ۢۤᩳ:I
-    if-ltz v0, :addr_1325
-    :addr_1306
+    if-ltz v0, :cond_1325
+    :goto_1306
     const-string v0, "֨ܿ᩸"
     const/4 v1, 0x1
     invoke-static {v0, v1}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
@@ -4387,23 +4387,23 @@
     move-result v2
     mul-int v1, v1, v2
     xor-int v1, v1, v62
-    const/4 v2, 0x2
+    const/4 v2, 0x0
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     add-int v2, v1, v0
     move/from16 v82, v3
     move-object/from16 v79, v4
     move/from16 v68, v7
-    goto/16 :addr_1405
-    :addr_1325
+    goto/16 :goto_1405
+    :cond_1325
     const-string v0, "۟ۚۜ"
     move-object/from16 v57, v1
-    const/4 v1, 0x1
+    const/4 v1, 0x0
     invoke-static {v0, v1}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v1
     mul-int/lit16 v1, v1, 0x3c1
     move/from16 v61, v2
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     mul-int/lit8 v2, v2, 0x1f
@@ -4435,7 +4435,7 @@
     move/from16 v72, v59
     move/from16 v73, v60
     move/from16 v65, v61
-    goto/16 :addr_161a
+    goto/16 :goto_161a
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -4466,7 +4466,7 @@
     move-object/from16 v4, v79
     const/16 v0, 0x7418
     const/16 v68, 0x7418
-    goto :addr_13ea
+    goto :goto_13ea
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -4497,7 +4497,7 @@
     move-object/from16 v4, v79
     const/16 v0, 0x68
     const/16 v68, 0x68
-    :addr_13ea
+    :goto_13ea
     const-string v0, "۬ܿۗ"
     const/4 v1, 0x1
     invoke-static {v0, v1}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
@@ -4507,13 +4507,13 @@
     move-result v2
     mul-int v1, v1, v2
     xor-int v1, v1, v62
-    const/4 v2, 0x2
+    const/4 v2, 0x0
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     add-int v2, v1, v0
     move/from16 v82, v3
     move-object/from16 v79, v4
-    :addr_1405
+    :goto_1405
     move-object/from16 v4, v18
     move-object/from16 v81, v23
     move-object/from16 v1, v24
@@ -4529,7 +4529,7 @@
     move/from16 v77, v54
     move/from16 v78, v55
     move/from16 v75, v56
-    goto/16 :addr_14c3
+    goto/16 :goto_14c3
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -4565,40 +4565,40 @@
     add-int/lit16 v2, v1, 0x2e28
     mul-int v2, v2, v2
     sub-int/2addr v2, v0
-    if-lez v2, :addr_1484
+    if-lez v2, :cond_1484
     const-string v0, "ۢ᩷ۖ"
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v0, v2}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
     xor-int v2, v2, v63
     move/from16 v57, v1
-    const/4 v1, 0x1
+    const/4 v1, 0x0
     invoke-static {v0, v1}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v1
     mul-int v2, v2, v1
-    const/4 v1, 0x1
+    const/4 v1, 0x2
     invoke-static {v0, v1}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     sub-int/2addr v2, v0
-    goto :addr_149d
-    :addr_1484
+    goto :goto_149d
+    :cond_1484
     move/from16 v57, v1
     const-string v0, "ܶۚܽ"
     const/4 v1, 0x1
     invoke-static {v0, v1}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v1
     xor-int v1, v1, v63
-    :addr_148f
-    const/4 v2, 0x2
+    :goto_148f
+    const/4 v2, 0x0
     invoke-static {v0, v2}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
     mul-int v1, v1, v2
     const/4 v2, 0x2
     invoke-static {v0, v2}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
-    :addr_149b
+    :goto_149b
     sub-int v2, v1, v0
-    :addr_149d
+    :goto_149d
     move/from16 v82, v3
     move-object/from16 v79, v4
     move/from16 v68, v7
@@ -4618,13 +4618,13 @@
     move/from16 v78, v55
     move/from16 v75, v56
     move/from16 v67, v57
-    :addr_14c3
+    :goto_14c3
     move-object/from16 v71, v58
     move/from16 v72, v59
     move/from16 v73, v60
     move-object/from16 v69, v64
     move/from16 v70, v66
-    goto/16 :addr_161a
+    goto/16 :goto_161a
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -4659,26 +4659,26 @@
     mul-int v0, v67, v67
     .line 171
     sget v2, Ll/ܽ᩵;->᩻ۗ֨:I
-    if-ltz v2, :addr_151e
-    :addr_1513
+    if-ltz v2, :cond_151e
+    :goto_1513
     const-string v0, "ۤܺۢ"
     const/4 v1, 0x1
     invoke-static {v0, v1}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v1
     xor-int v1, v1, v62
-    goto/16 :addr_148f
-    :addr_151e
+    goto/16 :goto_148f
+    :cond_151e
     const-string v2, "ۖۢ᩹"
     const/4 v1, 0x1
     invoke-static {v2, v1}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v1
     move/from16 v68, v0
-    const/4 v0, 0x0
+    const/4 v0, 0x2
     invoke-static {v2, v0}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
     mul-int v1, v1, v0
     xor-int v0, v1, v62
-    const/4 v1, 0x1
+    const/4 v1, 0x0
     invoke-static {v2, v1}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v1
     add-int v2, v0, v1
@@ -4711,7 +4711,7 @@
     move-object/from16 v6, v46
     move/from16 v29, v5
     move-object/from16 v5, v43
-    goto/16 :addr_1622
+    goto/16 :goto_1622
     move/from16 v45, v0
     move/from16 v44, v3
     move-object/from16 v46, v6
@@ -4744,33 +4744,33 @@
     move-object/from16 v4, v79
     sget-object v0, Lbin/mt/plus/ShortcutActivity;->۠ܶۧ:[S
     sget v2, Ll/᩺ܳ;->ۖۤܳ:I
-    if-gtz v2, :addr_15cd
-    :addr_15b6
+    if-gtz v2, :cond_15cd
+    :goto_15b6
     const-string v0, "۬֡ۧ"
     const/4 v1, 0x1
     invoke-static {v0, v1}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v1
     xor-int v1, v1, v62
-    const/4 v2, 0x2
+    const/4 v2, 0x0
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     mul-int v1, v1, v2
     const/4 v2, 0x2
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
-    goto/16 :addr_149b
-    :addr_15cd
+    goto/16 :goto_149b
+    :cond_15cd
     const-string v2, "ۗ֫ۖ"
     const/4 v1, 0x1
     invoke-static {v2, v1}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v1
     move-object/from16 v37, v0
-    const/4 v0, 0x0
+    const/4 v0, 0x2
     invoke-static {v2, v0}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     mul-int v1, v1, v0
     xor-int v0, v1, v63
-    const/4 v1, 0x1
+    const/4 v1, 0x0
     invoke-static {v2, v1}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v1
     add-int v2, v0, v1
@@ -4800,97 +4800,97 @@
     move-object/from16 v69, v64
     move/from16 v70, v66
     const/16 v37, 0xa
-    :addr_161a
+    :goto_161a
     move/from16 v29, v5
     move-object/from16 v23, v6
     move-object/from16 v5, v43
-    :addr_1620
+    :goto_1620
     move-object/from16 v6, v46
-    :addr_1622
+    :goto_1622
     move/from16 v43, v38
-    :addr_1624
+    :goto_1624
     move/from16 v38, v47
-    goto/16 :addr_00d6
-    :addr_1628
+    goto/16 :goto_d6
+    :cond_1628
     .sparse-switch
-        -98440750 -> :addr_07dc
-        -25471098 -> :addr_0dbb
-        -21108667 -> :addr_04f8
-        -17737715 -> :addr_0132
-        -17712981 -> :addr_0310
-        -17692677 -> :addr_025f
-        -17675380 -> :addr_0a07
-        -17122641 -> :addr_0fd0
-        -16983404 -> :addr_0c45
-        -16943218 -> :addr_01d9
-        -16839067 -> :addr_03b5
-        -12575626 -> :addr_0012
-        -11991002 -> :addr_0b77
-        -11931542 -> :addr_134f
-        -11900858 -> :addr_0748
-        -6701483 -> :addr_0205
-        -6579059 -> :addr_02d9
-        -6547629 -> :addr_0223
-        -3411078 -> :addr_0a65
-        -3256879 -> :addr_0747
-        -3253861 -> :addr_11e5
-        -3113718 -> :addr_04ac
-        -1985744 -> :addr_0081
-        -1965832 -> :addr_0458
-        -1912896 -> :addr_0404
-        -1886829 -> :addr_05d5
-        -1886470 -> :addr_06bb
-        -1828527 -> :addr_08d8
-        -1822375 -> :addr_0291
-        -1818762 -> :addr_01ec
-        -1803326 -> :addr_0d1e
-        -1765868 -> :addr_0513
-        -1752716 -> :addr_01d1
-        -1750625 -> :addr_1110
-        -1749574 -> :addr_0896
-        -1747909 -> :addr_0346
-        -1747535 -> :addr_0629
-        -1737377 -> :addr_149e
-        -1728829 -> :addr_0420
-        1444572 -> :addr_097b
-        1738092 -> :addr_0af0
-        1739800 -> :addr_023b
-        1743598 -> :addr_04f4
-        1745788 -> :addr_0541
-        1754582 -> :addr_03cb
-        1756471 -> :addr_0399
-        1757187 -> :addr_0231
-        1823678 -> :addr_0c89
-        1826759 -> :addr_0cc8
-        1827048 -> :addr_0594
-        2244794 -> :addr_045e
-        2343187 -> :addr_01f8
-        2416407 -> :addr_12d8
-        2419898 -> :addr_0f05
-        2434597 -> :addr_033f
-        2540557 -> :addr_13f9
-        2554693 -> :addr_0713
-        2555301 -> :addr_016b
-        2557297 -> :addr_0bf5
-        3085871 -> :addr_0480
-        3093355 -> :addr_0e4b
-        3093452 -> :addr_02f4
-        3255443 -> :addr_0797
-        6561173 -> :addr_036f
-        6563530 -> :addr_0853
-        6565157 -> :addr_0915
-        6571373 -> :addr_066b
-        6574777 -> :addr_003e
-        6725029 -> :addr_00fb
-        8859928 -> :addr_0824
-        11590448 -> :addr_129b
-        11651121 -> :addr_01e0
-        11946862 -> :addr_06ed
-        12506365 -> :addr_020e
-        44577338 -> :addr_01c1
-        44590712 -> :addr_02b3
-        45901765 -> :addr_0433
-        45909308 -> :addr_1063
+        -98440750 -> :sswitch_7dc
+        -25471098 -> :sswitch_dbb
+        -21108667 -> :sswitch_4f8
+        -17737715 -> :sswitch_132
+        -17712981 -> :sswitch_310
+        -17692677 -> :sswitch_25f
+        -17675380 -> :sswitch_a07
+        -17122641 -> :sswitch_fd0
+        -16983404 -> :sswitch_c45
+        -16943218 -> :sswitch_1d9
+        -16839067 -> :sswitch_3b5
+        -12575626 -> :sswitch_12
+        -11991002 -> :sswitch_b77
+        -11931542 -> :sswitch_134f
+        -11900858 -> :sswitch_748
+        -6701483 -> :sswitch_205
+        -6579059 -> :sswitch_2d9
+        -6547629 -> :sswitch_223
+        -3411078 -> :sswitch_a65
+        -3256879 -> :sswitch_747
+        -3253861 -> :sswitch_11e5
+        -3113718 -> :sswitch_4ac
+        -1985744 -> :sswitch_81
+        -1965832 -> :sswitch_458
+        -1912896 -> :sswitch_404
+        -1886829 -> :sswitch_5d5
+        -1886470 -> :sswitch_6bb
+        -1828527 -> :sswitch_8d8
+        -1822375 -> :sswitch_291
+        -1818762 -> :sswitch_1ec
+        -1803326 -> :sswitch_d1e
+        -1765868 -> :sswitch_513
+        -1752716 -> :sswitch_1d1
+        -1750625 -> :sswitch_1110
+        -1749574 -> :sswitch_896
+        -1747909 -> :sswitch_346
+        -1747535 -> :sswitch_629
+        -1737377 -> :sswitch_149e
+        -1728829 -> :sswitch_420
+        1444572 -> :sswitch_97b
+        1738092 -> :sswitch_af0
+        1739800 -> :sswitch_23b
+        1743598 -> :sswitch_4f4
+        1745788 -> :sswitch_541
+        1754582 -> :sswitch_3cb
+        1756471 -> :sswitch_399
+        1757187 -> :sswitch_231
+        1823678 -> :sswitch_c89
+        1826759 -> :sswitch_cc8
+        1827048 -> :sswitch_594
+        2244794 -> :sswitch_45e
+        2343187 -> :sswitch_1f8
+        2416407 -> :sswitch_12d8
+        2419898 -> :sswitch_f05
+        2434597 -> :sswitch_33f
+        2540557 -> :sswitch_13f9
+        2554693 -> :sswitch_713
+        2555301 -> :sswitch_16b
+        2557297 -> :sswitch_bf5
+        3085871 -> :sswitch_480
+        3093355 -> :sswitch_e4b
+        3093452 -> :sswitch_2f4
+        3255443 -> :sswitch_797
+        6561173 -> :sswitch_36f
+        6563530 -> :sswitch_853
+        6565157 -> :sswitch_915
+        6571373 -> :sswitch_66b
+        6574777 -> :sswitch_3e
+        6725029 -> :sswitch_fb
+        8859928 -> :sswitch_824
+        11590448 -> :sswitch_129b
+        11651121 -> :sswitch_1e0
+        11946862 -> :sswitch_6ed
+        12506365 -> :sswitch_20e
+        44577338 -> :sswitch_1c1
+        44590712 -> :sswitch_2b3
+        45901765 -> :sswitch_433
+        45909308 -> :sswitch_1063
     .end sparse-switch
 .end method
 
@@ -4900,218 +4900,218 @@
     sget v1, Ll/ܰۡ;->ۢᩳۛ:I
     sget v2, Ll/᩻ᩴ;->ۤ᩹ۜ:I
     const-string v3, "ۨۤ᩶"
-    :addr_0007
+    :goto_7
     invoke-static {v3}, Ll/ۤ֨;->۬ۚᩴ(Ljava/lang/Object;)I
     move-result v3
-    :addr_000b
+    :goto_b
     xor-int/2addr v3, v2
-    :addr_000c
-    sparse-switch v3, :addr_0188
+    :goto_c
+    sparse-switch v3, :cond_188
     .line 262
     invoke-static {}, Ll/ܽ᩶;->ۖܶ᩹()I
     invoke-static {}, Ll/ۤ֫;->֡ۖۛ()I
     move-result v3
-    if-nez v3, :addr_00bf
-    goto/16 :addr_012c
+    if-nez v3, :cond_bf
+    goto/16 :goto_12c
     .line 259
     invoke-static {}, Ll/ᩴᩳ;->ۛܰܶ()I
     sget-boolean v3, Ll/ۛܰ;->ۗ᩻֨:Z
-    if-nez v3, :addr_0087
-    goto/16 :addr_012c
+    if-nez v3, :cond_87
+    goto/16 :goto_12c
     .line 263
     invoke-static {}, Ll/ۘ;->۬ۖ۬()I
     sget v3, Ll/ᩴ᩵;->۟᩹᩵:I
-    if-nez v3, :addr_002c
-    goto/16 :addr_012c
-    :addr_002c
+    if-nez v3, :cond_2c
+    goto/16 :goto_12c
+    :cond_2c
     const-string v3, "ۤ᩹֫"
-    goto/16 :addr_0157
+    goto/16 :goto_157
     .line 260
     invoke-static {}, Ll/֫;->֨᩶᩸()I
     invoke-static {}, Ll/ܰۡ;->᩷۫֡()I
-    goto/16 :addr_012c
+    goto/16 :goto_12c
     invoke-static {}, Ll/ۤ֫;->֡ۖۛ()I
     const/4 v0, 0x0
     return v0
     invoke-static {v0}, Ll/ۛܳ;->᩷֡ܽ(Z)Ljava/lang/Boolean;
     move-result-object v3
     sput-object v3, Lbin/mt/plus/ShortcutActivity;->ۘۖ:Ljava/lang/Boolean;
-    goto/16 :addr_016d
+    goto/16 :goto_16d
     sget v3, Ll/֨֡;->ܿܿ᩺:I
-    if-ltz v3, :addr_004b
-    goto/16 :addr_0100
-    :addr_004b
+    if-ltz v3, :cond_4b
+    goto/16 :goto_100
+    :cond_4b
     const-string v3, "ܶ۠ܺ"
-    const/4 v4, 0x4
+    const/4 v4, 0x0
     invoke-static {v3, v4}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v4
     mul-int/lit16 v4, v4, 0x3c1
-    const/4 v5, 0x5
+    const/4 v5, 0x1
     invoke-static {v3, v5}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v5
     mul-int/lit8 v5, v5, 0x1f
     add-int/2addr v4, v5
     xor-int/2addr v4, v2
-    goto/16 :addr_0167
+    goto/16 :goto_167
     invoke-static {}, Ll/ۤ֨;->֫ܽ۫()Z
     move-result v3
-    if-eqz v3, :addr_0067
-    goto/16 :addr_0100
-    :addr_0067
+    if-eqz v3, :cond_67
+    goto/16 :goto_100
+    :cond_67
     const-string v3, "۫ܰۢ"
-    const/4 v4, 0x4
+    const/4 v4, 0x0
     invoke-static {v3, v4}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v4
     mul-int/lit16 v4, v4, 0x3c1
-    const/4 v5, 0x5
+    const/4 v5, 0x1
     invoke-static {v3, v5}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v5
-    goto :addr_00b3
+    goto :goto_b3
     sget v3, Ll/ۘ;->ۢۤᩳ:I
-    if-ltz v3, :addr_007c
-    goto/16 :addr_0100
-    :addr_007c
+    if-ltz v3, :cond_7c
+    goto/16 :goto_100
+    :cond_7c
     const-string v3, "ۧ᩶ᩴ"
     invoke-static {v3}, Ll/ۙۘ;->ۙᩴ۫(Ljava/lang/Object;)I
     move-result v3
-    goto :addr_00e3
+    goto :goto_e3
     .line 263
     sget-boolean v3, Ll/ۛܳ;->ۡ֨ᩴ:Z
-    if-eqz v3, :addr_0090
-    :addr_0087
+    if-eqz v3, :cond_90
+    :cond_87
     const-string v3, "ܶۖܺ"
-    const/4 v4, 0x4
+    const/4 v4, 0x1
     invoke-static {v3, v4}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v4
     xor-int/2addr v4, v1
-    goto :addr_00c7
-    :addr_0090
+    goto :goto_c7
+    :cond_90
     const-string v3, "ܶۚۗ"
-    const/4 v4, 0x4
+    const/4 v4, 0x0
     invoke-static {v3, v4}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v4
     mul-int/lit16 v4, v4, 0x3c1
-    const/4 v5, 0x5
+    const/4 v5, 0x1
     invoke-static {v3, v5}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v5
-    goto/16 :addr_017b
+    goto/16 :goto_17b
     sget v3, Ll/۬ۨ;->۫ۜۖ:I
-    if-ltz v3, :addr_00a5
-    goto :addr_00bf
-    :addr_00a5
+    if-ltz v3, :cond_a5
+    goto :cond_bf
+    :cond_a5
     const-string v3, "ۖ۫ܰ"
-    const/4 v4, 0x4
+    const/4 v4, 0x0
     invoke-static {v3, v4}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v4
     mul-int/lit16 v4, v4, 0x3c1
-    const/4 v5, 0x5
+    const/4 v5, 0x1
     invoke-static {v3, v5}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v5
-    :addr_00b3
+    :goto_b3
     mul-int/lit8 v5, v5, 0x1f
     add-int/2addr v4, v5
     xor-int/2addr v4, v2
-    goto/16 :addr_017f
+    goto/16 :goto_17f
     .line 261
     invoke-static {}, Ll/ۘ᩺;->ۡᩴᩳ()Z
     move-result v3
-    if-eqz v3, :addr_00d4
-    :addr_00bf
+    if-eqz v3, :cond_d4
+    :cond_bf
     const-string v3, "ۤۧ᩸"
-    const/4 v4, 0x4
+    const/4 v4, 0x1
     invoke-static {v3, v4}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v4
     xor-int/2addr v4, v2
-    :addr_00c7
-    const/4 v5, 0x5
+    :goto_c7
+    const/4 v5, 0x0
     invoke-static {v3, v5}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v5
     mul-int v4, v4, v5
-    const/4 v5, 0x5
+    const/4 v5, 0x2
     invoke-static {v3, v5}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v3
-    goto :addr_011c
-    :addr_00d4
+    goto :goto_11c
+    :cond_d4
     const-string v3, "ܽ۠ۢ"
-    goto/16 :addr_0007
+    goto/16 :goto_7
     sget-boolean v3, Ll/ۛܶ;->ۙ᩵᩶:Z
-    if-nez v3, :addr_00dd
-    goto :addr_012c
-    :addr_00dd
+    if-nez v3, :cond_dd
+    goto :goto_12c
+    :cond_dd
     const-string v3, "ܳ᩷ۗ"
     invoke-static {v3}, Ll/ۤ֨;->۬ۚᩴ(Ljava/lang/Object;)I
     move-result v3
-    :addr_00e3
+    :goto_e3
     xor-int/2addr v3, v1
-    goto/16 :addr_000c
+    goto/16 :goto_c
     .line 259
     sget v3, Ll/ۤۚ;->ۖۡۢ:I
-    if-ltz v3, :addr_00eb
-    goto :addr_012c
-    :addr_00eb
+    if-ltz v3, :cond_eb
+    goto :goto_12c
+    :cond_eb
     const-string v3, "᩶᩸ۗ"
-    const/4 v4, 0x4
+    const/4 v4, 0x1
     invoke-static {v3, v4}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v4
-    const/4 v5, 0x5
+    const/4 v5, 0x2
     invoke-static {v3, v5}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v5
     mul-int v4, v4, v5
     xor-int/2addr v4, v2
-    const/4 v5, 0x5
-    goto :addr_0168
+    const/4 v5, 0x0
+    goto :goto_168
     sget v3, Ll/ۤ۟;->ۤᩴۚ:I
-    if-ltz v3, :addr_0108
-    :addr_0100
+    if-ltz v3, :cond_108
+    :goto_100
     const-string v3, "᩶֡ᩳ"
     invoke-static {v3}, Ll/ۙۘ;->ۙᩴ۫(Ljava/lang/Object;)I
     move-result v3
-    goto/16 :addr_000b
-    :addr_0108
+    goto/16 :goto_b
+    :cond_108
     const-string v3, "ۜܽ֨"
-    :addr_010a
-    const/4 v4, 0x4
+    :goto_10a
+    const/4 v4, 0x1
     invoke-static {v3, v4}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v4
     xor-int/2addr v4, v1
-    const/4 v5, 0x5
+    const/4 v5, 0x0
     invoke-static {v3, v5}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v5
     mul-int v4, v4, v5
-    const/4 v5, 0x5
+    const/4 v5, 0x2
     invoke-static {v3, v5}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
-    :addr_011c
+    :goto_11c
     sub-int v3, v4, v3
-    goto/16 :addr_000c
+    goto/16 :goto_c
     .line 260
     invoke-static {}, Ll/ۡ۫;->۠ۚۧ()Landroid/app/Application;
     move-result-object v3
     invoke-static {v3}, Ll/֨᩺;->ۢ(Landroid/content/Context;)Z
     move-result v3
     sget-boolean v4, Ll/ᩴ;->ܳ᩺ܳ:Z
-    if-eqz v4, :addr_012f
-    :addr_012c
+    if-eqz v4, :cond_12f
+    :goto_12c
     const-string v3, "ۧ᩹ܰ"
-    goto :addr_010a
-    :addr_012f
+    goto :goto_10a
+    :cond_12f
     const-string v0, "֨ۢܽ"
-    const/4 v4, 0x4
+    const/4 v4, 0x1
     invoke-static {v0, v4}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v4
     xor-int/2addr v4, v2
-    const/4 v5, 0x5
+    const/4 v5, 0x0
     invoke-static {v0, v5}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v5
     mul-int v4, v4, v5
-    const/4 v5, 0x5
+    const/4 v5, 0x2
     invoke-static {v0, v5}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
     sub-int v0, v4, v0
     move v6, v3
     move v3, v0
     move v0, v6
-    goto/16 :addr_000c
+    goto/16 :goto_c
     .line 262
     sget-object v0, Lbin/mt/plus/ShortcutActivity;->ۘۖ:Ljava/lang/Boolean;
     invoke-static {v0}, Ll/ܳܺ;->ܿ᩻֡(Ljava/lang/Object;)Z
@@ -5119,65 +5119,65 @@
     return v0
     .line 259
     sget-object v3, Lbin/mt/plus/ShortcutActivity;->ۘۖ:Ljava/lang/Boolean;
-    if-nez v3, :addr_016d
+    if-nez v3, :goto_16d
     const-string v3, "ܳ֫۬"
-    :addr_0157
-    const/4 v4, 0x4
+    :goto_157
+    const/4 v4, 0x0
     invoke-static {v3, v4}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v4
     mul-int/lit16 v4, v4, 0x3c1
-    const/4 v5, 0x5
+    const/4 v5, 0x1
     invoke-static {v3, v5}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v5
     mul-int/lit8 v5, v5, 0x1f
     add-int/2addr v4, v5
     xor-int/2addr v4, v1
-    :addr_0167
-    const/4 v5, 0x5
-    :addr_0168
+    :goto_167
+    const/4 v5, 0x2
+    :goto_168
     invoke-static {v3, v5}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v3
-    goto :addr_0184
-    :addr_016d
+    goto :goto_184
+    :goto_16d
     const-string v3, "ۛۢۨ"
-    const/4 v4, 0x4
+    const/4 v4, 0x0
     invoke-static {v3, v4}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v4
     mul-int/lit16 v4, v4, 0x3c1
-    const/4 v5, 0x5
+    const/4 v5, 0x1
     invoke-static {v3, v5}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v5
-    :addr_017b
+    :goto_17b
     mul-int/lit8 v5, v5, 0x1f
     add-int/2addr v4, v5
     xor-int/2addr v4, v1
-    :addr_017f
-    const/4 v5, 0x5
+    :goto_17f
+    const/4 v5, 0x2
     invoke-static {v3, v5}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
-    :addr_0184
+    :goto_184
     add-int/2addr v3, v4
-    goto/16 :addr_000c
+    goto/16 :goto_c
     nop
-    :addr_0188
+    :cond_188
     .sparse-switch
-        1311041 -> :addr_002c
-        1728804 -> :addr_0077
-        1741007 -> :addr_013e
-        1767334 -> :addr_0039
-        1768133 -> :addr_0145
-        1815970 -> :addr_0114
-        1820707 -> :addr_0031
-        1836377 -> :addr_006a
-        1843648 -> :addr_0094
-        1912699 -> :addr_0053
-        1988909 -> :addr_00ad
-        6568919 -> :addr_000e
-        11880301 -> :addr_00cc
-        12180171 -> :addr_00f0
-        14220396 -> :addr_00da
-        14308342 -> :addr_0017
-        14824936 -> :addr_0024
+        1311041 -> :cond_2c
+        1728804 -> :sswitch_77
+        1741007 -> :sswitch_13e
+        1767334 -> :sswitch_39
+        1768133 -> :sswitch_145
+        1815970 -> :sswitch_114
+        1820707 -> :sswitch_31
+        1836377 -> :sswitch_6a
+        1843648 -> :sswitch_94
+        1912699 -> :sswitch_53
+        1988909 -> :sswitch_ad
+        6568919 -> :sswitch_e
+        11880301 -> :sswitch_cc
+        12180171 -> :sswitch_f0
+        14220396 -> :sswitch_da
+        14308342 -> :sswitch_17
+        14824936 -> :sswitch_24
     .end sparse-switch
 .end method
 
@@ -5194,18 +5194,18 @@
 .method public final Lbin/mt/plus/ShortcutActivity;->onCreate(Landroid/os/Bundle;)V
     .registers 41
     move-object/from16 v0, v39
-    const/4 v4, 0x4
-    const/4 v5, 0x5
-    const/4 v6, 0x6
-    const/4 v7, 0x7
-    const/4 v8, -0x8
-    const/4 v9, -0x7
-    const/4 v10, -0x6
-    const/4 v11, -0x5
-    const/4 v12, -0x4
-    const/4 v13, -0x3
-    const/4 v14, -0x2
-    const/4 v15, -0x1
+    const/4 v4, 0x0
+    const/4 v5, 0x0
+    const/4 v6, 0x0
+    const/4 v7, 0x0
+    const/4 v8, 0x0
+    const/4 v9, 0x0
+    const/4 v10, 0x0
+    const/4 v11, 0x0
+    const/4 v12, 0x0
+    const/4 v13, 0x0
+    const/4 v14, 0x0
+    const/4 v15, 0x0
     const/16 v16, 0x0
     const/16 v17, 0x0
     const/16 v18, 0x0
@@ -5225,32 +5225,32 @@
     sget v32, Ll/᩻᩺;->۟ۘ۫:I
     sget v33, Ll/ۚۙ;->ܽ۟֡:I
     const-string v1, "ۛۛ᩵"
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v1, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     xor-int v2, v2, v33
-    const/4 v3, 0x3
+    const/4 v3, 0x0
     invoke-static {v1, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v3
     mul-int v2, v2, v3
-    const/4 v3, 0x3
+    const/4 v3, 0x2
     invoke-static {v1, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v1
     sub-int/2addr v2, v1
     move-object v8, v7
-    const/4 v1, 0x1
-    const/4 v3, 0x3
-    const/4 v4, 0x4
-    const/4 v5, 0x5
-    const/4 v6, 0x6
-    const/4 v7, 0x7
-    const/4 v9, -0x7
-    const/4 v10, -0x6
-    const/4 v11, -0x5
-    const/4 v12, -0x4
-    const/4 v13, -0x3
-    const/4 v14, -0x2
-    const/4 v15, -0x1
+    const/4 v1, 0x0
+    const/4 v3, 0x0
+    const/4 v4, 0x0
+    const/4 v5, 0x0
+    const/4 v6, 0x0
+    const/4 v7, 0x0
+    const/4 v9, 0x0
+    const/4 v10, 0x0
+    const/4 v11, 0x0
+    const/4 v12, 0x0
+    const/4 v13, 0x0
+    const/4 v14, 0x0
+    const/4 v15, 0x0
     const/16 v16, 0x0
     const/16 v17, 0x0
     const/16 v18, 0x0
@@ -5268,22 +5268,22 @@
     const/16 v30, 0x0
     const/16 v31, 0x0
     const/16 v34, 0x0
-    :addr_0078
-    sparse-switch v2, :addr_0828
+    :goto_78
+    sparse-switch v2, :cond_828
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
-    if-eqz v17, :addr_0330
+    if-eqz v17, :cond_330
     const-string/jumbo v2, "᩻ۡ᩵"
-    const/4 v3, 0x3
+    const/4 v3, 0x1
     invoke-static {v2, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v3
-    const/4 v6, 0x6
+    const/4 v6, 0x2
     invoke-static {v2, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
     mul-int v3, v3, v6
     xor-int v3, v3, v33
-    goto/16 :addr_02cc
+    goto/16 :goto_2cc
     :try_start_0096
     .line 83
     invoke-virtual {v1}, Landroid/content/Intent;->getExtras()Landroid/os/Bundle;
@@ -5294,7 +5294,7 @@
     move-object/from16 v36, v1
     move/from16 v35, v6
     move/from16 v37, v11
-    goto/16 :addr_07a2
+    goto/16 :goto_7a2
     :try_start_00a5
     .line 88
     new-instance v2, Landroid/content/Intent;
@@ -5336,39 +5336,39 @@
     invoke-static {v0, v2}, Ll/ۚۘ;->ۡۖ᩺(Ljava/lang/Object;Ljava/lang/Object;)V
     :try_end_00bc
     :try_end_00bc
-    goto/16 :addr_0330
+    goto/16 :cond_330
     move-object/from16 v36, v3
     move/from16 v37, v11
-    goto/16 :addr_0330
+    goto/16 :cond_330
     move/from16 v35, v6
     move/from16 v37, v11
-    goto/16 :addr_07a0
+    goto/16 :goto_7a0
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
-    if-nez v31, :addr_0330
+    if-nez v31, :cond_330
     const-string/jumbo v2, "᩻ᩳ᩺"
-    const/4 v3, 0x3
+    const/4 v3, 0x1
     invoke-static {v2, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
     xor-int v3, v3, v32
-    goto/16 :addr_02a4
+    goto/16 :goto_2a4
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
-    if-nez v30, :addr_0330
+    if-nez v30, :cond_330
     const-string v2, "۬ۚ᩸"
-    const/4 v3, 0x3
+    const/4 v3, 0x0
     invoke-static {v2, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v3
     mul-int/lit16 v3, v3, 0x3c1
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v2, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
     mul-int/lit8 v6, v6, 0x1f
     add-int/2addr v3, v6
     xor-int v3, v3, v32
-    goto/16 :addr_0324
+    goto/16 :goto_324
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
@@ -5382,7 +5382,7 @@
     invoke-static {v2, v7}, Ll/ᩴ;->֨᩷ۜ(Ljava/lang/Object;I)Landroid/content/Intent;
     .line 101
     invoke-static {v0, v2}, Ll/ۚۘ;->ۡۖ᩺(Ljava/lang/Object;Ljava/lang/Object;)V
-    goto/16 :addr_0330
+    goto/16 :cond_330
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
@@ -5394,7 +5394,7 @@
     invoke-static {v2, v10}, Ll/ᩴ;->֨᩷ۜ(Ljava/lang/Object;I)Landroid/content/Intent;
     .line 125
     invoke-static {v0, v2}, Ll/ۤܿ;->ᩴܶۧ(Ljava/lang/Object;Ljava/lang/Object;)V
-    goto/16 :addr_0330
+    goto/16 :cond_330
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
@@ -5406,7 +5406,7 @@
     invoke-static {v2, v10}, Ll/ᩴ;->֨᩷ۜ(Ljava/lang/Object;I)Landroid/content/Intent;
     .line 130
     invoke-static {v0, v2}, Ll/ۚۘ;->ۡۖ᩺(Ljava/lang/Object;Ljava/lang/Object;)V
-    goto/16 :addr_0330
+    goto/16 :cond_330
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
@@ -5418,7 +5418,7 @@
     invoke-static {v2, v10}, Ll/ۤ֫;->᩸֫ܿ(Ljava/lang/Object;I)Landroid/content/Intent;
     .line 120
     invoke-static {v0, v2}, Ll/ۚۘ;->ۡۖ᩺(Ljava/lang/Object;Ljava/lang/Object;)V
-    goto/16 :addr_0330
+    goto/16 :cond_330
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
@@ -5430,7 +5430,7 @@
     invoke-static {v2, v10}, Ll/ۤ֫;->᩸֫ܿ(Ljava/lang/Object;I)Landroid/content/Intent;
     .line 115
     invoke-static {v0, v2}, Ll/ۚۘ;->ۡۖ᩺(Ljava/lang/Object;Ljava/lang/Object;)V
-    goto/16 :addr_0330
+    goto/16 :cond_330
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
@@ -5447,18 +5447,18 @@
     :try_end_0124
     :try_end_0124
     const-string v2, "ܰᩴۢ"
-    const/4 v3, 0x3
+    const/4 v3, 0x1
     invoke-static {v2, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
     xor-int v3, v3, v33
-    const/4 v6, 0x6
+    const/4 v6, 0x0
     invoke-static {v2, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
     mul-int v3, v3, v6
-    const/4 v6, 0x6
+    const/4 v6, 0x2
     invoke-static {v2, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
-    goto/16 :addr_02b0
+    goto/16 :goto_2b0
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
@@ -5467,7 +5467,7 @@
     invoke-virtual {v1}, Landroid/content/Intent;->getExtras()Landroid/os/Bundle;
     move-result-object v2
     invoke-static {v0, v2, v9}, Lbin/mt/plus/Main;->ۖ(Landroid/app/Activity;Landroid/os/Bundle;Z)V
-    goto/16 :addr_0330
+    goto/16 :cond_330
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
@@ -5477,13 +5477,13 @@
     :try_end_01bb
     :try_end_01bb
     const-string v2, "᩷ۘܿ"
-    const/4 v3, 0x3
+    const/4 v3, 0x1
     invoke-static {v2, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
-    const/4 v6, 0x6
+    const/4 v6, 0x2
     invoke-static {v2, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
-    goto/16 :addr_02c8
+    goto/16 :goto_2c8
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
@@ -5498,199 +5498,199 @@
     invoke-static {v0, v2}, Ll/ۚۘ;->ۡۖ᩺(Ljava/lang/Object;Ljava/lang/Object;)V
     :try_end_01e2
     :try_end_01e2
-    goto/16 :addr_0330
+    goto/16 :cond_330
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
-    if-eqz v29, :addr_0330
+    if-eqz v29, :cond_330
     const-string v2, "᩸ۢ۫"
-    const/4 v3, 0x3
+    const/4 v3, 0x1
     invoke-static {v2, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
     xor-int v3, v3, v33
-    goto/16 :addr_0264
+    goto/16 :goto_264
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
-    if-eqz v28, :addr_0330
+    if-eqz v28, :cond_330
     const-string v2, "ۨ᩻ᩳ"
-    const/4 v3, 0x3
+    const/4 v3, 0x1
     invoke-static {v2, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v3
-    goto/16 :addr_02dd
+    goto/16 :goto_2dd
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
-    if-eqz v27, :addr_0330
-    goto/16 :addr_02d6
+    if-eqz v27, :cond_330
+    goto/16 :goto_2d6
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
-    if-nez v26, :addr_029a
-    goto/16 :addr_0330
+    if-nez v26, :cond_29a
+    goto/16 :cond_330
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
-    if-eqz v25, :addr_0330
+    if-eqz v25, :cond_330
     const-string v2, "ۨ֡ᩴ"
-    goto/16 :addr_029d
+    goto/16 :goto_29d
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
-    if-nez v24, :addr_029a
-    goto/16 :addr_0330
+    if-nez v24, :cond_29a
+    goto/16 :cond_330
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
-    if-nez v23, :addr_029a
-    goto/16 :addr_0330
+    if-nez v23, :cond_29a
+    goto/16 :cond_330
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
-    if-eqz v22, :addr_0330
-    goto/16 :addr_02bc
+    if-eqz v22, :cond_330
+    goto/16 :goto_2bc
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
-    if-eqz v21, :addr_0330
+    if-eqz v21, :cond_330
     const-string v2, "۠ۤܽ"
-    const/4 v3, 0x3
+    const/4 v3, 0x1
     invoke-static {v2, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v3
     xor-int v3, v3, v32
-    :addr_0264
-    const/4 v6, 0x6
+    :goto_264
+    const/4 v6, 0x0
     invoke-static {v2, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
-    goto :addr_02a9
+    goto :goto_2a9
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
-    if-eqz v20, :addr_0330
-    goto :addr_02bc
+    if-eqz v20, :cond_330
+    goto :goto_2bc
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
-    if-nez v19, :addr_029a
-    goto/16 :addr_0330
+    if-nez v19, :cond_29a
+    goto/16 :cond_330
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
-    if-nez v18, :addr_029a
-    goto/16 :addr_0330
+    if-nez v18, :cond_29a
+    goto/16 :cond_330
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
-    if-eqz v16, :addr_0330
-    goto :addr_02bc
+    if-eqz v16, :cond_330
+    goto :goto_2bc
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
-    if-nez v15, :addr_029a
-    goto/16 :addr_0330
-    :addr_029a
+    if-nez v15, :cond_29a
+    goto/16 :cond_330
+    :cond_29a
     const-string/jumbo v2, "᩹᩵ᩴ"
-    :addr_029d
-    const/4 v3, 0x3
+    :goto_29d
+    const/4 v3, 0x1
     invoke-static {v2, v3}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v3
     xor-int v3, v3, v33
-    :addr_02a4
-    const/4 v6, 0x6
+    :goto_2a4
+    const/4 v6, 0x0
     invoke-static {v2, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
-    :addr_02a9
+    :goto_2a9
     mul-int v3, v3, v6
-    const/4 v6, 0x6
+    const/4 v6, 0x2
     invoke-static {v2, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
-    :addr_02b0
+    :goto_2b0
     sub-int v2, v3, v2
-    goto/16 :addr_032a
+    goto/16 :goto_32a
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
-    if-eqz v14, :addr_0330
-    :addr_02bc
+    if-eqz v14, :cond_330
+    :goto_2bc
     const-string v2, "ۧۧܳ"
-    const/4 v3, 0x3
+    const/4 v3, 0x1
     invoke-static {v2, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
-    const/4 v6, 0x6
+    const/4 v6, 0x2
     invoke-static {v2, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
-    :addr_02c8
+    :goto_2c8
     mul-int v3, v3, v6
     xor-int v3, v3, v32
-    :addr_02cc
-    const/4 v6, 0x6
-    goto :addr_0304
+    :goto_2cc
+    const/4 v6, 0x0
+    goto :goto_304
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
-    if-eqz v13, :addr_0330
-    :addr_02d6
+    if-eqz v13, :cond_330
+    :goto_2d6
     const-string v2, "֨ۚ۟"
-    const/4 v3, 0x3
+    const/4 v3, 0x1
     invoke-static {v2, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
-    :addr_02dd
-    const/4 v6, 0x6
+    :goto_2dd
+    const/4 v6, 0x2
     invoke-static {v2, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
     mul-int v3, v3, v6
     xor-int v3, v3, v32
-    const/4 v6, 0x6
-    goto :addr_0325
+    const/4 v6, 0x0
+    goto :goto_325
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
-    if-eqz v12, :addr_0330
+    if-eqz v12, :cond_330
     const-string v2, "֫ܶܿ"
-    const/4 v3, 0x3
+    const/4 v3, 0x0
     invoke-static {v2, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
     mul-int/lit16 v3, v3, 0x3c1
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v2, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
     mul-int/lit8 v6, v6, 0x1f
     add-int/2addr v3, v6
     xor-int v3, v3, v33
-    const/4 v6, 0x6
-    :addr_0304
+    const/4 v6, 0x2
+    :goto_304
     invoke-static {v2, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
-    goto :addr_0329
+    goto :goto_329
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
-    if-eqz v37, :addr_0330
+    if-eqz v37, :cond_330
     const-string v2, "֨ܰۗ"
-    const/4 v3, 0x3
+    const/4 v3, 0x0
     invoke-static {v2, v3}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
     mul-int/lit16 v3, v3, 0x3c1
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v2, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
     mul-int/lit8 v6, v6, 0x1f
     add-int/2addr v3, v6
     xor-int v3, v3, v33
-    :addr_0324
-    const/4 v6, 0x6
-    :addr_0325
+    :goto_324
+    const/4 v6, 0x2
+    :goto_325
     invoke-static {v2, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
-    :addr_0329
+    :goto_329
     add-int/2addr v2, v3
-    :addr_032a
+    :goto_32a
     move/from16 v6, v35
     move-object/from16 v3, v36
-    goto/16 :addr_0824
-    :addr_0330
+    goto/16 :goto_824
+    :cond_330
     move-object/from16 v3, v36
-    goto/16 :addr_07a0
+    goto/16 :goto_7a0
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
@@ -5708,7 +5708,7 @@
     invoke-static {v3, v2}, Ll/ܽۘ;->۫᩺ᩳ(Ljava/lang/Object;Ljava/lang/Object;)Z
     move-result v29
     const-string v2, "֨ۢ֡"
-    goto/16 :addr_054c
+    goto/16 :goto_54c
     move/from16 v35, v6
     move/from16 v37, v11
     .line 101
@@ -5721,7 +5721,7 @@
     invoke-static {v3, v2}, Ll/ܽۘ;->۫᩺ᩳ(Ljava/lang/Object;Ljava/lang/Object;)Z
     move-result v28
     const-string/jumbo v2, "᩺ۤܰ"
-    goto/16 :addr_03f1
+    goto/16 :goto_3f1
     move/from16 v35, v6
     move/from16 v37, v11
     .line 125
@@ -5734,7 +5734,7 @@
     invoke-static {v3, v2}, Ll/ۙ֫;->᩺۠ۖ(Ljava/lang/Object;Ljava/lang/Object;)Z
     move-result v27
     const-string v2, "۫ۡۨ"
-    goto/16 :addr_04cc
+    goto/16 :goto_4cc
     move/from16 v35, v6
     move/from16 v37, v11
     sget-object v2, Lbin/mt/plus/ShortcutActivity;->۠ܶۧ:[S
@@ -5747,10 +5747,10 @@
     :try_end_0346
     :try_end_0346
     const-string v2, "᩸ᩴ᩵"
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v2, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
-    goto/16 :addr_0515
+    goto/16 :goto_515
     move/from16 v35, v6
     move/from16 v37, v11
     :try_start_039a
@@ -5764,18 +5764,18 @@
     :try_end_039a
     :try_end_039a
     const-string v2, "ۧۨ֡"
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v2, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
     xor-int v6, v6, v32
-    const/4 v11, -0x5
+    const/4 v11, 0x0
     invoke-static {v2, v11}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v11
     mul-int v6, v6, v11
-    const/4 v11, -0x5
+    const/4 v11, 0x2
     invoke-static {v2, v11}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
-    goto/16 :addr_04b5
+    goto/16 :goto_4b5
     move/from16 v35, v6
     move/from16 v37, v11
     :try_start_03c3
@@ -5791,11 +5791,11 @@
     :try_end_03c3
     :try_end_03c3
     const-string v2, "ܿ᩷ۖ"
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v2, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
     xor-int v6, v6, v32
-    goto/16 :addr_04a9
+    goto/16 :goto_4a9
     move/from16 v35, v6
     move/from16 v37, v11
     :try_start_03e0
@@ -5809,23 +5809,23 @@
     :try_end_03e0
     :try_end_03e0
     const-string/jumbo v2, "᩹᩶᩻"
-    :addr_03f1
+    :goto_3f1
     invoke-static {v2}, Ll/ۤ֨;->۬ۚᩴ(Ljava/lang/Object;)I
     move-result v2
     xor-int v2, v2, v33
-    goto/16 :addr_0749
+    goto/16 :goto_749
     move/from16 v35, v6
     move/from16 v37, v11
     :try_start_03fd
     sget-object v2, Lbin/mt/plus/ShortcutActivity;->۠ܶۧ:[S
     const/16 v6, 0xf4
-    const/4 v11, -0x5
+    const/4 v11, 0x4
     invoke-static {v2, v6, v11, v5}, Ll/ۤ֨;->ۜۢۢ([SIII)Ljava/lang/String;
     move-result-object v2
     invoke-static {v3, v2}, Ll/ܽۘ;->۫᩺ᩳ(Ljava/lang/Object;Ljava/lang/Object;)Z
     move-result v22
     const-string v2, "᩵֨ܶ"
-    goto :addr_0445
+    goto :goto_445
     move/from16 v35, v6
     move/from16 v37, v11
     sget-object v2, Lbin/mt/plus/ShortcutActivity;->۠ܶۧ:[S
@@ -5838,15 +5838,15 @@
     :try_end_03fd
     :try_end_03fd
     const-string v2, "ۡ᩻ܶ"
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v2, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
-    const/4 v11, -0x5
+    const/4 v11, 0x2
     invoke-static {v2, v11}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v11
     mul-int v6, v6, v11
     xor-int v6, v6, v33
-    goto/16 :addr_055a
+    goto/16 :goto_55a
     move/from16 v35, v6
     move/from16 v37, v11
     :try_start_0435
@@ -5862,19 +5862,19 @@
     :try_end_0435
     :try_end_0435
     const-string v2, "᩷ۘ֫"
-    :addr_0445
-    const/4 v6, 0x6
+    :goto_445
+    const/4 v6, 0x0
     invoke-static {v2, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
     mul-int/lit16 v6, v6, 0x3c1
-    const/4 v11, -0x5
+    const/4 v11, 0x1
     invoke-static {v2, v11}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v11
     mul-int/lit8 v11, v11, 0x1f
     add-int/2addr v6, v11
     xor-int v6, v6, v32
-    const/4 v11, -0x5
-    goto/16 :addr_055b
+    const/4 v11, 0x2
+    goto/16 :goto_55b
     move/from16 v35, v6
     move/from16 v37, v11
     :try_start_045d
@@ -5888,13 +5888,13 @@
     :try_end_045d
     :try_end_045d
     const-string v2, "ܶ۬ۢ"
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v2, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
-    const/4 v11, -0x5
+    const/4 v11, 0x2
     invoke-static {v2, v11}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v11
-    goto/16 :addr_051a
+    goto/16 :goto_51a
     move/from16 v35, v6
     move/from16 v37, v11
     :try_start_047d
@@ -5906,7 +5906,7 @@
     invoke-static {v3, v2}, Ll/ۙ֫;->᩺۠ۖ(Ljava/lang/Object;Ljava/lang/Object;)Z
     move-result v18
     const-string v2, "ۚ᩸ܶ"
-    goto :addr_04cc
+    goto :goto_4cc
     move/from16 v35, v6
     move/from16 v37, v11
     sget-object v2, Lbin/mt/plus/ShortcutActivity;->۠ܶۧ:[S
@@ -5919,28 +5919,28 @@
     :try_end_047d
     :try_end_047d
     const-string v2, "ܿ۬ۢ"
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v2, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
     xor-int v6, v6, v33
-    :addr_04a9
-    const/4 v11, -0x5
+    :goto_4a9
+    const/4 v11, 0x0
     invoke-static {v2, v11}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v11
     mul-int v6, v6, v11
-    const/4 v11, -0x5
+    const/4 v11, 0x2
     invoke-static {v2, v11}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
-    :addr_04b5
+    :goto_4b5
     sub-int v2, v6, v2
-    goto/16 :addr_0749
+    goto/16 :goto_749
     move/from16 v35, v6
     move/from16 v37, v11
     :try_start_04bd
     .line 115
     sget-object v2, Lbin/mt/plus/ShortcutActivity;->۠ܶۧ:[S
     const/16 v6, 0x9b
-    const/4 v11, -0x5
+    const/4 v11, 0x6
     invoke-static {v2, v6, v11, v5}, Ll/᩻᩷;->ۧۧ᩹([SIII)Ljava/lang/String;
     move-result-object v2
     .line 77
@@ -5949,11 +5949,11 @@
     :try_end_04bd
     :try_end_04bd
     const-string v2, "ۨۚۘ"
-    :addr_04cc
+    :goto_4cc
     invoke-static {v2}, Ll/ۤ֨;->۬ۚᩴ(Ljava/lang/Object;)I
     move-result v2
     xor-int v2, v2, v32
-    goto/16 :addr_0749
+    goto/16 :goto_749
     move/from16 v35, v6
     move/from16 v37, v11
     :try_start_04d8
@@ -5967,18 +5967,18 @@
     :try_end_04d8
     :try_end_04d8
     const-string v2, "ۢܳܶ"
-    const/4 v6, 0x6
+    const/4 v6, 0x0
     invoke-static {v2, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
     mul-int/lit16 v6, v6, 0x3c1
-    const/4 v11, -0x5
+    const/4 v11, 0x1
     invoke-static {v2, v11}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v11
     mul-int/lit8 v11, v11, 0x1f
     add-int/2addr v6, v11
     xor-int v6, v6, v33
-    const/4 v11, -0x5
-    goto :addr_051f
+    const/4 v11, 0x2
+    goto :goto_51f
     move/from16 v35, v6
     move/from16 v37, v11
     :try_start_04ff
@@ -5994,35 +5994,35 @@
     :try_end_04ff
     :try_end_04ff
     const-string/jumbo v2, "᩹ۛۛ"
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v2, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
-    :addr_0515
-    const/4 v11, -0x5
+    :goto_515
+    const/4 v11, 0x2
     invoke-static {v2, v11}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v11
-    :addr_051a
+    :goto_51a
     mul-int v6, v6, v11
     xor-int v6, v6, v33
-    const/4 v11, -0x5
-    :addr_051f
+    const/4 v11, 0x0
+    :goto_51f
     invoke-static {v2, v11}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
-    goto :addr_055f
+    goto :goto_55f
     move/from16 v35, v6
     move/from16 v37, v11
     :try_start_0528
     .line 83
     sget-object v2, Lbin/mt/plus/ShortcutActivity;->۠ܶۧ:[S
     const/16 v6, 0x77
-    const/4 v11, -0x5
+    const/4 v11, 0x7
     invoke-static {v2, v6, v11, v5}, Ll/֫;->ܺ۠ᩳ([SIII)Ljava/lang/String;
     move-result-object v2
     .line 77
     invoke-static {v3, v2}, Ll/ܽۘ;->۫᩺ᩳ(Ljava/lang/Object;Ljava/lang/Object;)Z
     move-result v13
     const-string v2, "֨᩵ܳ"
-    goto :addr_054c
+    goto :goto_54c
     move/from16 v35, v6
     move/from16 v37, v11
     .line 110
@@ -6037,23 +6037,23 @@
     :try_end_0528
     :try_end_0528
     const-string v2, "ۜ᩹᩹"
-    :addr_054c
-    const/4 v6, 0x6
+    :goto_54c
+    const/4 v6, 0x1
     invoke-static {v2, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
-    const/4 v11, -0x5
+    const/4 v11, 0x2
     invoke-static {v2, v11}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v11
     mul-int v6, v6, v11
     xor-int v6, v6, v32
-    :addr_055a
-    const/4 v11, -0x5
-    :addr_055b
+    :goto_55a
+    const/4 v11, 0x0
+    :goto_55b
     invoke-static {v2, v11}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
-    :addr_055f
+    :goto_55f
     add-int/2addr v2, v6
-    goto/16 :addr_0749
+    goto/16 :goto_749
     move/from16 v35, v6
     move/from16 v37, v11
     :try_start_0566
@@ -6069,44 +6069,44 @@
     :try_end_0566
     :try_end_0566
     const-string v2, "ۘۗۡ"
-    const/4 v6, 0x6
+    const/4 v6, 0x0
     invoke-static {v2, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
     mul-int/lit16 v6, v6, 0x3c1
-    const/4 v0, 0x0
+    const/4 v0, 0x1
     invoke-static {v2, v0}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
     mul-int/lit8 v0, v0, 0x1f
     add-int/2addr v6, v0
     xor-int v0, v6, v33
-    const/4 v6, 0x6
+    const/4 v6, 0x2
     invoke-static {v2, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
     add-int/2addr v2, v0
     move-object/from16 v0, v39
     move/from16 v6, v35
-    goto/16 :addr_0078
+    goto/16 :goto_78
     return-void
     move/from16 v35, v6
     move/from16 v37, v11
     const/high16 v6, 0x400
     const-class v0, Ll/᩶֨۟;
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     const/high16 v11, 0x1000
-    sparse-switch v35, :addr_0922
-    goto/16 :addr_07a0
+    sparse-switch v35, :cond_922
+    goto/16 :goto_7a0
     const-string v2, "۫᩷ܰ"
-    const/4 v7, 0x7
+    const/4 v7, 0x0
     invoke-static {v2, v7}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v7
     mul-int/lit16 v7, v7, 0x3c1
-    const/4 v8, -0x8
+    const/4 v8, 0x1
     invoke-static {v2, v8}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v8
     mul-int/lit8 v8, v8, 0x1f
     add-int/2addr v7, v8
     xor-int v7, v7, v33
-    const/4 v8, -0x8
+    const/4 v8, 0x2
     invoke-static {v2, v8}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     add-int/2addr v2, v7
@@ -6115,151 +6115,151 @@
     move-object v8, v0
     move/from16 v6, v35
     move/from16 v11, v37
-    goto/16 :addr_06cc
+    goto/16 :goto_6cc
     const-string v0, "ۢۨۧ"
     invoke-static {v0}, Ll/ۤ֨;->۬ۚᩴ(Ljava/lang/Object;)I
     move-result v0
     xor-int v2, v0, v32
-    goto/16 :addr_06e7
+    goto/16 :goto_6e7
     const-string v0, "۟᩵ܰ"
-    const/4 v6, 0x6
+    const/4 v6, 0x0
     invoke-static {v0, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
     mul-int/lit16 v6, v6, 0x3c1
-    const/4 v9, -0x7
+    const/4 v9, 0x1
     invoke-static {v0, v9}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v9
     mul-int/lit8 v9, v9, 0x1f
     add-int/2addr v6, v9
     xor-int v6, v6, v32
-    const/4 v9, -0x7
+    const/4 v9, 0x2
     invoke-static {v0, v9}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
-    goto/16 :addr_06a3
+    goto/16 :goto_6a3
     const-string v0, "֨֡᩵"
-    goto/16 :addr_06f3
+    goto/16 :goto_6f3
     const-string v0, "ܰ᩸᩷"
     invoke-static {v0}, Ll/ۤ֨;->۬ۚᩴ(Ljava/lang/Object;)I
     move-result v0
     xor-int v2, v0, v33
-    goto/16 :addr_06e7
+    goto/16 :goto_6e7
     const-string v0, "۠ܿ۫"
-    goto :addr_0659
+    goto :goto_659
     const-string v0, "۠ᩴ֡"
     invoke-static {v0}, Ll/ۤ֨;->۬ۚᩴ(Ljava/lang/Object;)I
     move-result v0
-    goto :addr_065d
+    goto :goto_65d
     const-string v0, "᩵֫ܺ"
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v0, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
     xor-int v6, v6, v33
-    goto :addr_062f
+    goto :goto_62f
     const-string v0, "ۨ۬ۖ"
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v0, v2}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
-    const/4 v6, 0x6
+    const/4 v6, 0x2
     invoke-static {v0, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
     mul-int v2, v2, v6
     xor-int v2, v2, v33
-    const/4 v6, 0x6
+    const/4 v6, 0x0
     invoke-static {v0, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     add-int/2addr v2, v0
-    goto/16 :addr_06e7
+    goto/16 :goto_6e7
     const-string v0, "ۛᩳܺ"
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v0, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
     xor-int v6, v6, v32
-    :addr_062f
-    const/4 v9, -0x7
+    :goto_62f
+    const/4 v9, 0x0
     invoke-static {v0, v9}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v9
     mul-int v6, v6, v9
-    const/4 v9, -0x7
+    const/4 v9, 0x2
     invoke-static {v0, v9}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     sub-int v0, v6, v0
-    goto :addr_06a4
+    goto :goto_6a4
     const-string/jumbo v0, "᩹۟᩹"
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
-    const/4 v6, 0x6
+    const/4 v6, 0x2
     invoke-static {v0, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
     mul-int v2, v2, v6
     xor-int v2, v2, v33
-    const/4 v6, 0x6
+    const/4 v6, 0x0
     invoke-static {v0, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
     add-int/2addr v2, v0
-    goto/16 :addr_0747
+    goto/16 :goto_747
     const-string v0, "ܿ᩵ۨ"
-    :addr_0659
+    :goto_659
     invoke-static {v0}, Ll/ۙۘ;->ۙᩴ۫(Ljava/lang/Object;)I
     move-result v0
-    :addr_065d
+    :goto_65d
     xor-int v2, v0, v32
-    goto/16 :addr_0747
+    goto/16 :goto_747
     const-string/jumbo v0, "᩻ۖۖ"
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v0, v2}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v2
     xor-int v2, v2, v32
-    const/4 v6, 0x6
+    const/4 v6, 0x0
     invoke-static {v0, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
-    goto/16 :addr_06df
+    goto/16 :goto_6df
     const-string/jumbo v0, "᩻ۜܳ"
     invoke-static {v0}, Ll/ۙۘ;->ۙᩴ۫(Ljava/lang/Object;)I
     move-result v0
-    goto :addr_068b
+    goto :goto_68b
     const-string v0, "ܽ۬ܰ"
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     xor-int v2, v2, v32
-    goto/16 :addr_06fa
+    goto/16 :goto_6fa
     const-string v0, "᩸ܿۗ"
     invoke-static {v0}, Ll/ۤ֨;->۬ۚᩴ(Ljava/lang/Object;)I
     move-result v0
-    :addr_068b
+    :goto_68b
     xor-int v0, v0, v33
-    goto :addr_06a4
+    goto :goto_6a4
     const-string v0, "ۧۜܿ"
-    const/4 v6, 0x6
+    const/4 v6, 0x1
     invoke-static {v0, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
-    const/4 v9, -0x7
+    const/4 v9, 0x2
     invoke-static {v0, v9}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v9
     mul-int v6, v6, v9
     xor-int v6, v6, v32
-    const/4 v9, -0x7
+    const/4 v9, 0x0
     invoke-static {v0, v9}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
-    :addr_06a3
+    :goto_6a3
     add-int/2addr v0, v6
-    :addr_06a4
+    :goto_6a4
     move v2, v0
     move/from16 v6, v35
     move/from16 v11, v37
-    const/4 v9, -0x7
-    goto :addr_06cc
+    const/4 v9, 0x1
+    goto :goto_6cc
     const-string v7, "ۛܳۚ"
-    const/4 v8, -0x8
+    const/4 v8, 0x1
     invoke-static {v7, v8}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v8
-    const/4 v9, -0x7
+    const/4 v9, 0x2
     invoke-static {v7, v9}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v9
     mul-int v8, v8, v9
     xor-int v8, v8, v33
-    const/4 v9, -0x7
+    const/4 v9, 0x0
     invoke-static {v7, v9}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v7
     add-int/2addr v7, v8
@@ -6268,28 +6268,28 @@
     move/from16 v6, v35
     move/from16 v11, v37
     const/high16 v7, 0x400
-    const/4 v9, -0x7
+    const/4 v9, 0x1
     const/high16 v10, 0x1000
-    :addr_06cc
+    :goto_6cc
     move-object/from16 v0, v39
-    goto/16 :addr_0078
+    goto/16 :goto_78
     const-string/jumbo v0, "᩻ۘܺ"
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     xor-int v2, v2, v32
-    const/4 v6, 0x6
+    const/4 v6, 0x0
     invoke-static {v0, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
-    :addr_06df
+    :goto_6df
     mul-int v2, v2, v6
-    const/4 v6, 0x6
+    const/4 v6, 0x2
     invoke-static {v0, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     sub-int/2addr v2, v0
-    :addr_06e7
+    :goto_6e7
     const/high16 v10, 0x1000
-    goto :addr_0747
+    goto :goto_747
     move/from16 v35, v6
     move/from16 v37, v11
     :try_start_06ee
@@ -6298,16 +6298,16 @@
     :try_end_06ee
     :try_end_06ee
     const-string v0, "ۧۛ᩹"
-    :addr_06f3
-    const/4 v2, 0x2
+    :goto_6f3
+    const/4 v2, 0x1
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     xor-int v2, v2, v33
-    :addr_06fa
-    const/4 v6, 0x6
+    :goto_6fa
+    const/4 v6, 0x0
     invoke-static {v0, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
-    goto :addr_073f
+    goto :goto_73f
     move/from16 v35, v6
     move/from16 v37, v11
     :try_start_0704
@@ -6317,48 +6317,48 @@
     :try_end_0704
     :try_end_0704
     const-string v0, "ۡ۫ۖ"
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
-    const/4 v11, -0x5
+    const/4 v11, 0x2
     invoke-static {v0, v11}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v11
     mul-int v2, v2, v11
     xor-int v2, v2, v32
-    const/4 v11, -0x5
+    const/4 v11, 0x0
     invoke-static {v0, v11}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     add-int/2addr v2, v0
     move-object/from16 v0, v39
-    goto/16 :addr_0824
+    goto/16 :goto_824
     move/from16 v35, v6
     move/from16 v37, v11
-    if-eqz v34, :addr_0731
+    if-eqz v34, :cond_731
     const-string v0, "᩶᩺֫"
     invoke-static {v0}, Ll/ۤ֨;->۬ۚᩴ(Ljava/lang/Object;)I
     move-result v0
     xor-int v2, v0, v33
-    goto :addr_0747
-    :addr_0731
+    goto :goto_747
+    :cond_731
     const-string v0, "ᩴܽۨ"
-    const/4 v2, 0x2
+    const/4 v2, 0x1
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v2
     xor-int v2, v2, v33
-    const/4 v6, 0x6
+    const/4 v6, 0x0
     invoke-static {v0, v6}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v6
-    :addr_073f
+    :goto_73f
     mul-int v2, v2, v6
-    const/4 v6, 0x6
+    const/4 v6, 0x2
     invoke-static {v0, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
     sub-int/2addr v2, v0
-    :addr_0747
+    :goto_747
     move-object/from16 v0, v39
-    :addr_0749
+    :goto_749
     move/from16 v6, v35
-    goto/16 :addr_0824
+    goto/16 :goto_824
     .line 145
     invoke-static/range {v39 .. v39}, Ll/ۤۙ;->۫ۤܽ(Ljava/lang/Object;)V
     return-void
@@ -6381,7 +6381,7 @@
     :try_end_0755
     const/16 v11, 0x5a
     move-object/from16 v36, v1
-    const/4 v1, 0x1
+    const/4 v1, 0x4
     :try_start_076e
     invoke-static {v6, v11, v1, v5}, Ll/ܰۡ;->ܳۧۤ([SIII)Ljava/lang/String;
     move-result-object v1
@@ -6394,15 +6394,15 @@
     :try_end_076e
     :try_end_076e
     const-string v3, "᩶ۢۧ"
-    const/4 v4, 0x4
+    const/4 v4, 0x1
     invoke-static {v3, v4}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v4
     xor-int v4, v4, v32
-    const/4 v6, 0x6
+    const/4 v6, 0x0
     invoke-static {v3, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v6
     mul-int v4, v4, v6
-    const/4 v6, 0x6
+    const/4 v6, 0x2
     invoke-static {v3, v6}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v3
     sub-int v3, v4, v3
@@ -6414,34 +6414,34 @@
     move/from16 v38, v3
     move-object v3, v2
     move/from16 v2, v38
-    goto/16 :addr_0078
-    :addr_07a0
+    goto/16 :goto_78
+    :goto_7a0
     move-object/from16 v36, v1
-    :addr_07a2
+    :goto_7a2
     const-string v0, "۫᩵ܳ"
     invoke-static {v0}, Ll/ۙۘ;->ۙᩴ۫(Ljava/lang/Object;)I
     move-result v0
     xor-int v2, v0, v32
-    goto/16 :addr_081e
+    goto/16 :goto_81e
     move-object/from16 v36, v1
     move/from16 v35, v6
     move/from16 v37, v11
     .line 68
     invoke-super/range {v39 .. v40}, Ll/᩻᩻ۖ;->onCreate(Landroid/os/Bundle;)V
     const-string v0, "ᩴܶۚ"
-    goto :addr_0800
+    goto :goto_800
     move-object/from16 v36, v1
     move/from16 v35, v6
     move/from16 v37, v11
     const v0, 0x82cb
     const v5, 0x82cb
-    goto :addr_07d1
+    goto :goto_7d1
     move-object/from16 v36, v1
     move/from16 v35, v6
     move/from16 v37, v11
     const v0, 0xd772
     const v5, 0xd772
-    :addr_07d1
+    :goto_7d1
     const-string v0, "ۨۧۚ"
     const/4 v1, 0x1
     invoke-static {v0, v1}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
@@ -6451,10 +6451,10 @@
     move-result v2
     mul-int v1, v1, v2
     xor-int v1, v1, v32
-    const/4 v2, 0x2
+    const/4 v2, 0x0
     invoke-static {v0, v2}, Ll/ܽ᩵;->ᩳ᩹֨(Ljava/lang/Object;I)C
     move-result v0
-    goto :addr_081c
+    goto :goto_81c
     move-object/from16 v36, v1
     move/from16 v35, v6
     move/from16 v37, v11
@@ -6466,14 +6466,14 @@
     add-int/lit8 v0, v0, 0x1
     mul-int v0, v0, v0
     sub-int/2addr v1, v0
-    if-lez v1, :addr_0807
+    if-lez v1, :cond_807
     const-string v0, "ܶ᩺ܳ"
-    :addr_0800
+    :goto_800
     invoke-static {v0}, Ll/ۙۘ;->ۙᩴ۫(Ljava/lang/Object;)I
     move-result v0
     xor-int v2, v0, v33
-    goto :addr_081e
-    :addr_0807
+    goto :goto_81e
+    :cond_807
     const-string v0, "۟᩵ᩴ"
     const/4 v1, 0x1
     invoke-static {v0, v1}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
@@ -6483,104 +6483,104 @@
     move-result v2
     mul-int v1, v1, v2
     xor-int v1, v1, v32
-    const/4 v2, 0x2
+    const/4 v2, 0x0
     invoke-static {v0, v2}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v0
-    :addr_081c
+    :goto_81c
     add-int v2, v1, v0
-    :addr_081e
+    :goto_81e
     move-object/from16 v0, v39
     move/from16 v6, v35
     move-object/from16 v1, v36
-    :addr_0824
+    :goto_824
     move/from16 v11, v37
-    goto/16 :addr_0078
-    :addr_0828
+    goto/16 :goto_78
+    :cond_828
     .sparse-switch
-        1445053 -> :addr_0164
-        1458474 -> :addr_014c
-        1745504 -> :addr_0291
-        1749319 -> :addr_0218
-        1751549 -> :addr_0347
-        1752304 -> :addr_02d6
-        1755063 -> :addr_020f
-        1760195 -> :addr_019d
-        1767995 -> :addr_002d
-        1898507 -> :addr_02ed
-        1899401 -> :addr_0205
-        1902364 -> :addr_0364
-        1915450 -> :addr_02bc
-        1915928 -> :addr_06d5
-        1987121 -> :addr_0740
-        1988017 -> :addr_031e
-        1990915 -> :addr_0401
-        2537307 -> :addr_0179
-        2783998 -> :addr_0075
-        3078976 -> :addr_023c
-        3088927 -> :addr_013d
-        3099663 -> :addr_0734
-        3099844 -> :addr_051c
-        3102142 -> :addr_0395
-        3130108 -> :addr_01fb
-        3232715 -> :addr_04c0
-        3257136 -> :addr_0089
-        3261084 -> :addr_04ac
-        3261819 -> :addr_011c
-        4259107 -> :addr_00e6
-        4283534 -> :addr_01b1
-        4499097 -> :addr_045c
-        6559314 -> :addr_01d1
-        6564089 -> :addr_01f2
-        6564934 -> :addr_06d9
-        6577164 -> :addr_0441
-        6577262 -> :addr_0483
-        6578008 -> :addr_018c
-        6721785 -> :addr_0672
-        6730080 -> :addr_01c7
-        9722339 -> :addr_0303
-        9829660 -> :addr_03b9
-        10260383 -> :addr_0110
-        10397380 -> :addr_01bd
-        11346322 -> :addr_076f
-        11423946 -> :addr_051b
-        11872420 -> :addr_00d1
-        11926470 -> :addr_00fb
-        11933042 -> :addr_03e1
-        12483974 -> :addr_0256
-        12514381 -> :addr_01db
-        16098375 -> :addr_0416
-        16111833 -> :addr_04ea
-        16384539 -> :addr_06aa
-        37969180 -> :addr_001e
-        42709236 -> :addr_0688
-        44204853 -> :addr_00a6
-        45438207 -> :addr_0381
-        45864820 -> :addr_074d
-        45865746 -> :addr_01a7
-        45904824 -> :addr_00bc
-        45926780 -> :addr_0270
+        1445053 -> :sswitch_164
+        1458474 -> :sswitch_14c
+        1745504 -> :sswitch_291
+        1749319 -> :sswitch_218
+        1751549 -> :sswitch_347
+        1752304 -> :goto_2d6
+        1755063 -> :sswitch_20f
+        1760195 -> :sswitch_19d
+        1767995 -> :sswitch_2d
+        1898507 -> :sswitch_2ed
+        1899401 -> :sswitch_205
+        1902364 -> :sswitch_364
+        1915450 -> :goto_2bc
+        1915928 -> :sswitch_6d5
+        1987121 -> :sswitch_740
+        1988017 -> :sswitch_31e
+        1990915 -> :sswitch_401
+        2537307 -> :sswitch_179
+        2783998 -> :sswitch_75
+        3078976 -> :sswitch_23c
+        3088927 -> :sswitch_13d
+        3099663 -> :sswitch_734
+        3099844 -> :sswitch_51c
+        3102142 -> :sswitch_395
+        3130108 -> :sswitch_1fb
+        3232715 -> :sswitch_4c0
+        3257136 -> :sswitch_89
+        3261084 -> :sswitch_4ac
+        3261819 -> :sswitch_11c
+        4259107 -> :sswitch_e6
+        4283534 -> :sswitch_1b1
+        4499097 -> :sswitch_45c
+        6559314 -> :sswitch_1d1
+        6564089 -> :sswitch_1f2
+        6564934 -> :sswitch_6d9
+        6577164 -> :sswitch_441
+        6577262 -> :sswitch_483
+        6578008 -> :sswitch_18c
+        6721785 -> :sswitch_672
+        6730080 -> :sswitch_1c7
+        9722339 -> :sswitch_303
+        9829660 -> :sswitch_3b9
+        10260383 -> :sswitch_110
+        10397380 -> :sswitch_1bd
+        11346322 -> :sswitch_76f
+        11423946 -> :sswitch_51b
+        11872420 -> :sswitch_d1
+        11926470 -> :sswitch_fb
+        11933042 -> :sswitch_3e1
+        12483974 -> :sswitch_256
+        12514381 -> :sswitch_1db
+        16098375 -> :sswitch_416
+        16111833 -> :sswitch_4ea
+        16384539 -> :sswitch_6aa
+        37969180 -> :sswitch_1e
+        42709236 -> :sswitch_688
+        44204853 -> :sswitch_a6
+        45438207 -> :sswitch_381
+        45864820 -> :sswitch_74d
+        45865746 -> :sswitch_1a7
+        45904824 -> :sswitch_bc
+        45926780 -> :sswitch_270
     .end sparse-switch
-    :addr_0922
+    :cond_922
     .sparse-switch
-        -2122614245 -> :addr_0131
-        -1912197360 -> :addr_010c
-        -1263242200 -> :addr_00ef
-        -1212308659 -> :addr_00e6
-        -1119104947 -> :addr_00db
-        -1097461934 -> :addr_00d3
-        -785778927 -> :addr_00c2
-        -667500459 -> :addr_00b8
-        -593404262 -> :addr_009f
-        -560080238 -> :addr_0087
-        -474293814 -> :addr_006f
-        3178851 -> :addr_0065
-        24954378 -> :addr_005e
-        35253639 -> :addr_005b
-        588746739 -> :addr_0051
-        1041335639 -> :addr_004d
-        1721154072 -> :addr_0033
-        1841977966 -> :addr_0029
-        2116182360 -> :addr_0005
+        -2122614245 -> :sswitch_131
+        -1912197360 -> :sswitch_10c
+        -1263242200 -> :sswitch_ef
+        -1212308659 -> :sswitch_e6
+        -1119104947 -> :sswitch_db
+        -1097461934 -> :sswitch_d3
+        -785778927 -> :sswitch_c2
+        -667500459 -> :sswitch_b8
+        -593404262 -> :sswitch_9f
+        -560080238 -> :sswitch_87
+        -474293814 -> :sswitch_6f
+        3178851 -> :sswitch_65
+        24954378 -> :sswitch_5e
+        35253639 -> :sswitch_5b
+        588746739 -> :sswitch_51
+        1041335639 -> :sswitch_4d
+        1721154072 -> :sswitch_33
+        1841977966 -> :sswitch_29
+        2116182360 -> :sswitch_5
     .end sparse-switch
 .end method
 
