@@ -90,6 +90,7 @@ Rust 工作区包含 4 个 crate：
 - Java 风格 switch key 数字格式，未解析 payload target 使用 signed decimal offset fallback。
 - literal 十六进制格式，包括 `const/4` 窄 literal 解码修复。
 - likely float/double literal 与 payload 注释，例如 `(float)Math.PI`, `(float)Math.E`, `Math.PI`, `Math.E`。
+- configured resource-id 注释：通过 `--resolve-resources <prefix> <public.xml>` 读取 Java baksmali 风格 public.xml 映射，并在 narrow literal、switch payload、array-data 中输出资源名注释。
 - 基础 try/catch directive。
 - 未完整支持格式的 raw instruction fallback comment。
 
@@ -123,7 +124,7 @@ reference 解析当前覆盖：
 - 基础 disassemble 流程。
 - 若干 list 命令：classes/strings/types/fields/methods/dex。
 - 基础 class/field/method/instruction/debug/annotation 输出。
-- 部分 Java baksmali layout parity：section header、当前类成员声明省略、常见 branch/payload label、array/switch 数字格式、likely float/double 注释。
+- 部分 Java baksmali layout parity：section header、当前类成员声明省略、常见 branch/payload label、array/switch 数字格式、likely float/double 和 resource-id 注释。
 - method handle 与 call site 的可读 reference 输出。
 
 未覆盖或明显不完整：
@@ -131,7 +132,7 @@ reference 解析当前覆盖：
 - `dump`, `deodex`, dependencies, field offsets, vtables, references 等 Java CLI 命令。
 - 完整命令行参数与 Java baksmali 行为兼容。
 - Java `Adaptors` 中大量格式化细节与排序/注释/寄存器信息逻辑。
-- configured resource-id comment：Java 可通过 resource 文件映射输出资源名注释，Rust CLI 尚未加载资源表。
+- configured resource-id comment：Rust CLI 已支持 Java 风格 `--resolve-resources` 基础链路，但 XML 解析器较轻量，仍需覆盖更多 public.xml 边界。
 - synthetic accessor comment、register info、分析辅助输出。
 - 与 Java baksmali 完全一致的 whitespace、edge-case label ordering、try/catch 区间、annotation/subannotation layout。
 - 大规模上游 fixture roundtrip/parity 测试。
@@ -176,6 +177,7 @@ reference 解析当前覆盖：
 - `.array-data` 元素：补齐 `0x616s`、`-0xec1s` 等 Java 风格 signed hex 与 suffix。
 - switch payload key：补齐 Java encoded int 风格 key 与 unresolved target fallback。
 - literal/payload likely float/double 注释：开始参照 Java `InstructionMethodItem` / `NumberUtils` 输出常见 named constants。
+- resource-id 注释：开始参照 Java `BaksmaliOptions.loadResourceIds` / `--resolve-resources`，支持从 public.xml 读取映射并输出资源名 comment。
 
 剩余差异仍集中在 whitespace、复杂 label 插入/排序、resource-id comment、annotation/debug/try-catch 细节和更复杂 instruction formatting。
 
@@ -222,8 +224,8 @@ cargo fmt --all && cargo test --workspace
 1. **Java parity 仍是主要风险**  
    现在已经开始按 Java 源码逐项对齐，但完整 baksmali formatting 包含大量细节：whitespace、label ordering、debug/try/catch、annotation、resource comments、register info 等仍需真实 fixture 驱动。
 
-2. **resource-id 注释链路未完成**  
-   Java baksmali 可加载资源映射并在 literal/switch/array 中输出资源名注释；Rust 当前只保留了 formatter 层的占位，CLI 尚未支持 resource 文件加载。
+2. **resource-id XML 解析仍需增强**  
+   Rust 已实现 `--resolve-resources` 基础链路，但当前 public.xml 解析是轻量属性扫描，尚未达到 Java SAX parser 的完整 XML 兼容性。
 
 3. **annotation/encoded value 仍偏基础**  
    subannotation、array、method type、method handle、call site 已有基础输出，但复杂嵌套布局和 Java 多行格式仍未完全对齐。
@@ -245,9 +247,9 @@ cargo fmt --all && cargo test --workspace
    - 围绕 `classes2.dex` / `Lbin/mt/plus/ShortcutActivity;` 建立更强 golden/parity 断言。
    - 对 Java/Rust diff 中仍存在的 whitespace、label ordering、payload placement 逐项收敛。
 
-2. **补 resource-id comment 链路**
-   - 参考 Java `BaksmaliOptions.loadResourceIds` 和 formatter helper。
-   - 在 CLI 增加资源映射输入后，将 resource comments 接入 literal、switch payload、array-data。
+2. **扩展 resource-id comment parity**
+   - 对 `--resolve-resources` 增加更多 Java public.xml 边界测试。
+   - 必要时替换轻量属性扫描为完整 XML parser，以更接近 Java SAX 行为。
 
 3. **继续完善 annotation/encoded value parity**
    - 对齐 Java baksmali 对 array、subannotation、method type、method handle、call site 的多行布局。

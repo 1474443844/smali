@@ -15,6 +15,7 @@ pub struct BaksmaliFormatter<'a> {
     dex: &'a DexFile,
     data: &'a [u8],
     resolver: Resolver<'a>,
+    resource_ids: BTreeMap<i32, String>,
 }
 
 impl<'a> BaksmaliFormatter<'a> {
@@ -23,6 +24,20 @@ impl<'a> BaksmaliFormatter<'a> {
             dex,
             data,
             resolver: Resolver::new(dex, data),
+            resource_ids: BTreeMap::new(),
+        }
+    }
+
+    pub fn with_resource_ids(
+        dex: &'a DexFile,
+        data: &'a [u8],
+        resource_ids: BTreeMap<i32, String>,
+    ) -> Self {
+        Self {
+            dex,
+            data,
+            resolver: Resolver::new(dex, data),
+            resource_ids,
         }
     }
 
@@ -556,14 +571,14 @@ impl<'a> BaksmaliFormatter<'a> {
                 format!(
                     "{opcode} v{register}, {}{}",
                     format_signed_literal(*literal as i64),
-                    format_likely_float_comment(i32::from(*literal))
+                    self.format_narrow_literal_comment(i32::from(*literal))
                 )
             }
             InstructionOperands::RegisterLiteral32 { register, literal } => {
                 format!(
                     "{opcode} v{register}, {}{}",
                     format_signed_literal(*literal as i64),
-                    format_likely_float_comment(*literal)
+                    self.format_narrow_literal_comment(*literal)
                 )
             }
             InstructionOperands::RegisterLiteral64 { register, literal } => {
@@ -777,7 +792,12 @@ impl<'a> BaksmaliFormatter<'a> {
                         .get(&branch_target(0, *target))
                         .cloned()
                         .unwrap_or_else(|| format_switch_offset(*target));
-                    write!(out, "\n        {label}{}", format_resource_id_comment(key)).unwrap();
+                    write!(
+                        out,
+                        "\n        {label}{}",
+                        self.format_resource_id_comment(key)
+                    )
+                    .unwrap();
                     key = key.wrapping_add(1);
                 }
                 out.push_str("\n    .end packed-switch");
@@ -794,7 +814,7 @@ impl<'a> BaksmaliFormatter<'a> {
                         out,
                         "\n        {} -> {label}{}",
                         format_integral_value(i64::from(element.key), None),
-                        format_resource_id_comment(element.key)
+                        self.format_resource_id_comment(element.key)
                     )
                     .unwrap();
                 }
@@ -813,7 +833,7 @@ impl<'a> BaksmaliFormatter<'a> {
                 };
                 for element in elements {
                     let comment = match *element_width {
-                        4 => format_array_element_32_comment(element),
+                        4 => self.format_array_element_32_comment(element),
                         8 => format_array_element_64_comment(element),
                         _ => String::new(),
                     };
@@ -830,6 +850,26 @@ impl<'a> BaksmaliFormatter<'a> {
                 out
             }
         }
+    }
+
+    fn format_narrow_literal_comment(&self, value: i32) -> String {
+        let resource_comment = self.format_resource_id_comment(value);
+        if resource_comment.is_empty() {
+            format_likely_float_comment(value)
+        } else {
+            resource_comment
+        }
+    }
+
+    fn format_resource_id_comment(&self, value: i32) -> String {
+        self.resource_ids
+            .get(&value)
+            .map_or_else(String::new, |resource| format!("    # {resource}"))
+    }
+
+    fn format_array_element_32_comment(&self, element: &[u8]) -> String {
+        let value = i32::from_le_bytes([element[0], element[1], element[2], element[3]]);
+        self.format_narrow_literal_comment(value)
     }
 
     fn format_reference(&self, opcode: u16, reference: u32) -> Result<String> {
@@ -922,10 +962,6 @@ fn format_switch_offset(target: i32) -> String {
     }
 }
 
-fn format_resource_id_comment(_value: i32) -> String {
-    String::new()
-}
-
 fn format_likely_float_comment(value: i32) -> String {
     if !is_likely_float(value) {
         return String::new();
@@ -944,16 +980,6 @@ fn format_likely_double_comment(value: i64) -> String {
         "    # {}",
         format_double_comment(f64::from_bits(value as u64))
     )
-}
-
-fn format_array_element_32_comment(element: &[u8]) -> String {
-    let value = i32::from_le_bytes([element[0], element[1], element[2], element[3]]);
-    let resource_comment = format_resource_id_comment(value);
-    if resource_comment.is_empty() {
-        format_likely_float_comment(value)
-    } else {
-        resource_comment
-    }
 }
 
 fn format_array_element_64_comment(element: &[u8]) -> String {
@@ -2027,6 +2053,48 @@ mod tests {
                 ".array-data 8\n",
                 "        0x4005bf0a8b145769L    # Math.E\n",
                 "    .end array-data"
+            )
+        );
+    }
+
+    #[test]
+    fn formats_resource_id_comments_like_java_baksmali() {
+        let dex = test_dex();
+        let resource_ids = BTreeMap::from([(0x7f01_0001, "app.R.string.label".to_owned())]);
+        let formatter = BaksmaliFormatter::with_resource_ids(&dex, &[], resource_ids);
+
+        assert_eq!(
+            formatter
+                .format_instruction(
+                    &RawInstruction {
+                        address: 0,
+                        opcode: Opcode(0x14),
+                        code_units: Vec::new(),
+                        operands: InstructionOperands::RegisterLiteral32 {
+                            register: 0,
+                            literal: 0x7f01_0001,
+                        },
+                    },
+                    &BTreeMap::new(),
+                    &empty_code(),
+                )
+                .unwrap(),
+            "const v0, 0x7f010001    # app.R.string.label"
+        );
+        assert_eq!(
+            formatter.format_payload(
+                &PayloadInstruction::SparseSwitch {
+                    elements: vec![dex_types::SparseSwitchElement {
+                        key: 0x7f01_0001,
+                        target: 2,
+                    }],
+                },
+                &BTreeMap::from([(2, ":sswitch_2".to_owned())]),
+            ),
+            concat!(
+                ".sparse-switch\n",
+                "        0x7f010001 -> :sswitch_2    # app.R.string.label\n",
+                "    .end sparse-switch"
             )
         );
     }

@@ -1,5 +1,11 @@
 # Smali
 
+<div align="center">
+
+English | [中文](README_CN.md)
+
+</div>
+
 This repository is a Rust rewrite of the Java project [JesusFreke/smali](https://github.com/JesusFreke/smali.git).
 
 The long-term goal is to fully reimplement the upstream Java project in Rust, including:
@@ -177,6 +183,7 @@ Implemented smali text output for:
 - `.array-data` elements formatted according to Java `ArrayDataMethodItem`/`BaksmaliWriter` rules, including `t`/`s` suffixes and `L` for wide out-of-int-range values.
 - `.packed-switch` first keys and `.sparse-switch` keys formatted as Java encoded int values, with unresolved payload targets shown as signed decimal offsets.
 - Java baksmali-style literal and payload comments for likely float/double constants, including named constants such as `(float)Math.PI`, `(float)Math.E`, `Math.PI`, and `Math.E`.
+- Java baksmali-style resource id comments for configured `public.xml` mappings in narrow literals and switch/array payloads.
 - hexadecimal numeric literal formatting for supported literal instructions, including correct `const/4` narrow literal decoding.
 - fallback raw instruction comments for unknown/unimplemented formats.
 
@@ -197,6 +204,7 @@ Implemented a CLI binary named `baksmali` with commands:
 
 ```bash
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> -o <out_dir>
+baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --resolve-resources <prefix> <public.xml> -o <out_dir>
 baksmali list-classes <input.dex|input.apk|input.jar|input.zip>
 baksmali list-strings <input.dex|input.apk|input.jar|input.zip>
 baksmali list-types <input.dex|input.apk|input.jar|input.zip>
@@ -295,7 +303,7 @@ This is still an early port. The following are not complete yet:
 - Full debug info formatting parity.
 - Full try/catch label and range formatting parity.
 - Complete switch payload comment parity for configured resource ids.
-- Complete `.array-data` comment parity for configured resource ids and exact Java decimal rendering edge cases for float/double comments.
+- Complete `.array-data` comment parity for exact Java decimal rendering edge cases for float/double comments.
 - Complete call site rendering parity for complex nested call site arguments.
 - Broader MUTF-8 edge-case parity with dexlib2.
 - DEX writer.
@@ -311,7 +319,7 @@ Recommended next implementation slices:
 
 1. Add stronger Java baksmali fixture parity tests around `classes2.dex` / `Lbin/mt/plus/ShortcutActivity;`.
 2. Match remaining Java baksmali whitespace policy and label insertion/order edge cases.
-3. Add baksmali resource-id loading and wire configured resource comments into literals and payloads.
+3. Expand baksmali resource-id loading parity for Java edge cases and add more fixture coverage.
 4. Improve annotation and encoded value formatting parity for remaining edge cases.
 5. Improve debug info formatting parity against upstream baksmali fixtures.
 6. Continue refining try/catch labels and ranges against Java baksmali output.
