@@ -176,6 +176,7 @@ Implemented smali text output for:
 - baksmali-style branch and payload labels such as `:goto_23`, `:cond_53`, `:array_2e6`, and `:sswitch_data_29c`.
 - `.array-data` elements formatted according to Java `ArrayDataMethodItem`/`BaksmaliWriter` rules, including `t`/`s` suffixes and `L` for wide out-of-int-range values.
 - `.packed-switch` first keys and `.sparse-switch` keys formatted as Java encoded int values, with unresolved payload targets shown as signed decimal offsets.
+- Java baksmali-style literal and payload comments for likely float/double constants, including named constants such as `(float)Math.PI`, `(float)Math.E`, `Math.PI`, and `Math.E`.
 - hexadecimal numeric literal formatting for supported literal instructions, including correct `const/4` narrow literal decoding.
 - fallback raw instruction comments for unknown/unimplemented formats.
 
@@ -293,8 +294,8 @@ This is still an early port. The following are not complete yet:
 - Full annotation and encoded value formatting parity, especially complete Java-style multiline layout and edge cases.
 - Full debug info formatting parity.
 - Full try/catch label and range formatting parity.
-- Complete switch payload comment parity for likely resource ids.
-- Complete `.array-data` comment parity for likely float/double/resource values.
+- Complete switch payload comment parity for configured resource ids.
+- Complete `.array-data` comment parity for configured resource ids and exact Java decimal rendering edge cases for float/double comments.
 - Complete call site rendering parity for complex nested call site arguments.
 - Broader MUTF-8 edge-case parity with dexlib2.
 - DEX writer.
@@ -310,7 +311,7 @@ Recommended next implementation slices:
 
 1. Add stronger Java baksmali fixture parity tests around `classes2.dex` / `Lbin/mt/plus/ShortcutActivity;`.
 2. Match remaining Java baksmali whitespace policy and label insertion/order edge cases.
-3. Port Java baksmali comment helpers for likely resource ids, floats, and doubles in literals and payloads.
+3. Add baksmali resource-id loading and wire configured resource comments into literals and payloads.
 4. Improve annotation and encoded value formatting parity for remaining edge cases.
 5. Improve debug info formatting parity against upstream baksmali fixtures.
 6. Continue refining try/catch labels and ranges against Java baksmali output.

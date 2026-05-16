@@ -1,10 +1,12 @@
 # smali Rust 移植进度报告
 
-生成时间：2026-05-16
+生成时间：2026-05-17
 
 ## 结论
 
-当前 Rust 版本已经搭起了面向 baksmali 的最小可用链路：可以从 raw DEX 或 APK/JAR/ZIP 中读取 DEX，解析主要只读结构，解码大量 Dalvik 指令，并输出基础 smali 文本。整体仍处于早期移植阶段，覆盖重点集中在 dexlib2 的只读数据模型/reader 和 baksmali 的 disassemble/list 子集；Java 原项目中的 smali 汇编器、DEX writer/builder/rewriter、分析与 deodex、OAT/VDEX/CDex 支持还没有实现。
+当前 Rust 版本已经搭起了面向 baksmali 的最小可用链路：可以从 raw DEX 或 APK/JAR/ZIP 中读取 DEX，解析主要只读结构，解码大量 Dalvik 指令，并输出基础 smali 文本。近期重点已经从“能输出”推进到“参照 Java baksmali 做 layout / literal / payload parity”：`Lbin/mt/plus/ShortcutActivity;` 这类真实 fixture 的输出差异已明显缩小，包括 section header、当前类成员声明省略、payload label、array/switch 数字格式、likely float/double 注释等。
+
+整体仍处于早期移植阶段，覆盖重点集中在 dexlib2 的只读数据模型/reader 和 baksmali 的 disassemble/list 子集；Java 原项目中的 smali 汇编器、DEX writer/builder/rewriter、分析与 deodex、OAT/VDEX/CDex 支持还没有实现。
 
 ## 当前 Rust 工作区
 
@@ -12,9 +14,9 @@ Rust 工作区包含 4 个 crate：
 
 | crate | 当前职责 | 对应 Java 项目区域 |
 | --- | --- | --- |
-| `dex-types` | DEX 核心结构、opcode/format/reference 元数据、指令操作数、encoded value/annotation/debug 类型 | `dexlib2` 的接口/模型、`Opcode`、`Format`、value/debug 类型的一部分 |
-| `dex-reader` | 只读 DEX 解析、LEB128/SLEB128、class/code/debug/value/annotation/container 解析 | `dexlib2.dexbacked` 和部分 util/container 能力 |
-| `baksmali-format` | 将解析出的 DEX class/method/field/instruction 格式化为 smali 文本 | `baksmali.Adaptors`、`baksmali.formatter` 的一部分 |
+| `dex-types` | DEX 核心结构、opcode/format/reference 元数据、指令操作数、payload、encoded value/annotation/debug 类型 | `dexlib2` 的接口/模型、`Opcode`、`Format`、value/debug 类型的一部分 |
+| `dex-reader` | 只读 DEX 解析、LEB128/SLEB128、class/code/debug/value/annotation/container/call-site/method-handle 解析 | `dexlib2.dexbacked` 和部分 util/container 能力 |
+| `baksmali-format` | 将解析出的 DEX class/method/field/instruction 格式化为 smali 文本，并逐步对齐 Java baksmali layout | `baksmali.Adaptors`、`baksmali.formatter` 的一部分 |
 | `baksmali-cli` | 最小 baksmali CLI | `baksmali` 命令行的一小部分 |
 
 ## 已实现能力
@@ -24,11 +26,13 @@ Rust 工作区包含 4 个 crate：
 已实现的核心结构包括：
 
 - DEX header、string/type/proto/field/method/class def 表。
+- call site id、method handle、method handle type。
 - class data、encoded field/method、code item、try item、catch handler。
 - map list、access flags。
 - debug info item 与 debug item kind。
-- encoded value、encoded annotation、annotation set/directory。
+- encoded value、encoded array、encoded annotation、annotation set/directory。
 - opcode、format、reference type、opcode flags。
+- raw instruction、instruction operands、payload instruction、sparse switch element。
 
 指令元数据覆盖标准 `0x00..=0xff` opcode，并包含：
 
@@ -56,34 +60,45 @@ Rust 工作区包含 4 个 crate：
 - DEX magic/version/endian/header 校验。
 - bounds-checked 表读取。
 - `string_ids`, `type_ids`, `proto_ids`, `field_ids`, `method_ids`, `class_defs`。
-- `map_list`。
-- string data、type list。
+- map list。
+- string data，包括 Modified UTF-8 nul 与 surrogate pair 用例。
+- type list。
 - class data 的差分索引解析。
 - code item、try/catch handler、动态 payload 指令宽度。
 - debug info state machine 的基础解析。
 - encoded value、encoded array、annotation item/set/directory 解析。
+- call site id 和 method handle table 解析。
 - raw `.dex` 与 `.apk`/`.jar`/`.zip` 容器中的 multidex entry 发现。
-- 多处 cross-reference index 校验。
+- 多处 cross-reference index 校验，包括 type/proto/field/method/class/source/method-handle 引用。
 
 ### 3. baksmali 文本格式化
 
 `baksmali-format` 当前可以输出：
 
-- `.class`, `.super`, `.implements`, `.source`
+- `.class`, `.super`, `.implements`, `.source`。
+- Java baksmali 风格 section header：`# static fields`, `# instance fields`, `# direct methods`, `# virtual methods`。
 - `.field`，含静态初始值。
-- `.method`, `.registers`
+- `.method`, `.registers`。
+- 当前类 field/method 声明中的 descriptor 省略，例如 `<init>()V` 而不是 `LHello;-><init>()V`。
 - class/field/method annotation 的基础输出。
+- encoded value array 与 subannotation 的基础输出。
 - debug item 的基础输出：`.line`, `.local`, `.end local`, `.restart local`, `.prologue`, `.epilogue`, `.source`, `.param`。
-- branch target label，例如 `:addr_0004`。
+- parameter register 名称，如可用时输出 `p0`。
+- branch/payload label：`:goto_x`, `:cond_x`, `:array_x`, `:sswitch_data_x`, `:pswitch_data_x` 等。
 - switch/array payload：`.packed-switch`, `.sparse-switch`, `.array-data`。
+- Java 风格 `.array-data` 元素数字格式，包括 `t`/`s` 后缀和宽值 `L` 后缀。
+- Java 风格 switch key 数字格式，未解析 payload target 使用 signed decimal offset fallback。
+- literal 十六进制格式，包括 `const/4` 窄 literal 解码修复。
+- likely float/double literal 与 payload 注释，例如 `(float)Math.PI`, `(float)Math.E`, `Math.PI`, `Math.E`。
 - 基础 try/catch directive。
 - 未完整支持格式的 raw instruction fallback comment。
 
 reference 解析当前覆盖：
 
 - string/type/field/method/proto。
+- method handle，包含 handle kind，例如 `invoke-static@LTest;->method()V`、`static-get@LTest;->field:I`。
+- call site，从 encoded-array 数据渲染 bootstrap method handle、method name、method type 和已支持参数。
 - 部分 odex quick/inline/vtable placeholder。
-- call site、method handle、method proto 仍多以占位或索引形式输出。
 
 ### 4. CLI
 
@@ -108,14 +123,17 @@ reference 解析当前覆盖：
 - 基础 disassemble 流程。
 - 若干 list 命令：classes/strings/types/fields/methods/dex。
 - 基础 class/field/method/instruction/debug/annotation 输出。
+- 部分 Java baksmali layout parity：section header、当前类成员声明省略、常见 branch/payload label、array/switch 数字格式、likely float/double 注释。
+- method handle 与 call site 的可读 reference 输出。
 
 未覆盖或明显不完整：
 
 - `dump`, `deodex`, dependencies, field offsets, vtables, references 等 Java CLI 命令。
 - 完整命令行参数与 Java baksmali 行为兼容。
 - Java `Adaptors` 中大量格式化细节与排序/注释/寄存器信息逻辑。
+- configured resource-id comment：Java 可通过 resource 文件映射输出资源名注释，Rust CLI 尚未加载资源表。
 - synthetic accessor comment、register info、分析辅助输出。
-- 与 Java baksmali 完全一致的文本格式、label 命名、try/catch 区间、annotation/subannotation 表达。
+- 与 Java baksmali 完全一致的 whitespace、edge-case label ordering、try/catch 区间、annotation/subannotation layout。
 - 大规模上游 fixture roundtrip/parity 测试。
 
 ### dexlib2
@@ -123,9 +141,9 @@ reference 解析当前覆盖：
 已覆盖：
 
 - 一部分只读 DEX 数据结构。
-- header/id/class/code/debug/value/annotation 的解析子集。
+- header/id/class/code/debug/value/annotation/call-site/method-handle 的解析子集。
 - opcode/format/reference metadata 的 Rust 表达。
-- LEB128/SLEB128 与基础容器发现。
+- LEB128/SLEB128、Modified UTF-8 子集与基础容器发现。
 
 未覆盖或明显不完整：
 
@@ -135,7 +153,6 @@ reference 解析当前覆盖：
 - rewriter API。
 - analysis/type inference/deodex。
 - hidden api class data 的完整解析/格式化。
-- call site、method handle、method proto 的完整结构模型与解析。
 - OAT/VDEX/CDex/odex 相关 reader。
 - util 包中的大量工具类等价实现。
 
@@ -148,12 +165,26 @@ reference 解析当前覆盖：
 - 未见 token/literal/semantic error/grammar 对应实现。
 - 未见从 `.smali` 到 `.dex` 的 writer/builder 链路。
 
+## 真实 fixture parity 进展
+
+新增/使用了 `tests/fixtures/classes2.dex`，重点观察 `Lbin/mt/plus/ShortcutActivity;` 的 Java/Rust disassemble 差异。已解决或缩小的主要差异包括：
+
+- `const/4` literal 解码错误：修复后不再把高 nibble literal 大量输出为 `0x0`。
+- 当前类 field/method 声明：Rust 现在与 Java 类似省略 `Lbin/mt/plus/ShortcutActivity;->` 前缀。
+- section header：补齐 Java baksmali 风格字段/方法区块标题。
+- payload reference label：`fill-array-data`、`sparse-switch` 等现在输出 `:array_2e6`、`:sswitch_data_29c` 这类 Java 风格标签。
+- `.array-data` 元素：补齐 `0x616s`、`-0xec1s` 等 Java 风格 signed hex 与 suffix。
+- switch payload key：补齐 Java encoded int 风格 key 与 unresolved target fallback。
+- literal/payload likely float/double 注释：开始参照 Java `InstructionMethodItem` / `NumberUtils` 输出常见 named constants。
+
+剩余差异仍集中在 whitespace、复杂 label 插入/排序、resource-id comment、annotation/debug/try-catch 细节和更复杂 instruction formatting。
+
 ## 测试现状
 
 本次执行：
 
 ```bash
-cargo test --workspace
+cargo fmt --all && cargo test --workspace
 ```
 
 结果：全部通过。
@@ -161,14 +192,14 @@ cargo test --workspace
 测试统计：
 
 - `baksmali-cli` integration tests：2 passed。
-- `baksmali-format` unit tests：9 passed。
-- `baksmali-format` fixture tests：1 passed。
-- `dex-reader` unit tests：18 passed。
+- `baksmali-format` unit tests：18 passed。
+- `baksmali-format` fixture tests：2 passed。
+- `dex-reader` unit tests：23 passed。
 - `dex-reader` fixture tests：4 passed。
 - `dex-types` opcode tests：7 passed。
 - doc tests：0。
 
-总计当前可见测试：41 passed。
+总计当前可见测试：56 passed。
 
 覆盖重点包括：
 
@@ -179,56 +210,66 @@ cargo test --workspace
 - encoded value/array/annotation。
 - raw DEX 与 ZIP/APK DEX entry discovery。
 - invalid cross-reference index rejection。
+- method handle 与 call site table 解析。
 - opcode metadata、instruction width、operand decoding、payload decoding。
-- hello.dex fixture 的基础格式化。
+- hello.dex 与 classes2.dex fixture 的基础格式化。
+- Java 风格 method handle/call site 输出。
+- Java 风格 section header、当前类成员声明省略、payload label、array/switch 数字格式。
+- Java 风格 likely float/double literal 和 payload 注释。
 
 ## 当前风险与问题
 
-1. **readme 与实际实现存在轻微滞后**  
-   readme 中“Current Limitations”仍写着 annotations、debug info、try/catch 未完成，但代码中已经有基础解析和格式化；不过这些功能确实还不是 Java parity 级别。
+1. **Java parity 仍是主要风险**  
+   现在已经开始按 Java 源码逐项对齐，但完整 baksmali formatting 包含大量细节：whitespace、label ordering、debug/try/catch、annotation、resource comments、register info 等仍需真实 fixture 驱动。
 
-2. **try/catch label 输出可能仍不精确**  
-   当前 catch directive 使用 `:try_start_xxxx`/`:try_end_xxxx`，但主指令输出路径只看到 `:addr_xxxx` 与部分 `:try_end_xxxx`，需要用真实复杂 fixture 验证 Java baksmali 兼容性。
+2. **resource-id 注释链路未完成**  
+   Java baksmali 可加载资源映射并在 literal/switch/array 中输出资源名注释；Rust 当前只保留了 formatter 层的占位，CLI 尚未支持 resource 文件加载。
 
 3. **annotation/encoded value 仍偏基础**  
-   subannotation、array、method type、method handle、call site 等输出还不具备完整 smali 语义或 Java parity。
+   subannotation、array、method type、method handle、call site 已有基础输出，但复杂嵌套布局和 Java 多行格式仍未完全对齐。
 
-4. **DEX 字符串解析使用 UTF-8 路径**  
-   DEX string_data 是 MUTF-8；当前实现用 `String::from_utf8`，对非标准 UTF-8/MUTF-8 边界用例可能不兼容 Java dexlib2。
+4. **try/catch label 与区间仍需复杂 fixture 验证**  
+   当前 catch directive 已能输出基础范围和 handler label，但 Java baksmali 的 label 插入、排序、重叠 try range 等边界还未系统覆盖。
 
 5. **CLI 覆盖远小于 Java baksmali**  
    已有 list 子命令和 disassemble，但 Java baksmali 的参数、输入类型、dump/deodex/analysis 类功能尚未移植。
 
-6. **测试 fixture 规模较小**  
+6. **测试 fixture 规模仍偏小**  
    当前 Rust 测试主要覆盖小型手写数据和少量 fixture，尚未系统复用 Java 上游的大量 smali/dex roundtrip fixture。
 
 ## 建议下一阶段路线
 
 优先级建议如下：
 
-1. **先补齐 reader/formatter parity 的关键缺口**
-   - MUTF-8 string_data。
-   - call site、method handle、method proto 的完整模型与解析。
-   - annotation/subannotation/array/encoded value 的 smali 表达。
-   - try/catch label 与区间输出 parity。
-   - hidden api class data。
+1. **继续扩大 baksmali layout parity fixture**
+   - 围绕 `classes2.dex` / `Lbin/mt/plus/ShortcutActivity;` 建立更强 golden/parity 断言。
+   - 对 Java/Rust diff 中仍存在的 whitespace、label ordering、payload placement 逐项收敛。
 
-2. **扩大 baksmali fixture 对齐测试**
-   - 选取 Java `baksmali/src/test/resources` 中的 instruction、switch、annotation、debug、try/catch fixture。
-   - 建立 Rust 输出与期望 smali 文本的 golden tests。
-   - 对当前 fallback raw instruction comment 的场景逐步消除。
+2. **补 resource-id comment 链路**
+   - 参考 Java `BaksmaliOptions.loadResourceIds` 和 formatter helper。
+   - 在 CLI 增加资源映射输入后，将 resource comments 接入 literal、switch payload、array-data。
 
-3. **补 CLI 兼容层**
+3. **继续完善 annotation/encoded value parity**
+   - 对齐 Java baksmali 对 array、subannotation、method type、method handle、call site 的多行布局。
+   - 增加复杂 encoded value fixture。
+
+4. **完善 debug info parity**
+   - 使用 Java 上游 debug fixture 对齐 `.line`, `.local`, `.param`, `.restart local`, `.end local` 的边界行为。
+
+5. **完善 try/catch parity**
+   - 覆盖多 catch、catchall、重叠/相邻 try range、handler offset 等场景。
+
+6. **补 CLI 兼容层**
    - 对齐 Java baksmali 的常用参数。
    - 补 `list references`、`list dependencies`、`dump` 等只读命令。
    - 将错误信息和输出路径规则稳定下来。
 
-4. **再开始 writer/builder**
-   - 建议在 reader/formatter 更稳定后新增 `dex-writer` 或 `dex-builder` crate。
+7. **reader/formatter 稳定后再开始 writer/builder**
+   - 新增 `dex-writer` 或 `dex-builder` crate。
    - 先实现 string/type/proto/field/method/class/code 基础写出。
    - 再处理 branch/payload offset fixup、try/catch、debug、annotation。
 
-5. **最后启动 smali assembler**
+8. **最后启动 smali assembler**
    - lexer/parser/AST/semantic validation。
    - 与 builder/writer 对接。
    - 复用 Java smali integration tests 做 assemble/disassemble roundtrip。
@@ -240,13 +281,13 @@ cargo test --workspace
 | 模块 | 当前进度 | 说明 |
 | --- | ---: | --- |
 | Rust workspace/工程骨架 | 90% | 基础 crate 拆分清晰，可继续扩展 |
-| dex-types 只读模型 | 35% | 核心 DEX 与 opcode 已有，完整 dexlib2 模型还差很多 |
-| dex-reader | 35% | 主路径可读基础 DEX，复杂结构/格式仍缺 |
-| baksmali-format | 25% | 可输出基础 smali，但 Java parity 仍早期 |
+| dex-types 只读模型 | 40% | 核心 DEX、opcode、method handle/call site 类型已有，完整 dexlib2 模型还差很多 |
+| dex-reader | 40% | 主路径可读基础 DEX 与多种结构，复杂格式/OAT/VDEX/CDex 仍缺 |
+| baksmali-format | 32% | 已从基础输出推进到部分 Java layout parity，但完整 parity 仍早期 |
 | baksmali-cli | 25% | 已有 disassemble/list 子集，缺大量命令和参数 |
 | dex writer/builder | 0% | 未开始 |
 | smali assembler | 0% | 未开始 |
 | analysis/deodex | 0% | 未开始 |
 | OAT/VDEX/CDex | 0% | 未开始 |
 
-综合来看，如果目标是“可读取简单 DEX 并输出基础 smali”，已经达到可演示状态；如果目标是“替代 Java smali/baksmali/dexlib2”，当前大约处于 15%～25% 的早期移植阶段。
+综合来看，如果目标是“可读取简单/中等复杂 DEX 并输出基础 smali”，已经达到可演示并可继续扩展的状态；如果目标是“替代 Java smali/baksmali/dexlib2”，当前大约处于 20%～30% 的早期移植阶段。

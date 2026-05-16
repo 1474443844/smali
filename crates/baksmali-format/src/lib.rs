@@ -554,18 +554,24 @@ impl<'a> BaksmaliFormatter<'a> {
             InstructionOperands::TwoRegisters { a, b } => format!("{opcode} v{a}, v{b}"),
             InstructionOperands::RegisterLiteral16 { register, literal } => {
                 format!(
-                    "{opcode} v{register}, {}",
-                    format_signed_literal(*literal as i64)
+                    "{opcode} v{register}, {}{}",
+                    format_signed_literal(*literal as i64),
+                    format_likely_float_comment(i32::from(*literal))
                 )
             }
             InstructionOperands::RegisterLiteral32 { register, literal } => {
                 format!(
-                    "{opcode} v{register}, {}",
-                    format_signed_literal(*literal as i64)
+                    "{opcode} v{register}, {}{}",
+                    format_signed_literal(*literal as i64),
+                    format_likely_float_comment(*literal)
                 )
             }
             InstructionOperands::RegisterLiteral64 { register, literal } => {
-                format!("{opcode} v{register}, {}", format_wide_literal(*literal))
+                format!(
+                    "{opcode} v{register}, {}{}",
+                    format_wide_literal(*literal),
+                    format_likely_double_comment(*literal)
+                )
             }
             InstructionOperands::RegisterReference {
                 register,
@@ -771,7 +777,7 @@ impl<'a> BaksmaliFormatter<'a> {
                         .get(&branch_target(0, *target))
                         .cloned()
                         .unwrap_or_else(|| format_switch_offset(*target));
-                    write!(out, "\n        {label}").unwrap();
+                    write!(out, "\n        {label}{}", format_resource_id_comment(key)).unwrap();
                     key = key.wrapping_add(1);
                 }
                 out.push_str("\n    .end packed-switch");
@@ -786,8 +792,9 @@ impl<'a> BaksmaliFormatter<'a> {
                         .unwrap_or_else(|| format_switch_offset(element.target));
                     write!(
                         out,
-                        "\n        {} -> {label}",
-                        format_integral_value(i64::from(element.key), None)
+                        "\n        {} -> {label}{}",
+                        format_integral_value(i64::from(element.key), None),
+                        format_resource_id_comment(element.key)
                     )
                     .unwrap();
                 }
@@ -805,11 +812,17 @@ impl<'a> BaksmaliFormatter<'a> {
                     _ => "",
                 };
                 for element in elements {
+                    let comment = match *element_width {
+                        4 => format_array_element_32_comment(element),
+                        8 => format_array_element_64_comment(element),
+                        _ => String::new(),
+                    };
                     write!(
                         out,
-                        "\n        {}{}",
+                        "\n        {}{}{}",
                         format_array_element(*element_width, element),
-                        suffix
+                        suffix,
+                        comment
                     )
                     .unwrap();
                 }
@@ -907,6 +920,173 @@ fn format_switch_offset(target: i32) -> String {
     } else {
         target.to_string()
     }
+}
+
+fn format_resource_id_comment(_value: i32) -> String {
+    String::new()
+}
+
+fn format_likely_float_comment(value: i32) -> String {
+    if !is_likely_float(value) {
+        return String::new();
+    }
+    format!(
+        "    # {}",
+        format_float_comment(f32::from_bits(value as u32))
+    )
+}
+
+fn format_likely_double_comment(value: i64) -> String {
+    if !is_likely_double(value) {
+        return String::new();
+    }
+    format!(
+        "    # {}",
+        format_double_comment(f64::from_bits(value as u64))
+    )
+}
+
+fn format_array_element_32_comment(element: &[u8]) -> String {
+    let value = i32::from_le_bytes([element[0], element[1], element[2], element[3]]);
+    let resource_comment = format_resource_id_comment(value);
+    if resource_comment.is_empty() {
+        format_likely_float_comment(value)
+    } else {
+        resource_comment
+    }
+}
+
+fn format_array_element_64_comment(element: &[u8]) -> String {
+    format_likely_double_comment(i64::from_le_bytes([
+        element[0], element[1], element[2], element[3], element[4], element[5], element[6],
+        element[7],
+    ]))
+}
+
+fn format_float_comment(value: f32) -> String {
+    if value == f32::INFINITY {
+        "Float.POSITIVE_INFINITY".to_owned()
+    } else if value == f32::NEG_INFINITY {
+        "Float.NEGATIVE_INFINITY".to_owned()
+    } else if value.is_nan() {
+        "Float.NaN".to_owned()
+    } else if value == f32::MAX {
+        "Float.MAX_VALUE".to_owned()
+    } else if value == std::f32::consts::PI {
+        "(float)Math.PI".to_owned()
+    } else if value == std::f32::consts::E {
+        "(float)Math.E".to_owned()
+    } else {
+        format_float_decimal(value)
+    }
+}
+
+fn format_double_comment(value: f64) -> String {
+    if value == f64::INFINITY {
+        "Double.POSITIVE_INFINITY".to_owned()
+    } else if value == f64::NEG_INFINITY {
+        "Double.NEGATIVE_INFINITY".to_owned()
+    } else if value.is_nan() {
+        "Double.NaN".to_owned()
+    } else if value == f64::MAX {
+        "Double.MAX_VALUE".to_owned()
+    } else if value == std::f64::consts::PI {
+        "Math.PI".to_owned()
+    } else if value == std::f64::consts::E {
+        "Math.E".to_owned()
+    } else {
+        value.to_string()
+    }
+}
+
+fn format_float_decimal(value: f32) -> String {
+    let mut text = value.to_string();
+    if !text.contains('.') && !text.contains('E') && !text.contains('e') {
+        text.push_str(".0");
+    }
+    text.push('f');
+    text
+}
+
+fn is_likely_float(value: i32) -> bool {
+    let bits = value as u32;
+    if bits == f32::NAN.to_bits()
+        || bits == f32::MAX.to_bits()
+        || bits == std::f32::consts::PI.to_bits()
+        || bits == std::f32::consts::E.to_bits()
+    {
+        return true;
+    }
+    if value == i32::MAX || value == i32::MIN {
+        return false;
+    }
+    let package_id = value >> 24;
+    let resource_type = (value >> 16) & 0xff;
+    let resource_id = value & 0xffff;
+    if (package_id == 0x7f || package_id == 1) && resource_type < 0x1f && resource_id < 0xfff {
+        return false;
+    }
+    let float_value = f32::from_bits(bits);
+    if float_value.is_nan() {
+        return false;
+    }
+    decimal_scientific_i64(i64::from(value)).len()
+        > decimal_scientific_f64(f64::from(float_value)).len()
+}
+
+fn is_likely_double(value: i64) -> bool {
+    let bits = value as u64;
+    if bits == f64::NAN.to_bits()
+        || bits == f64::MAX.to_bits()
+        || bits == std::f64::consts::PI.to_bits()
+        || bits == std::f64::consts::E.to_bits()
+    {
+        return true;
+    }
+    if value == i64::MAX || value == i64::MIN {
+        return false;
+    }
+    let double_value = f64::from_bits(bits);
+    if double_value.is_nan() {
+        return false;
+    }
+    decimal_scientific_i64(value).len() > decimal_scientific_f64(double_value).len()
+}
+
+fn decimal_scientific_i64(value: i64) -> String {
+    java_scientific(format!("{value:.20E}"))
+}
+
+fn decimal_scientific_f64(value: f64) -> String {
+    java_scientific(format!("{value:.20E}"))
+}
+
+fn java_scientific(value: String) -> String {
+    let Some((mantissa, exponent)) = value.split_once('E') else {
+        return value;
+    };
+    let mantissa = mantissa.trim_end_matches('0').trim_end_matches('.');
+    let exponent = exponent.trim_start_matches('+').trim_start_matches('0');
+    let exponent = if exponent.is_empty() || exponent == "-" {
+        "0"
+    } else {
+        exponent
+    };
+    let mut out = format!("{mantissa}E{exponent}");
+    if let (Some(decimal_point), Some(exponent_index)) = (out.find('.'), out.find('E')) {
+        if let Some(zeros) = out.find("000") {
+            if zeros > decimal_point && zeros < exponent_index {
+                out.replace_range(zeros..exponent_index, "");
+                return out;
+            }
+        }
+        if let Some(nines) = out.find("999") {
+            if nines > decimal_point && nines < exponent_index {
+                out.replace_range(nines..exponent_index, "");
+            }
+        }
+    }
+    out
 }
 
 fn format_signed_int_or_long(value: i64) -> String {
@@ -1768,6 +1948,86 @@ mod tests {
                 )
                 .unwrap(),
             "const-wide v3, -0x100L"
+        );
+    }
+
+    #[test]
+    fn formats_literal_comments_like_java_baksmali() {
+        let dex = test_dex();
+        let formatter = BaksmaliFormatter::new(&dex, &[]);
+        let pi_bits = std::f32::consts::PI.to_bits() as i32;
+        let double_pi_bits = std::f64::consts::PI.to_bits() as i64;
+
+        assert_eq!(
+            formatter
+                .format_instruction(
+                    &RawInstruction {
+                        address: 0,
+                        opcode: Opcode(0x14),
+                        code_units: Vec::new(),
+                        operands: InstructionOperands::RegisterLiteral32 {
+                            register: 0,
+                            literal: pi_bits,
+                        },
+                    },
+                    &BTreeMap::new(),
+                    &empty_code(),
+                )
+                .unwrap(),
+            "const v0, 0x40490fdb    # (float)Math.PI"
+        );
+        assert_eq!(
+            formatter
+                .format_instruction(
+                    &RawInstruction {
+                        address: 0,
+                        opcode: Opcode(0x18),
+                        code_units: Vec::new(),
+                        operands: InstructionOperands::RegisterLiteral64 {
+                            register: 1,
+                            literal: double_pi_bits,
+                        },
+                    },
+                    &BTreeMap::new(),
+                    &empty_code(),
+                )
+                .unwrap(),
+            "const-wide v1, 0x400921fb54442d18L    # Math.PI"
+        );
+    }
+
+    #[test]
+    fn formats_payload_comments_like_java_baksmali() {
+        let dex = test_dex();
+        let formatter = BaksmaliFormatter::new(&dex, &[]);
+
+        assert_eq!(
+            formatter.format_payload(
+                &PayloadInstruction::Array {
+                    element_width: 4,
+                    elements: vec![std::f32::consts::E.to_bits().to_le_bytes().to_vec()],
+                },
+                &BTreeMap::new(),
+            ),
+            concat!(
+                ".array-data 4\n",
+                "        0x402df854    # (float)Math.E\n",
+                "    .end array-data"
+            )
+        );
+        assert_eq!(
+            formatter.format_payload(
+                &PayloadInstruction::Array {
+                    element_width: 8,
+                    elements: vec![std::f64::consts::E.to_bits().to_le_bytes().to_vec()],
+                },
+                &BTreeMap::new(),
+            ),
+            concat!(
+                ".array-data 8\n",
+                "        0x4005bf0a8b145769L    # Math.E\n",
+                "    .end array-data"
+            )
         );
     }
 
