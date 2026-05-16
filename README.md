@@ -207,6 +207,12 @@ Implemented a CLI binary named `baksmali` with commands:
 ```bash
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> -o <out_dir>
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --resolve-resources <prefix> <public.xml> -o <out_dir>
+baksmali list classes <input.dex|input.apk|input.jar|input.zip>
+baksmali list strings <input.dex|input.apk|input.jar|input.zip>
+baksmali list types <input.dex|input.apk|input.jar|input.zip>
+baksmali list fields <input.dex|input.apk|input.jar|input.zip>
+baksmali list methods <input.dex|input.apk|input.jar|input.zip>
+baksmali list dex <input.dex|input.apk|input.jar|input.zip>
 baksmali list-classes <input.dex|input.apk|input.jar|input.zip>
 baksmali list-strings <input.dex|input.apk|input.jar|input.zip>
 baksmali list-types <input.dex|input.apk|input.jar|input.zip>
@@ -261,6 +267,7 @@ Current test coverage includes:
 - Java-style likely float/double literal and payload comment formatting.
 - Java-style configured resource id comment formatting.
 - `--resolve-resources` parsing coverage for multiline attributes, single quotes, whitespace around `=`, and avoiding non-`public` element prefix matches.
+- Java-style nested `baksmali list <kind>` CLI commands and aliases, with `list classes` outputting class descriptors like Java baksmali.
 - copied upstream Java baksmali test fixtures are present under `tests/fixtures/upstream/baksmali` and covered by Rust fixture inventory/disassembly tests.
 - Rust ports of Java `BaksmaliTestUtils` normalization checks, `MultiSwitchTest`, and `ZeroArrayPayloadWidthTest` are present; the copied Java test source has been removed.
 - real `classes2.dex` fixture formatting coverage for `Lbin/mt/plus/ShortcutActivity;`.
@@ -275,7 +282,7 @@ cargo test --workspace
 Latest result:
 
 ```text
-All tests passed: 62 passed.
+All tests passed: 65 passed.
 ```
 
 ## Example Fixture Output

@@ -14,6 +14,39 @@ fn lists_raw_dex_input() {
 }
 
 #[test]
+fn lists_dex_with_java_style_nested_command() {
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+
+    command
+        .args(["list", "dex", "../../tests/fixtures/hello.apk"])
+        .assert()
+        .success()
+        .stdout("classes.dex\nclasses2.dex\n");
+}
+
+#[test]
+fn lists_classes_as_descriptors_like_java_baksmali() {
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+
+    command
+        .args(["list", "classes", "../../tests/fixtures/hello.dex"])
+        .assert()
+        .success()
+        .stdout("LHello;\n");
+}
+
+#[test]
+fn supports_java_style_list_aliases() {
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+
+    command
+        .args(["l", "c", "../../tests/fixtures/hello.dex"])
+        .assert()
+        .success()
+        .stdout("LHello;\n");
+}
+
+#[test]
 fn lists_zip_dex_entries() {
     let mut command = Command::cargo_bin("baksmali").unwrap();
 

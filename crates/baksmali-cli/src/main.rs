@@ -23,6 +23,11 @@ enum Command {
         #[arg(long = "resolve-resources", alias = "rr", value_names = ["PREFIX", "PUBLIC_XML"], num_args = 2)]
         resource_id_files: Vec<String>,
     },
+    #[command(alias = "l")]
+    List {
+        #[command(subcommand)]
+        command: ListCommand,
+    },
     ListClasses {
         input: PathBuf,
     },
@@ -43,6 +48,22 @@ enum Command {
     },
 }
 
+#[derive(Debug, Subcommand)]
+enum ListCommand {
+    #[command(alias = "class", alias = "c")]
+    Classes { input: PathBuf },
+    #[command(alias = "string", alias = "str", alias = "s")]
+    Strings { input: PathBuf },
+    #[command(alias = "type", alias = "t")]
+    Types { input: PathBuf },
+    #[command(alias = "field", alias = "f")]
+    Fields { input: PathBuf },
+    #[command(alias = "method", alias = "m")]
+    Methods { input: PathBuf },
+    #[command(alias = "d")]
+    Dex { input: PathBuf },
+}
+
 fn main() -> Result<()> {
     let cli = Cli::parse();
     match cli.command {
@@ -51,12 +72,24 @@ fn main() -> Result<()> {
             output,
             resource_id_files,
         } => disassemble(&input, &output, &resource_id_files),
+        Command::List { command } => run_list(command),
         Command::ListClasses { input } => list_classes(&input),
         Command::ListStrings { input } => list_strings(&input),
         Command::ListTypes { input } => list_types(&input),
         Command::ListFields { input } => list_fields(&input),
         Command::ListMethods { input } => list_methods(&input),
         Command::ListDex { input } => list_dex(&input),
+    }
+}
+
+fn run_list(command: ListCommand) -> Result<()> {
+    match command {
+        ListCommand::Classes { input } => list_classes(&input),
+        ListCommand::Strings { input } => list_strings(&input),
+        ListCommand::Types { input } => list_types(&input),
+        ListCommand::Fields { input } => list_fields(&input),
+        ListCommand::Methods { input } => list_methods(&input),
+        ListCommand::Dex { input } => list_dex(&input),
     }
 }
 
@@ -213,9 +246,9 @@ fn parse_resource_id(value: &str) -> Result<i32> {
 
 fn list_classes(input: &Path) -> Result<()> {
     for_loaded_dex(input, |dex, data| {
-        let formatter = BaksmaliFormatter::new(dex, data);
-        for class_def in formatter.classes() {
-            println!("{}", formatter.class_file_name(class_def)?);
+        let resolver = Resolver::new(dex, data);
+        for class_def in &dex.class_defs {
+            println!("{}", resolver.type_descriptor(class_def.class_idx)?);
         }
         Ok(())
     })

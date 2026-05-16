@@ -106,6 +106,12 @@ reference 解析当前覆盖：
 `baksmali-cli` 当前支持的命令：
 
 - `baksmali disassemble <input> -o <out_dir>`
+- `baksmali list classes <input>`
+- `baksmali list strings <input>`
+- `baksmali list types <input>`
+- `baksmali list fields <input>`
+- `baksmali list methods <input>`
+- `baksmali list dex <input>`
 - `baksmali list-classes <input>`
 - `baksmali list-strings <input>`
 - `baksmali list-types <input>`
@@ -194,7 +200,7 @@ cargo fmt --all && cargo test --workspace
 
 测试统计：
 
-- `baksmali-cli` integration tests：3 passed。
+- `baksmali-cli` integration tests：6 passed。
 - `baksmali-format` unit tests：19 passed。
 - `baksmali-format` fixture tests：6 passed。
 - `dex-reader` unit tests：23 passed。
@@ -202,7 +208,7 @@ cargo fmt --all && cargo test --workspace
 - `dex-types` opcode tests：7 passed。
 - doc tests：0。
 
-总计当前可见测试：62 passed。
+总计当前可见测试：65 passed。
 
 覆盖重点包括：
 
