@@ -2,7 +2,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use anyhow::{Context, Result};
+use anyhow::{Context, Result, anyhow};
 use baksmali_format::{BaksmaliFormatter, Resolver};
 use clap::{Parser, Subcommand};
 
@@ -39,6 +39,21 @@ enum Command {
             help = "Comma-separated class descriptors to disassemble"
         )]
         classes: Vec<String>,
+        #[arg(
+            short = 'j',
+            long = "jobs",
+            value_name = "N",
+            default_value_t = default_jobs(),
+            help = "Number of worker threads"
+        )]
+        jobs: usize,
+        #[arg(
+            short = 'a',
+            long = "api",
+            value_name = "API_LEVEL",
+            help = "The numeric api level of the file being disassembled"
+        )]
+        api: Option<u32>,
     },
     #[command(about = "List DEX references or DEX entries")]
     #[command(visible_alias = "l")]
@@ -126,7 +141,9 @@ fn main() -> Result<()> {
             output,
             resource_id_files,
             classes,
-        } => disassemble(&input, &output, &resource_id_files, &classes),
+            jobs,
+            api,
+        } => disassemble(&input, &output, &resource_id_files, &classes, jobs, api),
         Command::List { command } => run_list(command),
         Command::ListClasses { input } => list_classes(&input),
         Command::ListStrings { input } => list_strings(&input),
@@ -135,6 +152,10 @@ fn main() -> Result<()> {
         Command::ListMethods { input } => list_methods(&input),
         Command::ListDex { input } => list_dex(&input),
     }
+}
+
+fn default_jobs() -> usize {
+    std::thread::available_parallelism().map_or(1, usize::from)
 }
 
 fn run_list(command: ListCommand) -> Result<()> {
@@ -153,6 +174,8 @@ fn disassemble(
     output: &Path,
     resource_id_files: &[String],
     classes: &[String],
+    jobs: usize,
+    api_level: Option<u32>,
 ) -> Result<()> {
     let resource_ids = load_resource_ids(resource_id_files)?;
     let class_filter = class_filter(classes);
@@ -163,8 +186,12 @@ fn disassemble(
         let dex = dex_reader::parse_dex(&entry.data)
             .with_context(|| format!("failed to parse {}", entry.name))?;
         let resolver = Resolver::new(&dex, &entry.data);
-        let formatter =
-            BaksmaliFormatter::with_resource_ids(&dex, &entry.data, resource_ids.clone());
+        let formatter = BaksmaliFormatter::with_resource_ids_and_api(
+            &dex,
+            &entry.data,
+            resource_ids.clone(),
+            api_level,
+        );
         let dex_output = if entries.len() == 1 {
             output.to_path_buf()
         } else {
@@ -172,25 +199,89 @@ fn disassemble(
         };
         fs::create_dir_all(&dex_output)
             .with_context(|| format!("failed to create {}", dex_output.display()))?;
-        for class_def in formatter.classes() {
-            if let Some(class_filter) = &class_filter {
-                let descriptor = resolver.type_descriptor(class_def.class_idx)?;
-                if !class_filter.contains(descriptor) {
-                    continue;
-                }
-            }
-            let relative_name = formatter.class_file_name(class_def)?;
-            let path = dex_output.join(relative_name);
-            if let Some(parent) = path.parent() {
-                fs::create_dir_all(parent)
-                    .with_context(|| format!("failed to create {}", parent.display()))?;
-            }
-            let text = formatter.format_class(class_def)?;
-            fs::write(&path, text)
-                .with_context(|| format!("failed to write {}", path.display()))?;
-        }
+        disassemble_classes(
+            &formatter,
+            &resolver,
+            &dex_output,
+            class_filter.as_ref(),
+            jobs,
+        )?;
     }
     Ok(())
+}
+
+fn disassemble_classes(
+    formatter: &BaksmaliFormatter<'_>,
+    resolver: &Resolver<'_>,
+    dex_output: &Path,
+    class_filter: Option<&BTreeSet<String>>,
+    jobs: usize,
+) -> Result<()> {
+    let selected = formatter
+        .classes()
+        .iter()
+        .filter_map(|class_def| {
+            let descriptor = resolver.type_descriptor(class_def.class_idx).ok()?;
+            if class_filter.is_some_and(|filter| !filter.contains(descriptor)) {
+                None
+            } else {
+                Some(class_def)
+            }
+        })
+        .collect::<Vec<_>>();
+
+    let jobs = jobs.max(1).min(selected.len().max(1));
+    if jobs == 1 {
+        for class_def in selected {
+            write_class(formatter, dex_output, class_def)?;
+        }
+        return Ok(());
+    }
+
+    std::thread::scope(|scope| {
+        let mut handles = Vec::with_capacity(jobs);
+        for chunk in selected.chunks(selected.len().div_ceil(jobs)) {
+            handles.push(scope.spawn(move || -> Result<Vec<(PathBuf, String)>> {
+                chunk
+                    .iter()
+                    .map(|class_def| {
+                        let relative_name = formatter.class_file_name(class_def)?;
+                        let text = formatter.format_class(class_def)?;
+                        Ok((relative_name.into(), text))
+                    })
+                    .collect()
+            }));
+        }
+
+        for handle in handles {
+            for (relative_name, text) in handle
+                .join()
+                .map_err(|_| anyhow!("worker thread panicked"))??
+            {
+                write_class_text(dex_output, &relative_name, text)?;
+            }
+        }
+        Ok(())
+    })
+}
+
+fn write_class(
+    formatter: &BaksmaliFormatter<'_>,
+    dex_output: &Path,
+    class_def: &dex_types::ClassDef,
+) -> Result<()> {
+    let relative_name = formatter.class_file_name(class_def)?;
+    let text = formatter.format_class(class_def)?;
+    write_class_text(dex_output, Path::new(&relative_name), text)
+}
+
+fn write_class_text(dex_output: &Path, relative_name: &Path, text: String) -> Result<()> {
+    let path = dex_output.join(relative_name);
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent)
+            .with_context(|| format!("failed to create {}", parent.display()))?;
+    }
+    fs::write(&path, text).with_context(|| format!("failed to write {}", path.display()))
 }
 
 fn class_filter(classes: &[String]) -> Option<BTreeSet<String>> {

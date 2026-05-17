@@ -10,8 +10,12 @@ pub struct RawInstruction {
 
 impl RawInstruction {
     pub fn new(address: u32, code_units: Vec<u16>) -> Self {
+        Self::new_with_api(address, code_units, None)
+    }
+
+    pub fn new_with_api(address: u32, code_units: Vec<u16>, api_level: Option<u32>) -> Self {
         let opcode = Opcode((code_units[0] & 0x00ff) as u16);
-        let operands = InstructionOperands::decode(opcode, &code_units);
+        let operands = InstructionOperands::decode_with_api(opcode, &code_units, api_level);
         Self {
             address,
             opcode,
@@ -152,6 +156,10 @@ pub struct SparseSwitchElement {
 
 impl InstructionOperands {
     pub fn decode(opcode: Opcode, code_units: &[u16]) -> Self {
+        Self::decode_with_api(opcode, code_units, None)
+    }
+
+    pub fn decode_with_api(opcode: Opcode, code_units: &[u16], api_level: Option<u32>) -> Self {
         if code_units.is_empty() {
             return Self::Raw;
         }
@@ -162,7 +170,7 @@ impl InstructionOperands {
             }
         }
         let high = (first >> 8) as u8;
-        match opcode.format() {
+        match opcode.format_for_api(api_level) {
             Format::Format10x => Self::None,
             Format::Format10t => Self::Branch8 { offset: high as i8 },
             Format::Format11x => Self::Register {
@@ -509,7 +517,7 @@ fn decode_35c(first: u16, code_units: &[u16]) -> InstructionOperands {
     }
 }
 
-pub fn instruction_width(first_code_unit: u16) -> Option<usize> {
+pub fn instruction_width_for_api(first_code_unit: u16, api_level: Option<u32>) -> Option<usize> {
     let opcode = Opcode((first_code_unit & 0x00ff) as u16);
     if opcode == Opcode::NOP {
         return match first_code_unit >> 8 {
@@ -518,5 +526,9 @@ pub fn instruction_width(first_code_unit: u16) -> Option<usize> {
             _ => Some(1),
         };
     }
-    opcode.format().code_units().or(Some(1))
+    opcode.format_for_api(api_level).code_units().or(Some(1))
+}
+
+pub fn instruction_width(first_code_unit: u16) -> Option<usize> {
+    instruction_width_for_api(first_code_unit, None)
 }

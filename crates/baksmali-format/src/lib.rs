@@ -16,16 +16,12 @@ pub struct BaksmaliFormatter<'a> {
     data: &'a [u8],
     resolver: Resolver<'a>,
     resource_ids: BTreeMap<i32, String>,
+    api_level: Option<u32>,
 }
 
 impl<'a> BaksmaliFormatter<'a> {
     pub fn new(dex: &'a DexFile, data: &'a [u8]) -> Self {
-        Self {
-            dex,
-            data,
-            resolver: Resolver::new(dex, data),
-            resource_ids: BTreeMap::new(),
-        }
+        Self::with_options(dex, data, BTreeMap::new(), None)
     }
 
     pub fn with_resource_ids(
@@ -33,11 +29,30 @@ impl<'a> BaksmaliFormatter<'a> {
         data: &'a [u8],
         resource_ids: BTreeMap<i32, String>,
     ) -> Self {
+        Self::with_options(dex, data, resource_ids, None)
+    }
+
+    pub fn with_resource_ids_and_api(
+        dex: &'a DexFile,
+        data: &'a [u8],
+        resource_ids: BTreeMap<i32, String>,
+        api_level: Option<u32>,
+    ) -> Self {
+        Self::with_options(dex, data, resource_ids, api_level)
+    }
+
+    fn with_options(
+        dex: &'a DexFile,
+        data: &'a [u8],
+        resource_ids: BTreeMap<i32, String>,
+        api_level: Option<u32>,
+    ) -> Self {
         Self {
             dex,
             data,
             resolver: Resolver::new(dex, data),
             resource_ids,
+            api_level,
         }
     }
 
@@ -234,7 +249,8 @@ impl<'a> BaksmaliFormatter<'a> {
             self.format_annotation_set(out, annotations_off, "    ")?;
         }
         if method.code_off != 0 {
-            let code = dex_reader::parse_code_item(self.data, method.code_off)?;
+            let code =
+                dex_reader::parse_code_item_with_api(self.data, method.code_off, self.api_level)?;
             let debug_info = if code.debug_info_off != 0 {
                 Some(dex_reader::parse_debug_info_item(
                     self.data,
@@ -556,7 +572,7 @@ impl<'a> BaksmaliFormatter<'a> {
         label_names: &BTreeMap<u32, String>,
         code: &CodeItem,
     ) -> Result<String> {
-        let opcode = instruction.opcode.name();
+        let opcode = instruction.opcode.name_for_api(self.api_level);
         let text = match &instruction.operands {
             InstructionOperands::None => opcode.to_owned(),
             InstructionOperands::Register { register } => format!("{opcode} v{register}"),
@@ -882,7 +898,7 @@ impl<'a> BaksmaliFormatter<'a> {
                 .resolver
                 .type_descriptor(reference)
                 .map(ToOwned::to_owned),
-            0x52..=0x6d | 0xe3..=0xeb | 0xfd | 0xfe => self.resolver.field_descriptor(reference),
+            0x52..=0x6d | 0xe3..=0xeb | 0xfc..=0xfe => self.resolver.field_descriptor(reference),
             0xf2..=0xf7 => Ok(format!("field_offset@0x{reference:x}")),
             _ => Ok(format!("reference@{reference}")),
         }
@@ -892,6 +908,9 @@ impl<'a> BaksmaliFormatter<'a> {
         match opcode {
             0xee | 0xef => Ok(format!("inline@{reference}")),
             0xf8 | 0xf9 => Ok(format!("vtable@{reference}")),
+            0xfa | 0xfb if self.api_level.is_some_and(|api_level| api_level <= 25) => {
+                Ok(format!("vtable@{reference}"))
+            }
             0xfc | 0xfd => self.resolver.call_site_descriptor(reference),
             _ => self.resolver.method_descriptor(reference),
         }
@@ -901,7 +920,7 @@ impl<'a> BaksmaliFormatter<'a> {
         let mut out = format!(
             "# {:04x}: {}",
             instruction.address,
-            instruction.opcode.name()
+            instruction.opcode.name_for_api(self.api_level)
         );
         for unit in &instruction.code_units {
             write!(out, " {:04x}", unit).unwrap();
@@ -2177,6 +2196,20 @@ mod tests {
         assert_eq!(
             formatter.format_invoke_reference(0xfc, 0).unwrap(),
             "call_site{invoke-static@LTest;->method()V, \"name\", ()V, \"value\"}"
+        );
+    }
+
+    #[test]
+    fn formats_legacy_api_opcodes_with_api_level() {
+        let dex = test_dex();
+        let formatter =
+            BaksmaliFormatter::with_resource_ids_and_api(&dex, &[], BTreeMap::new(), Some(25));
+        let instruction = RawInstruction::new_with_api(0, vec![0x21fa, 0x0000, 0x0010], Some(25));
+        assert_eq!(
+            formatter
+                .format_instruction(&instruction, &BTreeMap::new(), &empty_code())
+                .unwrap(),
+            "invoke-super-quick {v0, v1}, vtable@0"
         );
     }
 

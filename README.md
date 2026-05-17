@@ -77,7 +77,7 @@ Instruction-set work now follows upstream `dexlib2` concepts:
 - `PayloadInstruction`
 - `SparseSwitchElement`
 
-Implemented opcode metadata for standard, payload, odex, volatile, quick, invoke-custom, and invoke-polymorphic opcodes across `0x00..=0xff`, with intentional reserved gaps covered by tests.
+Implemented opcode metadata for standard, payload, odex, volatile, quick, invoke-custom, and invoke-polymorphic opcodes across `0x00..=0xff`, with intentional reserved gaps covered by tests. Opcode metadata can now be selected by API level for legacy dexlib2-compatible opcode mappings such as pre-26 `0xfa..=0xff` odex opcodes.
 
 Implemented instruction operand decoding for many upstream formats:
 
@@ -210,6 +210,8 @@ baksmali dis <input.dex|input.apk|input.jar|input.zip> -o <out_dir>
 baksmali d <input.dex|input.apk|input.jar|input.zip> -o <out_dir>
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --resolve-resources <prefix> <public.xml> -o <out_dir>
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --classes <class-descriptor>[,<class-descriptor>...] -o <out_dir>
+baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --jobs <n> -o <out_dir>
+baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --api <api-level> -o <out_dir>
 baksmali list classes <input.dex|input.apk|input.jar|input.zip>
 baksmali list strings <input.dex|input.apk|input.jar|input.zip>
 baksmali list types <input.dex|input.apk|input.jar|input.zip>
@@ -274,6 +276,8 @@ Current test coverage includes:
 - Java-style nested `baksmali list <kind>` CLI commands and aliases, with `list classes` outputting class descriptors like Java baksmali.
 - Java-style `disassemble` command aliases: `dis` and `d`.
 - Java-style `disassemble --classes` filtering by class descriptor.
+- Java-style `disassemble --jobs` / `-j` option runs class formatting in parallel worker threads.
+- Java-style `disassemble --api` / `-a` option wired into API-level opcode decoding/formatting for legacy opcode mappings.
 - Java-style container entry path input such as `app.apk/classes2.dex`.
 - Improved `baksmali --help` and nested `list --help` output with visible aliases, value names, and command descriptions.
 - copied upstream Java baksmali test fixtures are present under `tests/fixtures/upstream/baksmali` and covered by Rust fixture inventory/disassembly tests.
@@ -290,7 +294,7 @@ cargo test --workspace
 Latest result:
 
 ```text
-All tests passed: 72 passed.
+All tests passed: 78 passed.
 ```
 
 ## Example Fixture Output

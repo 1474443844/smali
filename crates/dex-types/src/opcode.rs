@@ -20,12 +20,24 @@ impl Opcode {
         opcode_info(self.0)
     }
 
+    pub fn info_for_api(self, api_level: Option<u32>) -> OpcodeInfo {
+        opcode_info_for_api(self.0, api_level)
+    }
+
     pub fn name(self) -> &'static str {
         self.info().name
     }
 
+    pub fn name_for_api(self, api_level: Option<u32>) -> &'static str {
+        self.info_for_api(api_level).name
+    }
+
     pub fn format(self) -> Format {
         self.info().format
+    }
+
+    pub fn format_for_api(self, api_level: Option<u32>) -> Format {
+        self.info_for_api(api_level).format
     }
 
     pub fn reference_type(self) -> ReferenceType {
@@ -170,6 +182,21 @@ bitflags! {
 }
 
 const NONE: ReferenceType = ReferenceType::None;
+
+pub fn opcode_info_for_api(value: u16, api_level: Option<u32>) -> OpcodeInfo {
+    if let Some(api_level) = api_level {
+        if api_level >= 26 {
+            return opcode_info(value);
+        }
+        if let Some(info) = legacy_odex_opcode_info(value, api_level) {
+            return info;
+        }
+        if matches!(value, 0xfa..=0xff) {
+            return unknown_opcode_info(value);
+        }
+    }
+    opcode_info(value)
+}
 
 pub fn opcode_info(value: u16) -> OpcodeInfo {
     let (name, format, reference_type, flags) = match value {
@@ -637,7 +664,7 @@ pub fn opcode_info(value: u16) -> OpcodeInfo {
             NONE,
             OpcodeFlags::empty(),
         ),
-        _ => ("unknown", Format::Unknown, NONE, OpcodeFlags::empty()),
+        _ => return unknown_opcode_info(value),
     };
 
     OpcodeInfo {
@@ -652,6 +679,73 @@ pub fn opcode_info(value: u16) -> OpcodeInfo {
         },
         flags,
     }
+}
+
+fn unknown_opcode_info(value: u16) -> OpcodeInfo {
+    OpcodeInfo {
+        opcode: Opcode(value),
+        name: "unknown",
+        format: Format::Unknown,
+        reference_type: ReferenceType::None,
+        reference_type2: ReferenceType::None,
+        flags: OpcodeFlags::empty(),
+    }
+}
+
+fn legacy_odex_opcode_info(value: u16, api_level: u32) -> Option<OpcodeInfo> {
+    let (name, format, reference_type, flags) = match value {
+        0xfa => (
+            "invoke-super-quick",
+            Format::Format35ms,
+            NONE,
+            OpcodeFlags::CAN_THROW | OpcodeFlags::CAN_CONTINUE | OpcodeFlags::ODEX_ONLY,
+        ),
+        0xfb => (
+            "invoke-super-quick/range",
+            Format::Format3rms,
+            NONE,
+            OpcodeFlags::CAN_THROW | OpcodeFlags::CAN_CONTINUE | OpcodeFlags::ODEX_ONLY,
+        ),
+        0xfc => (
+            "iput-object-volatile",
+            Format::Format22c,
+            ReferenceType::Field,
+            OpcodeFlags::CAN_THROW
+                | OpcodeFlags::CAN_CONTINUE
+                | OpcodeFlags::ODEX_ONLY
+                | OpcodeFlags::VOLATILE_FIELD_ACCESSOR,
+        ),
+        0xfd => (
+            "sget-object-volatile",
+            Format::Format21c,
+            ReferenceType::Field,
+            OpcodeFlags::CAN_THROW
+                | OpcodeFlags::CAN_CONTINUE
+                | OpcodeFlags::ODEX_ONLY
+                | OpcodeFlags::VOLATILE_FIELD_ACCESSOR
+                | OpcodeFlags::STATIC_FIELD_ACCESSOR
+                | OpcodeFlags::SETS_REGISTER,
+        ),
+        0xfe if api_level <= 19 => (
+            "sput-object-volatile",
+            Format::Format21c,
+            ReferenceType::Field,
+            OpcodeFlags::CAN_THROW
+                | OpcodeFlags::CAN_CONTINUE
+                | OpcodeFlags::ODEX_ONLY
+                | OpcodeFlags::VOLATILE_FIELD_ACCESSOR
+                | OpcodeFlags::STATIC_FIELD_ACCESSOR,
+        ),
+        _ => return None,
+    };
+    Some(OpcodeInfo {
+        opcode: Opcode(value),
+        name,
+        format,
+        reference_type,
+        reference_type2: ReferenceType::None,
+        flags,
+    })
 }
 
 const IF_TEST_NAMES: [&str; 6] = ["if-eq", "if-ne", "if-lt", "if-ge", "if-gt", "if-le"];

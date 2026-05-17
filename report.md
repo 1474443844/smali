@@ -34,7 +34,7 @@ Rust 工作区包含 4 个 crate：
 - opcode、format、reference type、opcode flags。
 - raw instruction、instruction operands、payload instruction、sparse switch element。
 
-指令元数据覆盖标准 `0x00..=0xff` opcode，并包含：
+指令元数据覆盖标准 `0x00..=0xff` opcode，并包含 API-level 选择能力，用于对齐 dexlib2 的 legacy opcode 映射，例如 pre-26 的 `0xfa..=0xff` odex opcode，并包含：
 
 - 标准 Dalvik opcode。
 - payload pseudo opcode。
@@ -110,6 +110,8 @@ reference 解析当前覆盖：
 - `baksmali dis <input> -o <out_dir>`
 - `baksmali d <input> -o <out_dir>`
 - `baksmali disassemble <input> --classes <class-descriptor>[,<class-descriptor>...] -o <out_dir>`
+- `baksmali disassemble <input> --jobs <n> -o <out_dir>`
+- `baksmali disassemble <input> --api <api-level> -o <out_dir>`
 - `baksmali list classes <input>`
 - `baksmali list strings <input>`
 - `baksmali list types <input>`
@@ -204,15 +206,15 @@ cargo fmt --all && cargo test --workspace
 
 测试统计：
 
-- `baksmali-cli` integration tests：11 passed。
-- `baksmali-format` unit tests：19 passed。
+- `baksmali-cli` integration tests：14 passed。
+- `baksmali-format` unit tests：20 passed。
 - `baksmali-format` fixture tests：6 passed。
 - `dex-reader` unit tests：23 passed。
 - `dex-reader` fixture tests：6 passed。
-- `dex-types` opcode tests：7 passed。
+- `dex-types` opcode tests：9 passed。
 - doc tests：0。
 
-总计当前可见测试：72 passed。
+总计当前可见测试：78 passed。
 
 覆盖重点包括：
 
@@ -224,7 +226,7 @@ cargo fmt --all && cargo test --workspace
 - raw DEX 与 ZIP/APK DEX entry discovery，以及 Java 风格容器 entry 路径选择。
 - invalid cross-reference index rejection。
 - method handle 与 call site table 解析。
-- opcode metadata、instruction width、operand decoding、payload decoding。
+- opcode metadata、API-level legacy opcode mapping、instruction width、operand decoding、payload decoding。
 - hello.dex 与 classes2.dex fixture 的基础格式化。
 - Java 风格 method handle/call site 输出。
 - Java 风格 section header、当前类成员声明省略、payload label、array/switch 数字格式。
@@ -232,6 +234,8 @@ cargo fmt --all && cargo test --workspace
 - Java 风格 resource-id 注释以及 `--resolve-resources` 常见 public.xml 格式变体解析。
 - Java 风格 `disassemble --classes` class descriptor 过滤。
 - Java 风格容器 entry 路径输入，例如 `app.apk/classes2.dex`。
+- Java 风格 `disassemble --jobs` / `-j` CLI 参数会使用并行 worker thread 格式化 class。
+- Java 风格 `disassemble --api` / `-a` 参数已接入 API-level opcode decoding/formatting，用于 legacy opcode 映射。
 - 已复制上游 Java baksmali 测试案例到 `tests/fixtures/upstream/baksmali`：包含 `src/test/resources` 和 `src/test/smali` fixture；已用 Rust 移植 `BaksmaliTestUtils` normalization 检查、`MultiSwitchTest` 与 `ZeroArrayPayloadWidthTest`，并删除复制来的 Java 测试源码。
 
 ## 当前风险与问题

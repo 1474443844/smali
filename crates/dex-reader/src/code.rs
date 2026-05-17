@@ -1,12 +1,20 @@
 use dex_types::{
     CodeItem, EncodedCatchHandler, EncodedCatchHandlerList, EncodedTypeAddrPair, RawInstruction,
-    Result, TryItem, instruction_width, payload_width,
+    Result, TryItem, instruction_width_for_api, payload_width,
 };
 
 use crate::leb128::{read_sleb128_at, read_uleb128_at};
 use crate::section::{checked_range, read_u16, read_u32, u32_to_usize};
 
 pub fn parse_code_item(data: &[u8], offset: u32) -> Result<CodeItem> {
+    parse_code_item_with_api(data, offset, None)
+}
+
+pub fn parse_code_item_with_api(
+    data: &[u8],
+    offset: u32,
+    api_level: Option<u32>,
+) -> Result<CodeItem> {
     let base = u32_to_usize(offset, "code_item")?;
     checked_range(data, base, 16)?;
     let registers_size = read_u16(data, base)?;
@@ -23,7 +31,7 @@ pub fn parse_code_item(data: &[u8], offset: u32) -> Result<CodeItem> {
     while cursor < insns_size {
         let first = read_u16(data, insns_off + cursor * 2)?;
         let remaining = insns_size - cursor;
-        let width = match instruction_width(first) {
+        let width = match instruction_width_for_api(first, api_level) {
             Some(width) => width,
             None => {
                 let mut remaining_units = Vec::with_capacity(remaining);
@@ -38,7 +46,11 @@ pub fn parse_code_item(data: &[u8], offset: u32) -> Result<CodeItem> {
         for i in 0..width {
             code_units.push(read_u16(data, insns_off + (cursor + i) * 2)?);
         }
-        instructions.push(RawInstruction::new(cursor as u32, code_units));
+        instructions.push(RawInstruction::new_with_api(
+            cursor as u32,
+            code_units,
+            api_level,
+        ));
         cursor += width;
     }
 

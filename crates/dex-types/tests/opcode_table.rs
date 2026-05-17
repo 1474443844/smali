@@ -1,6 +1,6 @@
 use dex_types::{
     Format, InstructionOperands, Opcode, OpcodeFlags, PayloadInstruction, RawInstruction,
-    ReferenceType, instruction_width, payload_width,
+    ReferenceType, instruction_width, instruction_width_for_api, payload_width,
 };
 
 #[test]
@@ -63,6 +63,53 @@ fn covers_expected_opcode_values() {
             assert_ne!(info.format, Format::Unknown, "missing format 0x{value:02x}");
         }
     }
+}
+
+#[test]
+fn maps_opcode_metadata_by_api_level_like_dexlib2() {
+    assert_eq!(Opcode(0xfa).info().name, "invoke-polymorphic");
+    assert_eq!(
+        Opcode(0xfa).info_for_api(Some(25)).name,
+        "invoke-super-quick"
+    );
+    assert_eq!(
+        Opcode(0xfa).info_for_api(Some(25)).format,
+        Format::Format35ms
+    );
+    assert_eq!(
+        Opcode(0xfb).info_for_api(Some(25)).name,
+        "invoke-super-quick/range"
+    );
+    assert_eq!(
+        Opcode(0xfc).info_for_api(Some(25)).name,
+        "iput-object-volatile"
+    );
+    assert_eq!(
+        Opcode(0xfd).info_for_api(Some(25)).name,
+        "sget-object-volatile"
+    );
+    assert_eq!(
+        Opcode(0xfe).info_for_api(Some(19)).name,
+        "sput-object-volatile"
+    );
+    assert_eq!(Opcode(0xfe).info_for_api(Some(20)).name, "unknown");
+    assert_eq!(Opcode(0xff).info_for_api(Some(25)).name, "unknown");
+}
+
+#[test]
+fn decodes_instructions_by_api_level_like_dexlib2() {
+    assert_eq!(instruction_width_for_api(0x21fa, Some(25)), Some(3));
+    assert_eq!(instruction_width_for_api(0x21fa, Some(26)), Some(4));
+
+    let legacy = RawInstruction::new_with_api(0, vec![0x21fa, 0x0003, 0x0010], Some(25));
+    assert_eq!(legacy.opcode.name_for_api(Some(25)), "invoke-super-quick");
+    assert_eq!(
+        legacy.operands,
+        InstructionOperands::Invoke {
+            registers: vec![0, 1],
+            reference: 3
+        }
+    );
 }
 
 #[test]

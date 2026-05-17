@@ -18,7 +18,7 @@ use crate::leb128::read_uleb128_at;
 use crate::section::{checked_table_range, read_u16, read_u32, u32_to_usize};
 
 pub use class::parse_class_data;
-pub use code::{parse_code_item, parse_encoded_catch_handler_list};
+pub use code::{parse_code_item, parse_code_item_with_api, parse_encoded_catch_handler_list};
 pub use container::{DexEntry, dex_entries_from_bytes, dex_entries_from_path};
 pub use debug::parse_debug_info_item;
 pub use value::{

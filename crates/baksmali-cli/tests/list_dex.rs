@@ -175,7 +175,9 @@ fn help_shows_java_style_aliases_and_descriptions() {
         .args(["disassemble", "--help"])
         .assert()
         .success()
-        .stdout(predicates::str::contains("--classes <CLASSES>"));
+        .stdout(predicates::str::contains("--classes <CLASSES>"))
+        .stdout(predicates::str::contains("--jobs <N>"))
+        .stdout(predicates::str::contains("--api <API_LEVEL>"));
 
     let mut command = Command::cargo_bin("baksmali").unwrap();
     command
@@ -185,6 +187,82 @@ fn help_shows_java_style_aliases_and_descriptions() {
         .stdout(predicates::str::contains("List class descriptors"))
         .stdout(predicates::str::contains("aliases: class, c"))
         .stdout(predicates::str::contains("aliases: string, str, s"));
+}
+
+#[test]
+fn accepts_java_style_jobs_argument() {
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let output = std::env::temp_dir().join(format!("baksmali-jobs-test-{unique}"));
+
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+    command
+        .args([
+            "disassemble",
+            "../../tests/fixtures/hello.dex",
+            "--jobs",
+            "1",
+            "-o",
+            output.to_str().unwrap(),
+        ])
+        .assert()
+        .success();
+
+    assert!(output.join("Hello.smali").exists());
+    fs::remove_dir_all(output).unwrap();
+}
+
+#[test]
+fn disassemble_uses_jobs_for_multiple_classes() {
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let output = std::env::temp_dir().join(format!("baksmali-jobs-multiclass-test-{unique}"));
+
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+    command
+        .args([
+            "disassemble",
+            "../../tests/fixtures/hello.apk",
+            "--jobs",
+            "2",
+            "-o",
+            output.to_str().unwrap(),
+        ])
+        .assert()
+        .success();
+
+    assert!(output.join("dex1").join("Hello.smali").exists());
+    assert!(output.join("dex2").join("Hello.smali").exists());
+    fs::remove_dir_all(output).unwrap();
+}
+
+#[test]
+fn accepts_java_style_api_argument() {
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let output = std::env::temp_dir().join(format!("baksmali-api-test-{unique}"));
+
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+    command
+        .args([
+            "disassemble",
+            "../../tests/fixtures/hello.dex",
+            "--api",
+            "28",
+            "-o",
+            output.to_str().unwrap(),
+        ])
+        .assert()
+        .success();
+
+    assert!(output.join("Hello.smali").exists());
+    fs::remove_dir_all(output).unwrap();
 }
 
 #[test]

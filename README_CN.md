@@ -77,7 +77,7 @@ tests/fixtures/upstream/baksmali/smali/      # 复制自 Java baksmali src/test/
 - `PayloadInstruction`
 - `SparseSwitchElement`
 
-已实现 `0x00..=0xff` 范围内的标准、payload、odex、volatile、quick、invoke-custom、invoke-polymorphic opcode metadata，并通过测试覆盖有意保留的 opcode 空洞。
+已实现 `0x00..=0xff` 范围内的标准、payload、odex、volatile、quick、invoke-custom、invoke-polymorphic opcode metadata，并通过测试覆盖有意保留的 opcode 空洞。opcode metadata 现在可按 API level 选择，用于对齐 dexlib2 的 legacy opcode 映射，例如 pre-26 的 `0xfa..=0xff` odex opcode。
 
 已实现许多上游格式的 instruction operand 解码：
 
@@ -210,6 +210,8 @@ baksmali dis <input.dex|input.apk|input.jar|input.zip> -o <out_dir>
 baksmali d <input.dex|input.apk|input.jar|input.zip> -o <out_dir>
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --resolve-resources <prefix> <public.xml> -o <out_dir>
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --classes <class-descriptor>[,<class-descriptor>...] -o <out_dir>
+baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --jobs <n> -o <out_dir>
+baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --api <api-level> -o <out_dir>
 baksmali list classes <input.dex|input.apk|input.jar|input.zip>
 baksmali list strings <input.dex|input.apk|input.jar|input.zip>
 baksmali list types <input.dex|input.apk|input.jar|input.zip>
@@ -274,6 +276,8 @@ baksmali list-dex <input.dex|input.apk|input.jar|input.zip>
 - Java 风格嵌套 `baksmali list <kind>` CLI 命令和 alias，且 `list classes` 像 Java baksmali 一样输出 class descriptor。
 - Java 风格 `disassemble` 命令 alias：`dis` 和 `d`。
 - Java 风格 `disassemble --classes`，按 class descriptor 过滤输出 class。
+- Java 风格 `disassemble --jobs` / `-j` 参数会使用并行 worker thread 格式化 class。
+- Java 风格 `disassemble --api` / `-a` 参数已接入 API-level opcode decoding/formatting，用于 legacy opcode 映射。
 - Java 风格容器 entry 路径输入，例如 `app.apk/classes2.dex`。
 - 改进 `baksmali --help` 和嵌套 `list --help` 输出，显示 alias、value name 和命令说明。
 - 已将上游 Java baksmali 测试 fixture 复制到 `tests/fixtures/upstream/baksmali`，并增加 Rust fixture inventory/disassembly 测试覆盖。
@@ -290,7 +294,7 @@ cargo test --workspace
 最新结果：
 
 ```text
-All tests passed: 72 passed.
+All tests passed: 78 passed.
 ```
 
 ## 示例 Fixture 输出
