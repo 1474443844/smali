@@ -21,6 +21,22 @@ fn discovers_zip_dex_entries() {
 }
 
 #[test]
+fn selects_container_dex_entry_from_path_suffix() {
+    let path = std::path::Path::new("../../tests/fixtures/hello.apk/classes2.dex");
+    let entries = dex_reader::dex_entries_from_path(path).unwrap();
+    assert_eq!(entries.len(), 1);
+    assert_eq!(entries[0].name, "classes2.dex");
+}
+
+#[test]
+fn selects_container_dex_entry_from_quoted_exact_path_suffix() {
+    let path = std::path::Path::new("../../tests/fixtures/hello.apk/\"classes2.dex\"");
+    let entries = dex_reader::dex_entries_from_path(path).unwrap();
+    assert_eq!(entries.len(), 1);
+    assert_eq!(entries[0].name, "classes2.dex");
+}
+
+#[test]
 fn rejects_invalid_type_descriptor_index() {
     let mut data = HELLO_DEX.to_vec();
     let string_count = u32::from_le_bytes(data[56..60].try_into().unwrap());

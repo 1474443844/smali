@@ -69,6 +69,7 @@ Rust 工作区包含 4 个 crate：
 - encoded value、encoded array、annotation item/set/directory 解析。
 - call site id 和 method handle table 解析。
 - raw `.dex` 与 `.apk`/`.jar`/`.zip` 容器中的 multidex entry 发现。
+- Java 风格容器 entry 路径选择，例如 `app.apk/classes2.dex`。
 - 多处 cross-reference index 校验，包括 type/proto/field/method/class/source/method-handle 引用。
 
 ### 3. baksmali 文本格式化
@@ -122,7 +123,7 @@ reference 解析当前覆盖：
 - `baksmali list-methods <input>`
 - `baksmali list-dex <input>`
 
-输入支持 raw DEX 以及 APK/JAR/ZIP 容器。单 DEX 输出到目标目录，多 DEX 容器会拆分到 `dex1`, `dex2` 等目录。
+输入支持 raw DEX 以及 APK/JAR/ZIP 容器。支持 Java 风格容器 entry 路径选择，例如 `app.apk/classes2.dex`。单 DEX 输出到目标目录，多 DEX 容器会拆分到 `dex1`, `dex2` 等目录。
 
 ## 与 Java 原项目的覆盖对比
 
@@ -203,15 +204,15 @@ cargo fmt --all && cargo test --workspace
 
 测试统计：
 
-- `baksmali-cli` integration tests：10 passed。
+- `baksmali-cli` integration tests：11 passed。
 - `baksmali-format` unit tests：19 passed。
 - `baksmali-format` fixture tests：6 passed。
 - `dex-reader` unit tests：23 passed。
-- `dex-reader` fixture tests：4 passed。
+- `dex-reader` fixture tests：6 passed。
 - `dex-types` opcode tests：7 passed。
 - doc tests：0。
 
-总计当前可见测试：69 passed。
+总计当前可见测试：72 passed。
 
 覆盖重点包括：
 
@@ -220,7 +221,7 @@ cargo fmt --all && cargo test --workspace
 - catch handler 与 try/catch handler offset。
 - debug info state machine。
 - encoded value/array/annotation。
-- raw DEX 与 ZIP/APK DEX entry discovery。
+- raw DEX 与 ZIP/APK DEX entry discovery，以及 Java 风格容器 entry 路径选择。
 - invalid cross-reference index rejection。
 - method handle 与 call site table 解析。
 - opcode metadata、instruction width、operand decoding、payload decoding。
@@ -230,6 +231,7 @@ cargo fmt --all && cargo test --workspace
 - Java 风格 likely float/double literal 和 payload 注释。
 - Java 风格 resource-id 注释以及 `--resolve-resources` 常见 public.xml 格式变体解析。
 - Java 风格 `disassemble --classes` class descriptor 过滤。
+- Java 风格容器 entry 路径输入，例如 `app.apk/classes2.dex`。
 - 已复制上游 Java baksmali 测试案例到 `tests/fixtures/upstream/baksmali`：包含 `src/test/resources` 和 `src/test/smali` fixture；已用 Rust 移植 `BaksmaliTestUtils` normalization 检查、`MultiSwitchTest` 与 `ZeroArrayPayloadWidthTest`，并删除复制来的 Java 测试源码。
 
 ## 当前风险与问题

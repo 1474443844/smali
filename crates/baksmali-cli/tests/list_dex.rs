@@ -25,6 +25,30 @@ fn lists_dex_with_java_style_nested_command() {
 }
 
 #[test]
+fn disassemble_accepts_container_entry_path_like_java_baksmali() {
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let output = std::env::temp_dir().join(format!("baksmali-entry-path-test-{unique}"));
+
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+    command
+        .args([
+            "disassemble",
+            "../../tests/fixtures/hello.apk/classes2.dex",
+            "-o",
+            output.to_str().unwrap(),
+        ])
+        .assert()
+        .success();
+
+    assert!(output.join("Hello.smali").exists());
+    assert!(!output.join("dex1").exists());
+    fs::remove_dir_all(output).unwrap();
+}
+
+#[test]
 fn lists_classes_as_descriptors_like_java_baksmali() {
     let mut command = Command::cargo_bin("baksmali").unwrap();
 

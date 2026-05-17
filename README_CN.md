@@ -227,6 +227,7 @@ baksmali list-dex <input.dex|input.apk|input.jar|input.zip>
 说明：
 
 - binary 名称是 `baksmali`，不是 `baksmali-cli`。
+- 支持 Java 风格容器 entry 路径选择，例如 `app.apk/classes2.dex`。
 - 单 DEX 输出会直接写到 output directory 下。
 - multidex 容器输出会拆分到 `dex1`, `dex2` 等目录。
 
@@ -248,7 +249,7 @@ baksmali list-dex <input.dex|input.apk|input.jar|input.zip>
 - real `.dex` fixture formatting。
 - invalid cross-reference index rejection。
 - raw DEX entry discovery。
-- ZIP/APK DEX entry discovery。
+- ZIP/APK DEX entry discovery，以及 Java 风格容器 entry 路径选择。
 - `0x00..=0xff` opcode metadata coverage，并覆盖 reserved gaps。
 - opcode format 和 reference type metadata。
 - odex/volatile/quick opcode metadata。
@@ -273,6 +274,7 @@ baksmali list-dex <input.dex|input.apk|input.jar|input.zip>
 - Java 风格嵌套 `baksmali list <kind>` CLI 命令和 alias，且 `list classes` 像 Java baksmali 一样输出 class descriptor。
 - Java 风格 `disassemble` 命令 alias：`dis` 和 `d`。
 - Java 风格 `disassemble --classes`，按 class descriptor 过滤输出 class。
+- Java 风格容器 entry 路径输入，例如 `app.apk/classes2.dex`。
 - 改进 `baksmali --help` 和嵌套 `list --help` 输出，显示 alias、value name 和命令说明。
 - 已将上游 Java baksmali 测试 fixture 复制到 `tests/fixtures/upstream/baksmali`，并增加 Rust fixture inventory/disassembly 测试覆盖。
 - 已用 Rust 移植 Java `BaksmaliTestUtils` normalization 检查、`MultiSwitchTest` 和 `ZeroArrayPayloadWidthTest`；复制来的 Java 测试源码已删除。
@@ -288,7 +290,7 @@ cargo test --workspace
 最新结果：
 
 ```text
-All tests passed: 69 passed.
+All tests passed: 72 passed.
 ```
 
 ## 示例 Fixture 输出

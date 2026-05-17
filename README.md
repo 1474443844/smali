@@ -227,6 +227,7 @@ baksmali list-dex <input.dex|input.apk|input.jar|input.zip>
 Notes:
 
 - The binary name is `baksmali`, not `baksmali-cli`.
+- Container entries can be selected with Java-style path suffixes such as `app.apk/classes2.dex`.
 - Single DEX output is written directly under the output directory.
 - Multidex container output is split into `dex1`, `dex2`, etc.
 
@@ -248,7 +249,7 @@ Current test coverage includes:
 - real `.dex` fixture formatting.
 - invalid cross-reference index rejection.
 - raw DEX entry discovery.
-- ZIP/APK DEX entry discovery.
+- ZIP/APK DEX entry discovery and Java-style container entry path selection.
 - opcode metadata coverage for `0x00..=0xff` with reserved gaps.
 - opcode format and reference type metadata.
 - odex/volatile/quick opcode metadata.
@@ -273,6 +274,7 @@ Current test coverage includes:
 - Java-style nested `baksmali list <kind>` CLI commands and aliases, with `list classes` outputting class descriptors like Java baksmali.
 - Java-style `disassemble` command aliases: `dis` and `d`.
 - Java-style `disassemble --classes` filtering by class descriptor.
+- Java-style container entry path input such as `app.apk/classes2.dex`.
 - Improved `baksmali --help` and nested `list --help` output with visible aliases, value names, and command descriptions.
 - copied upstream Java baksmali test fixtures are present under `tests/fixtures/upstream/baksmali` and covered by Rust fixture inventory/disassembly tests.
 - Rust ports of Java `BaksmaliTestUtils` normalization checks, `MultiSwitchTest`, and `ZeroArrayPayloadWidthTest` are present; the copied Java test source has been removed.
@@ -288,7 +290,7 @@ cargo test --workspace
 Latest result:
 
 ```text
-All tests passed: 69 passed.
+All tests passed: 72 passed.
 ```
 
 ## Example Fixture Output
