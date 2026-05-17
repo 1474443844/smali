@@ -44,6 +44,11 @@ pub struct AnnotationSet {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AnnotationSetRefList {
+    pub entries: Vec<u32>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AnnotationDirectory {
     pub class_annotations_off: u32,
     pub field_annotations: Vec<FieldAnnotation>,

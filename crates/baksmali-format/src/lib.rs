@@ -297,7 +297,13 @@ impl<'a> BaksmaliFormatter<'a> {
             let code_labels = collect_code_labels(&code);
             let label_names = label_names(&code);
             writeln!(out, "    .registers {}", code.registers_size).unwrap();
-            self.write_parameter_debug_items(out, method, &code, debug_info.as_ref())?;
+            self.write_parameter_items(
+                out,
+                method,
+                annotation_directory,
+                &code,
+                debug_info.as_ref(),
+            )?;
             for instruction in &code.instructions {
                 if let Some(labels) = code_labels.get(&instruction.address) {
                     for label in labels {
@@ -334,31 +340,47 @@ impl<'a> BaksmaliFormatter<'a> {
         Ok(())
     }
 
-    fn write_parameter_debug_items(
+    fn write_parameter_items(
         &self,
         out: &mut String,
         method: &EncodedMethod,
+        annotation_directory: Option<&AnnotationDirectory>,
         code: &CodeItem,
         debug_info: Option<&DebugInfoItem>,
     ) -> Result<()> {
-        let Some(debug_info) = debug_info else {
-            return Ok(());
-        };
         let parameter_types = self.resolver.method_parameter_types(method.method_idx)?;
+        let annotations = parameter_annotation_offsets(annotation_directory, method.method_idx)
+            .map(|annotations_off| {
+                dex_reader::parse_annotation_set_ref_list(self.data, annotations_off)
+            })
+            .transpose()?;
         let parameter_base = parameter_base(code);
         let mut register =
             parameter_base + u32::from(!method.access_flags.contains(AccessFlags::STATIC));
         for (index, type_item) in parameter_types.iter().enumerate() {
             let descriptor = self.resolver.type_descriptor(type_item.type_idx as u32)?;
-            if let Some(Some(name_idx)) = debug_info.parameters.get(index) {
-                writeln!(
-                    out,
-                    "    .param {}, \"{}\"    # {}",
-                    format_register(register, parameter_base, self.parameter_registers),
-                    escape_string(self.resolver.string(*name_idx)?),
-                    descriptor
-                )
-                .unwrap();
+            let name_idx = debug_info
+                .and_then(|debug_info| debug_info.parameters.get(index).copied().flatten());
+            let annotations_off = annotations
+                .as_ref()
+                .and_then(|annotations| annotations.entries.get(index).copied())
+                .filter(|annotations_off| *annotations_off != 0);
+            if name_idx.is_some() || annotations_off.is_some() {
+                let register = format_register(register, parameter_base, self.parameter_registers);
+                match name_idx {
+                    Some(name_idx) => writeln!(
+                        out,
+                        "    .param {}, \"{}\"    # {}",
+                        register,
+                        escape_string(self.resolver.string(name_idx)?),
+                        descriptor
+                    )
+                    .unwrap(),
+                    None => writeln!(out, "    .param {register}    # {descriptor}").unwrap(),
+                }
+                if let Some(annotations_off) = annotations_off {
+                    self.format_annotation_set(out, annotations_off, "        ")?;
+                }
                 writeln!(out, "    .end param").unwrap();
             }
             register += type_register_width(descriptor);
@@ -609,31 +631,41 @@ impl<'a> BaksmaliFormatter<'a> {
         let opcode = instruction.opcode.name_for_api(self.api_level);
         let text = match &instruction.operands {
             InstructionOperands::None => opcode.to_owned(),
-            InstructionOperands::Register { register } => format!("{opcode} v{register}"),
+            InstructionOperands::Register { register } => {
+                format!("{opcode} {}", self.format_code_register(*register, code))
+            }
             InstructionOperands::RegisterNarrowLiteral { register, literal } => {
                 format!(
-                    "{opcode} v{register}, {}",
+                    "{opcode} {}, {}",
+                    self.format_code_register(*register, code),
                     format_signed_literal(*literal as i64)
                 )
             }
-            InstructionOperands::TwoRegisters { a, b } => format!("{opcode} v{a}, v{b}"),
+            InstructionOperands::TwoRegisters { a, b } => format!(
+                "{opcode} {}, {}",
+                self.format_code_register(*a, code),
+                self.format_code_register(*b, code)
+            ),
             InstructionOperands::RegisterLiteral16 { register, literal } => {
                 format!(
-                    "{opcode} v{register}, {}{}",
+                    "{opcode} {}, {}{}",
+                    self.format_code_register(*register, code),
                     format_signed_literal(*literal as i64),
                     self.format_narrow_literal_comment(i32::from(*literal))
                 )
             }
             InstructionOperands::RegisterLiteral32 { register, literal } => {
                 format!(
-                    "{opcode} v{register}, {}{}",
+                    "{opcode} {}, {}{}",
+                    self.format_code_register(*register, code),
                     format_signed_literal(*literal as i64),
                     self.format_narrow_literal_comment(*literal)
                 )
             }
             InstructionOperands::RegisterLiteral64 { register, literal } => {
                 format!(
-                    "{opcode} v{register}, {}{}",
+                    "{opcode} {}, {}{}",
+                    self.format_code_register(*register, code),
                     format_wide_literal(*literal),
                     format_likely_double_comment(*literal)
                 )
@@ -646,34 +678,50 @@ impl<'a> BaksmaliFormatter<'a> {
                 register,
                 reference,
             } => format!(
-                "{opcode} v{register}, {}",
+                "{opcode} {}, {}",
+                self.format_code_register(*register, code),
                 self.format_reference(instruction.opcode.value(), *reference)?
             ),
             InstructionOperands::TwoRegistersReference { a, b, reference } => format!(
-                "{opcode} v{a}, v{b}, {}",
+                "{opcode} {}, {}, {}",
+                self.format_code_register(*a, code),
+                self.format_code_register(*b, code),
                 self.format_reference(instruction.opcode.value(), *reference)?
             ),
-            InstructionOperands::ThreeRegisters { a, b, c } => format!("{opcode} v{a}, v{b}, v{c}"),
+            InstructionOperands::ThreeRegisters { a, b, c } => format!(
+                "{opcode} {}, {}, {}",
+                self.format_code_register(*a, code),
+                self.format_code_register(*b, code),
+                self.format_code_register(*c, code)
+            ),
             InstructionOperands::TwoRegistersLiteral8 { a, b, literal } => {
                 format!(
-                    "{opcode} v{a}, v{b}, {}",
+                    "{opcode} {}, {}, {}",
+                    self.format_code_register(*a, code),
+                    self.format_code_register(*b, code),
                     format_signed_literal(*literal as i64)
                 )
             }
             InstructionOperands::TwoRegistersLiteral16 { a, b, literal } => {
                 format!(
-                    "{opcode} v{a}, v{b}, {}",
+                    "{opcode} {}, {}, {}",
+                    self.format_code_register(*a, code),
+                    self.format_code_register(*b, code),
                     format_signed_literal(*literal as i64)
                 )
             }
-            InstructionOperands::RegisterWide { a, b } => format!("{opcode} v{a}, v{b}"),
+            InstructionOperands::RegisterWide { a, b } => format!(
+                "{opcode} {}, {}",
+                self.format_code_register(*a, code),
+                self.format_code_register(*b, code)
+            ),
             InstructionOperands::Invoke {
                 registers,
                 reference,
             } => {
                 let registers = registers
                     .iter()
-                    .map(|register| format!("v{register}"))
+                    .map(|register| self.format_code_register(*register, code))
                     .collect::<Vec<_>>()
                     .join(", ");
                 format!(
@@ -688,7 +736,9 @@ impl<'a> BaksmaliFormatter<'a> {
             } => {
                 let end_register = start_register + register_count.saturating_sub(1);
                 format!(
-                    "{opcode} {{v{start_register} .. v{end_register}}}, {}",
+                    "{opcode} {{{} .. {}}}, {}",
+                    self.format_code_register(*start_register, code),
+                    self.format_code_register(end_register, code),
                     self.format_invoke_reference(instruction.opcode.value(), *reference)?
                 )
             }
@@ -699,7 +749,7 @@ impl<'a> BaksmaliFormatter<'a> {
             } => {
                 let registers = registers
                     .iter()
-                    .map(|register| format!("v{register}"))
+                    .map(|register| self.format_code_register(*register, code))
                     .collect::<Vec<_>>()
                     .join(", ");
                 format!(
@@ -716,7 +766,9 @@ impl<'a> BaksmaliFormatter<'a> {
             } => {
                 let end_register = start_register + register_count.saturating_sub(1);
                 format!(
-                    "{opcode} {{v{start_register} .. v{end_register}}}, {}, {}",
+                    "{opcode} {{{} .. {}}}, {}, {}",
+                    self.format_code_register(*start_register, code),
+                    self.format_code_register(end_register, code),
                     self.resolver.method_descriptor(*method_reference)?,
                     self.resolver.proto_descriptor_by_index(*proto_reference)?
                 )
@@ -742,13 +794,16 @@ impl<'a> BaksmaliFormatter<'a> {
             }
             InstructionOperands::TwoRegistersBranch { a, b, offset } => {
                 format!(
-                    "{opcode} v{a}, v{b}, {}",
+                    "{opcode} {}, {}, {}",
+                    self.format_code_register(*a, code),
+                    self.format_code_register(*b, code),
                     self.label_for(label_names, instruction.address, *offset as i32)
                 )
             }
             InstructionOperands::RegisterBranch { register, offset } => {
                 format!(
-                    "{opcode} v{register}, {}",
+                    "{opcode} {}, {}",
+                    self.format_code_register(*register, code),
                     self.label_for(label_names, instruction.address, *offset as i32)
                 )
             }
@@ -758,7 +813,10 @@ impl<'a> BaksmaliFormatter<'a> {
                 } else {
                     self.label_for(label_names, instruction.address, *offset)
                 };
-                format!("{opcode} v{register}, {label}")
+                format!(
+                    "{opcode} {}, {label}",
+                    self.format_code_register(*register, code)
+                )
             }
             InstructionOperands::Branch32 { offset } => {
                 format!(
@@ -770,6 +828,14 @@ impl<'a> BaksmaliFormatter<'a> {
             InstructionOperands::Raw => self.format_raw_instruction(instruction),
         };
         Ok(text)
+    }
+
+    fn format_code_register<R: Into<u32>>(&self, register: R, code: &CodeItem) -> String {
+        format_register(
+            register.into(),
+            parameter_base(code),
+            self.parameter_registers && code.ins_size != 0,
+        )
     }
 
     fn field_declaration_descriptor(&self, field_idx: u32, current_class: &str) -> Result<String> {
@@ -1216,6 +1282,21 @@ fn method_annotations_off(directory: Option<&AnnotationDirectory>, method_idx: u
         .and_then(|directory| {
             directory
                 .method_annotations
+                .iter()
+                .find(|annotation| annotation.method_idx == method_idx)
+        })
+        .map(|annotation| annotation.annotations_off)
+        .filter(|annotations_off| *annotations_off != 0)
+}
+
+fn parameter_annotation_offsets(
+    directory: Option<&AnnotationDirectory>,
+    method_idx: u32,
+) -> Option<u32> {
+    directory
+        .and_then(|directory| {
+            directory
+                .parameter_annotations
                 .iter()
                 .find(|annotation| annotation.method_idx == method_idx)
         })
@@ -2005,10 +2086,10 @@ mod tests {
         let mut vreg_out = String::new();
 
         formatter
-            .write_parameter_debug_items(&mut out, &method, &code, Some(&debug_info))
+            .write_parameter_items(&mut out, &method, None, &code, Some(&debug_info))
             .unwrap();
         without_parameter_registers
-            .write_parameter_debug_items(&mut vreg_out, &method, &code, Some(&debug_info))
+            .write_parameter_items(&mut vreg_out, &method, None, &code, Some(&debug_info))
             .unwrap();
 
         assert_eq!(out, "    .param p1, \"name\"    # I\n    .end param\n");

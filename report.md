@@ -81,7 +81,7 @@ Rust 工作区包含 4 个 crate：
 - `.field`，含静态初始值。
 - `.method`, `.registers`。
 - 当前类 field/method 声明中的 descriptor 省略，例如 `<init>()V` 而不是 `LHello;-><init>()V`。
-- class/field/method annotation 的基础输出。
+- class/field/method/parameter annotation 的基础输出。
 - encoded value array 与 subannotation 的基础输出。
 - debug item 的基础输出：`.line`, `.local`, `.end local`, `.restart local`, `.prologue`, `.epilogue`, `.source`, `.param`。
 - parameter register 名称，如可用时输出 `p0`。
@@ -239,7 +239,8 @@ cargo fmt --all && cargo test --workspace
 - Java 风格 `disassemble --jobs` / `-j` CLI 参数会使用并行 worker thread 格式化 class。
 - Java 风格 `disassemble --api` / `-a` 参数已接入 API-level opcode decoding/formatting，用于 legacy opcode 映射。
 - Java 风格 `disassemble --debug-info` / `--di` 参数控制 `.local`、`.param`、`.line` 等 debug directive 输出。
-- Java 风格 `disassemble --parameter-registers` / `--preg` / `--pr` 参数控制 debug directive 是否使用 `pNN` parameter register 语法。
+- Java 风格 `disassemble --parameter-registers` / `--preg` / `--pr` 参数控制 debug directive 和 instruction operand 是否使用 `pNN` parameter register 语法。
+- Java 风格 method parameter annotation block 输出。
 - 已复制上游 Java baksmali 测试案例到 `tests/fixtures/upstream/baksmali`：包含 `src/test/resources` 和 `src/test/smali` fixture；已用 Rust 移植 `BaksmaliTestUtils` normalization 检查、`MultiSwitchTest` 与 `ZeroArrayPayloadWidthTest`，并删除复制来的 Java 测试源码。
 
 ## 当前风险与问题

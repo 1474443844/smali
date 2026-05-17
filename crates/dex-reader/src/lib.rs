@@ -23,7 +23,8 @@ pub use container::{DexEntry, dex_entries_from_bytes, dex_entries_from_path};
 pub use debug::parse_debug_info_item;
 pub use value::{
     parse_annotation_directory, parse_annotation_item, parse_annotation_set,
-    parse_encoded_annotation_at, parse_encoded_array_at, parse_encoded_value_at,
+    parse_annotation_set_ref_list, parse_encoded_annotation_at, parse_encoded_array_at,
+    parse_encoded_value_at,
 };
 
 pub fn parse_dex(data: &[u8]) -> Result<DexFile> {

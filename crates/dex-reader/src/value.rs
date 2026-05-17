@@ -1,7 +1,7 @@
 use dex_types::{
-    AnnotationDirectory, AnnotationElement, AnnotationItem, AnnotationSet, AnnotationVisibility,
-    DexError, EncodedAnnotation, EncodedValue, FieldAnnotation, MethodAnnotation,
-    ParameterAnnotation, Result,
+    AnnotationDirectory, AnnotationElement, AnnotationItem, AnnotationSet, AnnotationSetRefList,
+    AnnotationVisibility, DexError, EncodedAnnotation, EncodedValue, FieldAnnotation,
+    MethodAnnotation, ParameterAnnotation, Result,
 };
 
 use crate::leb128::read_uleb128_at;
@@ -137,6 +137,16 @@ pub fn parse_annotation_set(data: &[u8], offset: u32) -> Result<AnnotationSet> {
         entries.push(read_u32(data, base + 4 + i * 4)?);
     }
     Ok(AnnotationSet { entries })
+}
+
+pub fn parse_annotation_set_ref_list(data: &[u8], offset: u32) -> Result<AnnotationSetRefList> {
+    let base = u32_to_usize(offset, "annotation_set_ref_list")?;
+    let size = read_u32(data, base)? as usize;
+    let mut entries = Vec::with_capacity(size);
+    for i in 0..size {
+        entries.push(read_u32(data, base + 4 + i * 4)?);
+    }
+    Ok(AnnotationSetRefList { entries })
 }
 
 pub fn parse_annotation_directory(data: &[u8], offset: u32) -> Result<AnnotationDirectory> {

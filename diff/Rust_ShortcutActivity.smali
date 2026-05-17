@@ -2,15 +2,19 @@
 .super Ll/ۗۢ;
 .source "ShortcutActivity.java"
 
-.field public static Lbin/mt/plus/ShortcutActivity;->ۘۖ:Ljava/lang/Boolean;
-.field private static final Lbin/mt/plus/ShortcutActivity;->۠ܶۧ:[S
-.field public static final Lbin/mt/plus/ShortcutActivity;->ܽۖ:Ll/۠᩺۟;
+# static fields
+.field public static ۘۖ:Ljava/lang/Boolean;
 
-.method public static constructor Lbin/mt/plus/ShortcutActivity;-><clinit>()V
+.field private static final ۠ܶۧ:[S
+
+.field public static final ܽۖ:Ll/۠᩺۟;
+
+# direct methods
+.method public static constructor <clinit>()V
     .registers 21
     const/16 v0, 0x184
     new-array v0, v0, [S
-    fill-array-data v0, :cond_2e6
+    fill-array-data v0, :array_2e6
     sput-object v0, Lbin/mt/plus/ShortcutActivity;->۠ܶۧ:[S
     const/4 v0, 0x0
     const/4 v1, 0x0
@@ -33,7 +37,7 @@
     move-result v16
     xor-int v16, v16, v14
     :goto_23
-    sparse-switch v16, :cond_29c
+    sparse-switch v16, :sswitch_data_29c
     move-object/from16 v16, v0
     move-object/from16 v17, v1
     move/from16 v18, v2
@@ -434,428 +438,428 @@
     move-result v0
     xor-int/2addr v0, v14
     goto/16 :goto_1a8
-    :cond_29c
+    :sswitch_data_29c
     .sparse-switch
-        -54079251 -> :cond_22d
-        -33557498 -> :sswitch_221
-        -12569323 -> :sswitch_1e7
-        -9824363 -> :sswitch_1bf
-        -8787042 -> :sswitch_19e
-        -8752249 -> :sswitch_193
-        -6723454 -> :sswitch_189
-        -6717156 -> :sswitch_15f
-        -6575374 -> :cond_151
-        -6490448 -> :sswitch_120
-        -3083367 -> :sswitch_109
-        -3067227 -> :sswitch_da
-        -1907860 -> :goto_a6
-        -1904462 -> :sswitch_7b
-        -1753904 -> :sswitch_70
-        -1742362 -> :sswitch_41
-        -1737566 -> :sswitch_20
-        -1314777 -> :sswitch_11
+        -0x3392f13 -> :cond_22d
+        -0x2000bfa -> +545
+        -0xbfcaeb -> +487
+        -0x95e86b -> +447
+        -0x861462 -> +414
+        -0x858c79 -> +403
+        -0x66977e -> +393
+        -0x667ee4 -> +351
+        -0x64550e -> :cond_151
+        -0x630950 -> +288
+        -0x2f0c67 -> +265
+        -0x2ecd5b -> +218
+        -0x1d1c94 -> :goto_a6
+        -0x1d0f4e -> +123
+        -0x1ac330 -> +112
+        -0x1a961a -> +65
+        -0x1a835e -> +32
+        -0x140fd9 -> +17
     .end sparse-switch
-    :cond_2e6
+    :array_2e6
     .array-data 2
-        0x0616
-        0xf13f
-        0xf124
-        0xf123
-        0xf13e
-        0xf138
-        0xf12f
-        0xf139
-        0xf138
-        0xf13f
-        0x059e
-        0x75e8
-        0x9379
-        0x9d04
-        0x001c
-        0x0007
-        0x0007
-        0x0004
-        0x0045
-        0x0007
-        0x0018
-        0x000d
-        0x001a
-        0x0009
-        0x001c
-        0x0001
-        0x0007
-        0x0006
-        0x001d
-        0x0018
-        0x000c
-        0x0009
-        0x001c
-        0x000d
-        0x0024
-        0x0009
-        0x000a
-        0x000d
-        0x0004
-        0x0009
-        0x000b
-        0x000b
-        0x000d
-        0x0006
-        0x001c
-        0x002b
-        0x0007
-        0x0004
-        0x0007
-        0x001a
-        0x0021
-        0x000b
-        0x0007
-        0x0006
-        0x000e
-        0x0007
-        0x0004
-        0x000c
-        0x000d
-        0x001a
-        0x002b
-        0x0007
-        0x0004
-        0x0007
-        0x001a
-        0x0021
-        0x000b
-        0x0007
-        0x0006
-        0x963e
-        0x6bb0
-        0x9985
-        0x6135
-        0x80ed
-        0x4f89
-        0x0001
-        0x001b
-        0x002c
-        0x0001
-        0x001a
-        0x0a61
-        0xd71d
-        0xd702
-        0xd717
-        0xd700
-        0xd713
-        0xd706
-        0xd71b
-        0xd71d
-        0xd71c
-        0xd702
-        0xd713
-        0xd706
-        0xd71a
-        0xd706
-        0xd71d
-        0xd71d
-        0xd71e
-        0xd75f
-        0xd717
-        0xd70a
-        0xd706
-        0xd700
-        0xd713
-        0xd711
-        0xd706
-        0xd75f
-        0xd713
-        0xd702
-        0xd719
-        0xd717
-        0xd716
-        0xd71b
-        0xd706
-        0xd75f
-        0xd706
-        0xd717
-        0xd70a
-        0xd706
-        0xd71d
-        0xd702
-        0xd717
-        0xd71c
-        0xd75f
-        0xd71c
-        0xd701
-        0xd71e
-        0xd71d
-        0xd711
-        0xd713
-        0xd706
-        0xd717
-        0xd75f
-        0xd711
-        0xd71e
-        0xd71b
-        0xd711
-        0xd719
-        0xd706
-        0xd71d
-        0xd71d
-        0xd71e
-        0xd75f
-        0xd711
-        0xd71d
-        0xd71e
-        0xd71d
-        0xd700
-        0xd75f
-        0xd702
-        0xd71b
-        0xd711
-        0xd719
-        0xd717
-        0xd700
-        0xd71e
-        0xd71d
-        0xd711
-        0xd713
-        0xd706
-        0xd717
-        0xd706
-        0xd71d
-        0xd71d
-        0xd71e
-        0xd75f
-        0xd706
-        0xd717
-        0xd700
-        0xd71f
-        0xd71b
-        0xd71c
-        0xd713
-        0xd71e
-        0xd706
-        0xd71d
-        0xd71d
-        0xd71e
-        0xd75f
-        0xd701
-        0xd71b
-        0xd715
-        0xd71c
-        0xd713
-        0xd706
-        0xd707
-        0xd700
-        0xd717
-        0xd75f
-        0xd719
-        0xd717
-        0xd70b
-        0xd706
-        0xd71d
-        0xd71d
-        0xd71e
-        0xd75f
-        0xd713
-        0xd711
-        0xd706
-        0xd71b
-        0xd704
-        0xd71b
-        0xd706
-        0xd70b
-        0xd75f
-        0xd700
-        0xd717
-        0xd711
-        0xd71d
-        0xd700
-        0xd716
-        0xd715
-        0xd71d
-        0xd706
-        0xd71d
-        0xd75f
-        0xd71d
-        0xd700
-        0xd75f
-        0xd71e
-        0xd71d
-        0xd711
-        0xd713
-        0xd706
-        0xd717
-        0xd706
-        0xd71d
-        0xd71d
-        0xd71e
-        0xd75f
-        0xd702
-        0xd71e
-        0xd707
-        0xd715
-        0xd71b
-        0xd71c
-        0xd75f
-        0xd71f
-        0xd713
-        0xd71c
-        0xd713
-        0xd715
-        0xd717
-        0xd715
-        0xd71d
-        0xd706
-        0xd71d
-        0xd706
-        0xd71d
-        0xd71d
-        0xd71e
-        0xd75f
-        0xd701
-        0xd71f
-        0xd713
-        0xd71e
-        0xd71b
-        0xd75f
-        0xd703
-        0xd707
-        0xd717
-        0xd700
-        0xd70b
-        0xd717
-        0xd70a
-        0xd717
-        0xd711
-        0xd75f
-        0xd701
-        0xd711
-        0xd700
-        0xd71b
-        0xd702
-        0xd706
-        0xd706
-        0xd71d
-        0xd71d
-        0xd71e
-        0xd75f
-        0xd706
-        0xd707
-        0xd706
-        0xd71d
-        0xd700
-        0xd71b
-        0xd713
-        0xd71e
-        0xd706
-        0xd71d
-        0xd71d
-        0xd71e
-        0xd75f
-        0xd700
-        0xd717
-        0xd71f
-        0xd71d
-        0xd706
-        0xd717
-        0xd75f
-        0xd71f
-        0xd713
-        0xd71c
-        0xd713
-        0xd715
-        0xd717
-        0xd706
-        0xd71d
-        0xd71d
-        0xd71e
-        0xd75f
-        0xd700
-        0xd717
-        0xd711
-        0xd70b
-        0xd711
-        0xd71e
-        0xd717
-        0xd75f
-        0xd710
-        0xd71b
-        0xd71c
-        0xd706
-        0xd71d
-        0xd71d
-        0xd71e
-        0xd75f
-        0xd713
-        0xd702
-        0xd702
-        0xd75f
-        0xd702
-        0xd700
-        0xd71d
-        0xd706
-        0xd717
-        0xd711
-        0xd706
-        0xd706
-        0xd71d
-        0xd71d
-        0xd71e
-        0xd75f
-        0xd706
-        0xd717
-        0xd70a
-        0xd706
-        0xd75f
-        0xd717
-        0xd716
-        0xd71b
-        0xd706
-        0xd71d
-        0xd700
-        0xd713
-        0xd71c
-        0xd716
-        0xd700
-        0xd71d
-        0xd71b
-        0xd716
-        0xd75c
-        0xd71b
-        0xd71c
-        0xd706
-        0xd717
-        0xd71c
-        0xd706
-        0xd75c
-        0xd713
-        0xd711
-        0xd706
-        0xd71b
-        0xd71d
-        0xd71c
-        0xd75c
-        0xd724
-        0xd73b
-        0xd737
-        0xd725
-        0xd701
-        0xd71a
-        0xd71d
-        0xd700
-        0xd706
-        0xd711
-        0xd707
-        0xd706
+        0x616s
+        -0xec1s
+        -0xedcs
+        -0xedds
+        -0xec2s
+        -0xec8s
+        -0xed1s
+        -0xec7s
+        -0xec8s
+        -0xec1s
+        0x59es
+        0x75e8s
+        -0x6c87s
+        -0x62fcs
+        0x1cs
+        0x7s
+        0x7s
+        0x4s
+        0x45s
+        0x7s
+        0x18s
+        0xds
+        0x1as
+        0x9s
+        0x1cs
+        0x1s
+        0x7s
+        0x6s
+        0x1ds
+        0x18s
+        0xcs
+        0x9s
+        0x1cs
+        0xds
+        0x24s
+        0x9s
+        0xas
+        0xds
+        0x4s
+        0x9s
+        0xbs
+        0xbs
+        0xds
+        0x6s
+        0x1cs
+        0x2bs
+        0x7s
+        0x4s
+        0x7s
+        0x1as
+        0x21s
+        0xbs
+        0x7s
+        0x6s
+        0xes
+        0x7s
+        0x4s
+        0xcs
+        0xds
+        0x1as
+        0x2bs
+        0x7s
+        0x4s
+        0x7s
+        0x1as
+        0x21s
+        0xbs
+        0x7s
+        0x6s
+        -0x69c2s
+        0x6bb0s
+        -0x667bs
+        0x6135s
+        -0x7f13s
+        0x4f89s
+        0x1s
+        0x1bs
+        0x2cs
+        0x1s
+        0x1as
+        0xa61s
+        -0x28e3s
+        -0x28fes
+        -0x28e9s
+        -0x2900s
+        -0x28eds
+        -0x28fas
+        -0x28e5s
+        -0x28e3s
+        -0x28e4s
+        -0x28fes
+        -0x28eds
+        -0x28fas
+        -0x28e6s
+        -0x28fas
+        -0x28e3s
+        -0x28e3s
+        -0x28e2s
+        -0x28a1s
+        -0x28e9s
+        -0x28f6s
+        -0x28fas
+        -0x2900s
+        -0x28eds
+        -0x28efs
+        -0x28fas
+        -0x28a1s
+        -0x28eds
+        -0x28fes
+        -0x28e7s
+        -0x28e9s
+        -0x28eas
+        -0x28e5s
+        -0x28fas
+        -0x28a1s
+        -0x28fas
+        -0x28e9s
+        -0x28f6s
+        -0x28fas
+        -0x28e3s
+        -0x28fes
+        -0x28e9s
+        -0x28e4s
+        -0x28a1s
+        -0x28e4s
+        -0x28ffs
+        -0x28e2s
+        -0x28e3s
+        -0x28efs
+        -0x28eds
+        -0x28fas
+        -0x28e9s
+        -0x28a1s
+        -0x28efs
+        -0x28e2s
+        -0x28e5s
+        -0x28efs
+        -0x28e7s
+        -0x28fas
+        -0x28e3s
+        -0x28e3s
+        -0x28e2s
+        -0x28a1s
+        -0x28efs
+        -0x28e3s
+        -0x28e2s
+        -0x28e3s
+        -0x2900s
+        -0x28a1s
+        -0x28fes
+        -0x28e5s
+        -0x28efs
+        -0x28e7s
+        -0x28e9s
+        -0x2900s
+        -0x28e2s
+        -0x28e3s
+        -0x28efs
+        -0x28eds
+        -0x28fas
+        -0x28e9s
+        -0x28fas
+        -0x28e3s
+        -0x28e3s
+        -0x28e2s
+        -0x28a1s
+        -0x28fas
+        -0x28e9s
+        -0x2900s
+        -0x28e1s
+        -0x28e5s
+        -0x28e4s
+        -0x28eds
+        -0x28e2s
+        -0x28fas
+        -0x28e3s
+        -0x28e3s
+        -0x28e2s
+        -0x28a1s
+        -0x28ffs
+        -0x28e5s
+        -0x28ebs
+        -0x28e4s
+        -0x28eds
+        -0x28fas
+        -0x28f9s
+        -0x2900s
+        -0x28e9s
+        -0x28a1s
+        -0x28e7s
+        -0x28e9s
+        -0x28f5s
+        -0x28fas
+        -0x28e3s
+        -0x28e3s
+        -0x28e2s
+        -0x28a1s
+        -0x28eds
+        -0x28efs
+        -0x28fas
+        -0x28e5s
+        -0x28fcs
+        -0x28e5s
+        -0x28fas
+        -0x28f5s
+        -0x28a1s
+        -0x2900s
+        -0x28e9s
+        -0x28efs
+        -0x28e3s
+        -0x2900s
+        -0x28eas
+        -0x28ebs
+        -0x28e3s
+        -0x28fas
+        -0x28e3s
+        -0x28a1s
+        -0x28e3s
+        -0x2900s
+        -0x28a1s
+        -0x28e2s
+        -0x28e3s
+        -0x28efs
+        -0x28eds
+        -0x28fas
+        -0x28e9s
+        -0x28fas
+        -0x28e3s
+        -0x28e3s
+        -0x28e2s
+        -0x28a1s
+        -0x28fes
+        -0x28e2s
+        -0x28f9s
+        -0x28ebs
+        -0x28e5s
+        -0x28e4s
+        -0x28a1s
+        -0x28e1s
+        -0x28eds
+        -0x28e4s
+        -0x28eds
+        -0x28ebs
+        -0x28e9s
+        -0x28ebs
+        -0x28e3s
+        -0x28fas
+        -0x28e3s
+        -0x28fas
+        -0x28e3s
+        -0x28e3s
+        -0x28e2s
+        -0x28a1s
+        -0x28ffs
+        -0x28e1s
+        -0x28eds
+        -0x28e2s
+        -0x28e5s
+        -0x28a1s
+        -0x28fds
+        -0x28f9s
+        -0x28e9s
+        -0x2900s
+        -0x28f5s
+        -0x28e9s
+        -0x28f6s
+        -0x28e9s
+        -0x28efs
+        -0x28a1s
+        -0x28ffs
+        -0x28efs
+        -0x2900s
+        -0x28e5s
+        -0x28fes
+        -0x28fas
+        -0x28fas
+        -0x28e3s
+        -0x28e3s
+        -0x28e2s
+        -0x28a1s
+        -0x28fas
+        -0x28f9s
+        -0x28fas
+        -0x28e3s
+        -0x2900s
+        -0x28e5s
+        -0x28eds
+        -0x28e2s
+        -0x28fas
+        -0x28e3s
+        -0x28e3s
+        -0x28e2s
+        -0x28a1s
+        -0x2900s
+        -0x28e9s
+        -0x28e1s
+        -0x28e3s
+        -0x28fas
+        -0x28e9s
+        -0x28a1s
+        -0x28e1s
+        -0x28eds
+        -0x28e4s
+        -0x28eds
+        -0x28ebs
+        -0x28e9s
+        -0x28fas
+        -0x28e3s
+        -0x28e3s
+        -0x28e2s
+        -0x28a1s
+        -0x2900s
+        -0x28e9s
+        -0x28efs
+        -0x28f5s
+        -0x28efs
+        -0x28e2s
+        -0x28e9s
+        -0x28a1s
+        -0x28f0s
+        -0x28e5s
+        -0x28e4s
+        -0x28fas
+        -0x28e3s
+        -0x28e3s
+        -0x28e2s
+        -0x28a1s
+        -0x28eds
+        -0x28fes
+        -0x28fes
+        -0x28a1s
+        -0x28fes
+        -0x2900s
+        -0x28e3s
+        -0x28fas
+        -0x28e9s
+        -0x28efs
+        -0x28fas
+        -0x28fas
+        -0x28e3s
+        -0x28e3s
+        -0x28e2s
+        -0x28a1s
+        -0x28fas
+        -0x28e9s
+        -0x28f6s
+        -0x28fas
+        -0x28a1s
+        -0x28e9s
+        -0x28eas
+        -0x28e5s
+        -0x28fas
+        -0x28e3s
+        -0x2900s
+        -0x28eds
+        -0x28e4s
+        -0x28eas
+        -0x2900s
+        -0x28e3s
+        -0x28e5s
+        -0x28eas
+        -0x28a4s
+        -0x28e5s
+        -0x28e4s
+        -0x28fas
+        -0x28e9s
+        -0x28e4s
+        -0x28fas
+        -0x28a4s
+        -0x28eds
+        -0x28efs
+        -0x28fas
+        -0x28e5s
+        -0x28e3s
+        -0x28e4s
+        -0x28a4s
+        -0x28dcs
+        -0x28c5s
+        -0x28c9s
+        -0x28dbs
+        -0x28ffs
+        -0x28e6s
+        -0x28e3s
+        -0x2900s
+        -0x28fas
+        -0x28efs
+        -0x28f9s
+        -0x28fas
     .end array-data
 .end method
 
-.method public constructor Lbin/mt/plus/ShortcutActivity;-><init>()V
+.method public constructor <init>()V
     .registers 1
     .line 37
     invoke-direct {v0}, Ll/ۗۢ;-><init>()V
     return-void
 .end method
 
-.method public static Lbin/mt/plus/ShortcutActivity;->ۖ(Ljava/lang/String;)Landroid/graphics/Bitmap;
+.method public static ۖ(Ljava/lang/String;)Landroid/graphics/Bitmap;
     .registers 14
     const/4 v0, 0x0
     const/4 v1, 0x0
@@ -885,7 +889,7 @@
     :goto_22
     add-int/2addr v10, v9
     :goto_23
-    sparse-switch v10, :cond_214
+    sparse-switch v10, :sswitch_data_214
     .line 77
     invoke-static {}, Ll/ۤۙ;->ᩴ֫֫()I
     sget-boolean v9, Ll/ۛܶ;->ۙ᩵᩶:Z
@@ -1236,35 +1240,35 @@
     move-object v0, v9
     goto/16 :goto_23
     nop
-    :cond_214
+    :sswitch_data_214
     .sparse-switch
-        -45905535 -> :sswitch_e5
-        -43680523 -> :sswitch_b0
-        -11341447 -> :sswitch_6d
-        -11271964 -> :sswitch_4e
-        -6719300 -> :sswitch_16e
-        -6568653 -> :sswitch_132
-        -3095238 -> :sswitch_28
-        -1911108 -> :sswitch_152
-        -1892587 -> :sswitch_1c1
-        -1759846 -> :sswitch_49
-        -1755547 -> :sswitch_44
-        1737145 -> :sswitch_18c
-        1738758 -> :sswitch_108
-        1763878 -> :sswitch_6c
-        1894434 -> :sswitch_1aa
-        1899402 -> :sswitch_13b
-        1901601 -> :sswitch_c
-        3100547 -> :sswitch_6d
-        4616777 -> :sswitch_33
-        4953471 -> :sswitch_148
-        11878908 -> :sswitch_3c
-        18108124 -> :sswitch_4d
-        45925720 -> :sswitch_6e
+        -0x2bc767f -> +229
+        -0x29a830b -> +176
+        -0xad0e87 -> +109
+        -0xabff1c -> +78
+        -0x668744 -> +366
+        -0x643acd -> +306
+        -0x2f3ac6 -> +40
+        -0x1d2944 -> +338
+        -0x1ce0eb -> +449
+        -0x1ada66 -> +73
+        -0x1ac99b -> +68
+        0x1a81b9 -> +396
+        0x1a8806 -> +264
+        0x1aea26 -> +108
+        0x1ce822 -> +426
+        0x1cfb8a -> +315
+        0x1d0421 -> +12
+        0x2f4f83 -> +109
+        0x467249 -> +51
+        0x4b957f -> +328
+        0xb541fc -> +60
+        0x1144edc -> +77
+        0x2bcc558 -> +110
     .end sparse-switch
 .end method
 
-.method public static Lbin/mt/plus/ShortcutActivity;->ۖ(Ljava/lang/String;Landroid/graphics/Bitmap;)V
+.method public static ۖ(Ljava/lang/String;Landroid/graphics/Bitmap;)V
     .registers 10
     const/4 v0, 0x0
     const/4 v1, 0x0
@@ -1291,7 +1295,7 @@
     :goto_1e
     add-int/2addr v6, v5
     :goto_1f
-    sparse-switch v6, :cond_1e6
+    sparse-switch v6, :sswitch_data_1e6
     .line 17
     sget v5, Ll/ۘ᩹;->ۛۡ᩵:I
     if-gez v5, :cond_137
@@ -1620,36 +1624,36 @@
     invoke-static {v5, v7}, Ll/ۡ۫;->۠ۢ᩶(Ljava/lang/Object;I)C
     move-result v5
     goto/16 :goto_1e
-    :cond_1e6
+    :sswitch_data_1e6
     .sparse-switch
-        -28059417 -> :sswitch_21
-        -28026678 -> :sswitch_e4
-        -8465690 -> :sswitch_5e
-        -7171868 -> :sswitch_5a
-        -6570478 -> :sswitch_1b
-        -6564546 -> :sswitch_63
-        -6564325 -> :sswitch_8d
-        -6556519 -> :sswitch_134
-        -1830075 -> :sswitch_151
-        -1749696 -> :sswitch_f5
-        -1442329 -> :sswitch_1aa
-        1445542 -> :sswitch_3d
-        1463967 -> :sswitch_ce
-        1745108 -> :sswitch_114
-        1746345 -> :sswitch_16d
-        1748464 -> :sswitch_16
-        1754277 -> :sswitch_8
-        1834066 -> :sswitch_64
-        1842575 -> :sswitch_127
-        3071856 -> :sswitch_45
-        3077753 -> :sswitch_8c
-        6575170 -> :sswitch_10
-        7565456 -> :sswitch_62
-        9819940 -> :sswitch_18d
+        -0x1ac2719 -> +33
+        -0x1aba736 -> +228
+        -0x812d1a -> +94
+        -0x6d6f1c -> +90
+        -0x6441ee -> +27
+        -0x642ac2 -> +99
+        -0x6429e5 -> +141
+        -0x640b67 -> +308
+        -0x1becbb -> +337
+        -0x1ab2c0 -> +245
+        -0x160219 -> +426
+        0x160ea6 -> +61
+        0x16569f -> +206
+        0x1aa0d4 -> +276
+        0x1aa5a9 -> +365
+        0x1aadf0 -> +22
+        0x1ac4a5 -> +8
+        0x1bfc52 -> +100
+        0x1c1d8f -> +295
+        0x2edf70 -> +69
+        0x2ef679 -> +140
+        0x645442 -> +16
+        0x737090 -> +98
+        0x95d724 -> +397
     .end sparse-switch
 .end method
 
-.method public static Lbin/mt/plus/ShortcutActivity;->ۖ(Ll/۠ᩴۡ;Z)V
+.method public static ۖ(Ll/۠ᩴۡ;Z)V
     .registers 88
     move-object/from16 v0, v86
     const/4 v4, 0x0
@@ -1769,7 +1773,7 @@
     move-object/from16 v25, v14
     move-object/from16 v14, v85
     :goto_d6
-    sparse-switch v2, :cond_1628
+    sparse-switch v2, :sswitch_data_1628
     move/from16 v45, v0
     move/from16 v44, v3
     invoke-static {}, Ll/ۙۙ;->ܳܶۖ()I
@@ -4811,90 +4815,90 @@
     :goto_1624
     move/from16 v38, v47
     goto/16 :goto_d6
-    :cond_1628
+    :sswitch_data_1628
     .sparse-switch
-        -98440750 -> :sswitch_7dc
-        -25471098 -> :sswitch_dbb
-        -21108667 -> :sswitch_4f8
-        -17737715 -> :sswitch_132
-        -17712981 -> :sswitch_310
-        -17692677 -> :sswitch_25f
-        -17675380 -> :sswitch_a07
-        -17122641 -> :sswitch_fd0
-        -16983404 -> :sswitch_c45
-        -16943218 -> :sswitch_1d9
-        -16839067 -> :sswitch_3b5
-        -12575626 -> :sswitch_12
-        -11991002 -> :sswitch_b77
-        -11931542 -> :sswitch_134f
-        -11900858 -> :sswitch_748
-        -6701483 -> :sswitch_205
-        -6579059 -> :sswitch_2d9
-        -6547629 -> :sswitch_223
-        -3411078 -> :sswitch_a65
-        -3256879 -> :sswitch_747
-        -3253861 -> :sswitch_11e5
-        -3113718 -> :sswitch_4ac
-        -1985744 -> :sswitch_81
-        -1965832 -> :sswitch_458
-        -1912896 -> :sswitch_404
-        -1886829 -> :sswitch_5d5
-        -1886470 -> :sswitch_6bb
-        -1828527 -> :sswitch_8d8
-        -1822375 -> :sswitch_291
-        -1818762 -> :sswitch_1ec
-        -1803326 -> :sswitch_d1e
-        -1765868 -> :sswitch_513
-        -1752716 -> :sswitch_1d1
-        -1750625 -> :sswitch_1110
-        -1749574 -> :sswitch_896
-        -1747909 -> :sswitch_346
-        -1747535 -> :sswitch_629
-        -1737377 -> :sswitch_149e
-        -1728829 -> :sswitch_420
-        1444572 -> :sswitch_97b
-        1738092 -> :sswitch_af0
-        1739800 -> :sswitch_23b
-        1743598 -> :sswitch_4f4
-        1745788 -> :sswitch_541
-        1754582 -> :sswitch_3cb
-        1756471 -> :sswitch_399
-        1757187 -> :sswitch_231
-        1823678 -> :sswitch_c89
-        1826759 -> :sswitch_cc8
-        1827048 -> :sswitch_594
-        2244794 -> :sswitch_45e
-        2343187 -> :sswitch_1f8
-        2416407 -> :sswitch_12d8
-        2419898 -> :sswitch_f05
-        2434597 -> :sswitch_33f
-        2540557 -> :sswitch_13f9
-        2554693 -> :sswitch_713
-        2555301 -> :sswitch_16b
-        2557297 -> :sswitch_bf5
-        3085871 -> :sswitch_480
-        3093355 -> :sswitch_e4b
-        3093452 -> :sswitch_2f4
-        3255443 -> :sswitch_797
-        6561173 -> :sswitch_36f
-        6563530 -> :sswitch_853
-        6565157 -> :sswitch_915
-        6571373 -> :sswitch_66b
-        6574777 -> :sswitch_3e
-        6725029 -> :sswitch_fb
-        8859928 -> :sswitch_824
-        11590448 -> :sswitch_129b
-        11651121 -> :sswitch_1e0
-        11946862 -> :sswitch_6ed
-        12506365 -> :sswitch_20e
-        44577338 -> :sswitch_1c1
-        44590712 -> :sswitch_2b3
-        45901765 -> :sswitch_433
-        45909308 -> :sswitch_1063
+        -0x5de162e -> +2012
+        -0x184a87a -> +3515
+        -0x14217bb -> +1272
+        -0x10ea7f3 -> +306
+        -0x10e4755 -> +784
+        -0x10df805 -> +607
+        -0x10db474 -> +2567
+        -0x1054551 -> +4048
+        -0x103256c -> +3141
+        -0x1028872 -> +473
+        -0x100f19b -> +949
+        -0xbfe38a -> +18
+        -0xb6f7da -> +2935
+        -0xb60f96 -> +4943
+        -0xb597ba -> +1864
+        -0x6641ab -> +517
+        -0x646373 -> +729
+        -0x63e8ad -> +547
+        -0x340c86 -> +2661
+        -0x31b22f -> +1863
+        -0x31a665 -> +4581
+        -0x2f82f6 -> +1196
+        -0x1e4cd0 -> +129
+        -0x1dff08 -> +1112
+        -0x1d3040 -> +1028
+        -0x1cca6d -> +1493
+        -0x1cc906 -> +1723
+        -0x1be6af -> +2264
+        -0x1bcea7 -> +657
+        -0x1bc08a -> +492
+        -0x1b843e -> +3358
+        -0x1af1ec -> +1299
+        -0x1abe8c -> +465
+        -0x1ab661 -> +4368
+        -0x1ab246 -> +2198
+        -0x1aabc5 -> +838
+        -0x1aaa4f -> +1577
+        -0x1a82a1 -> +5278
+        -0x1a613d -> +1056
+        0x160adc -> +2427
+        0x1a856c -> +2800
+        0x1a8c18 -> +571
+        0x1a9aee -> +1268
+        0x1aa37c -> +1345
+        0x1ac5d6 -> +971
+        0x1acd37 -> +921
+        0x1ad003 -> +561
+        0x1bd3be -> +3209
+        0x1bdfc7 -> +3272
+        0x1be0e8 -> +1428
+        0x2240ba -> +1118
+        0x23c113 -> +504
+        0x24df17 -> +4824
+        0x24ecba -> +3845
+        0x252625 -> +831
+        0x26c40d -> +5113
+        0x26fb45 -> +1811
+        0x26fda5 -> +363
+        0x270571 -> +3061
+        0x2f162f -> +1152
+        0x2f336b -> +3659
+        0x2f33cc -> +756
+        0x31ac93 -> +1943
+        0x641d95 -> +879
+        0x6426ca -> +2131
+        0x642d25 -> +2325
+        0x64456d -> +1643
+        0x6452b9 -> +62
+        0x669da5 -> +251
+        0x873118 -> +2084
+        0xb0db30 -> +4763
+        0xb1c831 -> +480
+        0xb64b6e -> +1773
+        0xbed4fd -> +526
+        0x2a8323a -> +449
+        0x2a86678 -> +691
+        0x2bc67c5 -> +1075
+        0x2bc853c -> +4195
     .end sparse-switch
 .end method
 
-.method public static Lbin/mt/plus/ShortcutActivity;->᩵()Z
+.method public static ᩵()Z
     .registers 7
     const/4 v0, 0x0
     sget v1, Ll/ܰۡ;->ۢᩳۛ:I
@@ -4906,7 +4910,7 @@
     :goto_b
     xor-int/2addr v3, v2
     :goto_c
-    sparse-switch v3, :cond_188
+    sparse-switch v3, :sswitch_data_188
     .line 262
     invoke-static {}, Ll/ܽ᩶;->ۖܶ᩹()I
     invoke-static {}, Ll/ۤ֫;->֡ۖۛ()I
@@ -5159,29 +5163,29 @@
     add-int/2addr v3, v4
     goto/16 :goto_c
     nop
-    :cond_188
+    :sswitch_data_188
     .sparse-switch
-        1311041 -> :cond_2c
-        1728804 -> :sswitch_77
-        1741007 -> :sswitch_13e
-        1767334 -> :sswitch_39
-        1768133 -> :sswitch_145
-        1815970 -> :sswitch_114
-        1820707 -> :sswitch_31
-        1836377 -> :sswitch_6a
-        1843648 -> :sswitch_94
-        1912699 -> :sswitch_53
-        1988909 -> :sswitch_ad
-        6568919 -> :sswitch_e
-        11880301 -> :sswitch_cc
-        12180171 -> :sswitch_f0
-        14220396 -> :sswitch_da
-        14308342 -> :sswitch_17
-        14824936 -> :sswitch_24
+        0x140141 -> :cond_2c
+        0x1a6124 -> +119
+        0x1a90cf -> +318
+        0x1af7a6 -> +57
+        0x1afac5 -> +325
+        0x1bb5a2 -> +276
+        0x1bc823 -> +49
+        0x1c0559 -> +106
+        0x1c21c0 -> +148
+        0x1d2f7b -> +83
+        0x1e592d -> +173
+        0x643bd7 -> +14
+        0xb5476d -> +204
+        0xb9dacb -> +240
+        0xd8fc6c -> +218
+        0xda53f6 -> +23
+        0xe235e8 -> +36
     .end sparse-switch
 .end method
 
-.method public static Lbin/mt/plus/ShortcutActivity;->᩸(Ljava/lang/String;)V
+.method public static ᩸(Ljava/lang/String;)V
     .registers 2
     .line 292
     sget-object v0, Lbin/mt/plus/ShortcutActivity;->ܽۖ:Ll/۠᩺۟;
@@ -5191,7 +5195,8 @@
     return-void
 .end method
 
-.method public final Lbin/mt/plus/ShortcutActivity;->onCreate(Landroid/os/Bundle;)V
+# virtual methods
+.method public final onCreate(Landroid/os/Bundle;)V
     .registers 41
     move-object/from16 v0, v39
     const/4 v4, 0x0
@@ -5269,7 +5274,7 @@
     const/16 v31, 0x0
     const/16 v34, 0x0
     :goto_78
-    sparse-switch v2, :cond_828
+    sparse-switch v2, :sswitch_data_828
     move-object/from16 v36, v3
     move/from16 v35, v6
     move/from16 v37, v11
@@ -6093,7 +6098,7 @@
     const-class v0, Ll/᩶֨۟;
     const/4 v2, 0x1
     const/high16 v11, 0x1000
-    sparse-switch v35, :cond_922
+    sparse-switch v35, :sswitch_data_922
     goto/16 :goto_7a0
     const-string v2, "۫᩷ܰ"
     const/4 v7, 0x0
@@ -6495,92 +6500,92 @@
     :goto_824
     move/from16 v11, v37
     goto/16 :goto_78
-    :cond_828
+    :sswitch_data_828
     .sparse-switch
-        1445053 -> :sswitch_164
-        1458474 -> :sswitch_14c
-        1745504 -> :sswitch_291
-        1749319 -> :sswitch_218
-        1751549 -> :sswitch_347
-        1752304 -> :goto_2d6
-        1755063 -> :sswitch_20f
-        1760195 -> :sswitch_19d
-        1767995 -> :sswitch_2d
-        1898507 -> :sswitch_2ed
-        1899401 -> :sswitch_205
-        1902364 -> :sswitch_364
-        1915450 -> :goto_2bc
-        1915928 -> :sswitch_6d5
-        1987121 -> :sswitch_740
-        1988017 -> :sswitch_31e
-        1990915 -> :sswitch_401
-        2537307 -> :sswitch_179
-        2783998 -> :sswitch_75
-        3078976 -> :sswitch_23c
-        3088927 -> :sswitch_13d
-        3099663 -> :sswitch_734
-        3099844 -> :sswitch_51c
-        3102142 -> :sswitch_395
-        3130108 -> :sswitch_1fb
-        3232715 -> :sswitch_4c0
-        3257136 -> :sswitch_89
-        3261084 -> :sswitch_4ac
-        3261819 -> :sswitch_11c
-        4259107 -> :sswitch_e6
-        4283534 -> :sswitch_1b1
-        4499097 -> :sswitch_45c
-        6559314 -> :sswitch_1d1
-        6564089 -> :sswitch_1f2
-        6564934 -> :sswitch_6d9
-        6577164 -> :sswitch_441
-        6577262 -> :sswitch_483
-        6578008 -> :sswitch_18c
-        6721785 -> :sswitch_672
-        6730080 -> :sswitch_1c7
-        9722339 -> :sswitch_303
-        9829660 -> :sswitch_3b9
-        10260383 -> :sswitch_110
-        10397380 -> :sswitch_1bd
-        11346322 -> :sswitch_76f
-        11423946 -> :sswitch_51b
-        11872420 -> :sswitch_d1
-        11926470 -> :sswitch_fb
-        11933042 -> :sswitch_3e1
-        12483974 -> :sswitch_256
-        12514381 -> :sswitch_1db
-        16098375 -> :sswitch_416
-        16111833 -> :sswitch_4ea
-        16384539 -> :sswitch_6aa
-        37969180 -> :sswitch_1e
-        42709236 -> :sswitch_688
-        44204853 -> :sswitch_a6
-        45438207 -> :sswitch_381
-        45864820 -> :sswitch_74d
-        45865746 -> :sswitch_1a7
-        45904824 -> :sswitch_bc
-        45926780 -> :sswitch_270
+        0x160cbd -> +356
+        0x16412a -> +332
+        0x1aa260 -> +657
+        0x1ab147 -> +536
+        0x1ab9fd -> +839
+        0x1abcf0 -> :goto_2d6
+        0x1ac7b7 -> +527
+        0x1adbc3 -> +413
+        0x1afa3b -> +45
+        0x1cf80b -> +749
+        0x1cfb89 -> +517
+        0x1d071c -> +868
+        0x1d3a3a -> :goto_2bc
+        0x1d3c18 -> +1749
+        0x1e5231 -> +1856
+        0x1e55b1 -> +798
+        0x1e6103 -> +1025
+        0x26b75b -> +377
+        0x2a7afe -> +117
+        0x2efb40 -> +572
+        0x2f221f -> +317
+        0x2f4c0f -> +1844
+        0x2f4cc4 -> +1308
+        0x2f55be -> +917
+        0x2fc2fc -> +507
+        0x3153cb -> +1216
+        0x31b330 -> +137
+        0x31c29c -> +1196
+        0x31c57b -> +284
+        0x40fd23 -> +230
+        0x415c8e -> +433
+        0x44a699 -> +1116
+        0x641652 -> +465
+        0x6428f9 -> +498
+        0x642c46 -> +1753
+        0x645c0c -> +1089
+        0x645c6e -> +1155
+        0x645f58 -> +396
+        0x6690f9 -> +1650
+        0x66b160 -> +455
+        0x9459e3 -> +771
+        0x95fd1c -> +953
+        0x9c8f9f -> +272
+        0x9ea6c4 -> +445
+        0xad2192 -> +1903
+        0xae50ca -> +1307
+        0xb528a4 -> +209
+        0xb5fbc6 -> +251
+        0xb61572 -> +993
+        0xbe7d86 -> +598
+        0xbef44d -> +475
+        0xf5a447 -> +1046
+        0xf5d8d9 -> +1258
+        0xfa021b -> +1706
+        0x2435d1c -> +30
+        0x28bb0f4 -> +1672
+        0x2a28335 -> +166
+        0x2b554ff -> +897
+        0x2bbd774 -> +1869
+        0x2bbdb12 -> +423
+        0x2bc73b8 -> +188
+        0x2bcc97c -> +624
     .end sparse-switch
-    :cond_922
+    :sswitch_data_922
     .sparse-switch
-        -2122614245 -> :sswitch_131
-        -1912197360 -> :sswitch_10c
-        -1263242200 -> :sswitch_ef
-        -1212308659 -> :sswitch_e6
-        -1119104947 -> :sswitch_db
-        -1097461934 -> :sswitch_d3
-        -785778927 -> :sswitch_c2
-        -667500459 -> :sswitch_b8
-        -593404262 -> :sswitch_9f
-        -560080238 -> :sswitch_87
-        -474293814 -> :sswitch_6f
-        3178851 -> :sswitch_65
-        24954378 -> :sswitch_5e
-        35253639 -> :sswitch_5b
-        588746739 -> :sswitch_51
-        1041335639 -> :sswitch_4d
-        1721154072 -> :sswitch_33
-        1841977966 -> :sswitch_29
-        2116182360 -> :sswitch_5
+        -0x7e8485e5 -> +305
+        -0x71f9d0f0 -> +268
+        -0x4b4b8bd8 -> +239
+        -0x48425cb3 -> +230
+        -0x42b42fb3 -> +219
+        -0x4169f0ae -> +211
+        -0x2ed608ef -> +194
+        -0x27c93fab -> +184
+        -0x235ea166 -> +159
+        -0x2162256e -> +135
+        -0x1c452636 -> +111
+        0x308163 -> +101
+        0x17cc60a -> +94
+        0x219ed87 -> +91
+        0x23178ff3 -> +81
+        0x3e118557 -> +77
+        0x6696ba18 -> +51
+        0x6dca5a6e -> +41
+        0x7e226158 -> +5
     .end sparse-switch
 .end method
 

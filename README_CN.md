@@ -262,7 +262,7 @@ baksmali list-dex <input.dex|input.apk|input.jar|input.zip>
 - dual-reference invoke-polymorphic decoding。
 - class interface formatting。
 - static field initial value formatting。
-- class、field、method annotation formatting。
+- class、field、method 和 method parameter annotation formatting。
 - debug directive formatting。
 - basic try/catch directive formatting。
 - method handle 和 call site table parsing。
@@ -281,7 +281,7 @@ baksmali list-dex <input.dex|input.apk|input.jar|input.zip>
 - Java 风格 `disassemble --jobs` / `-j` 参数会使用并行 worker thread 格式化 class。
 - Java 风格 `disassemble --api` / `-a` 参数已接入 API-level opcode decoding/formatting，用于 legacy opcode 映射。
 - Java 风格 `disassemble --debug-info` / `--di` 参数控制 `.local`、`.param`、`.line` 等 debug directive 输出。
-- Java 风格 `disassemble --parameter-registers` / `--preg` / `--pr` 参数控制 debug directive 是否使用 `pNN` parameter register 语法。
+- Java 风格 `disassemble --parameter-registers` / `--preg` / `--pr` 参数控制 debug directive 和 instruction operand 是否使用 `pNN` parameter register 语法。
 - Java 风格容器 entry 路径输入，例如 `app.apk/classes2.dex`。
 - 改进 `baksmali --help` 和嵌套 `list --help` 输出，显示 alias、value name 和命令说明。
 - 已将上游 Java baksmali 测试 fixture 复制到 `tests/fixtures/upstream/baksmali`，并增加 Rust fixture inventory/disassembly 测试覆盖。

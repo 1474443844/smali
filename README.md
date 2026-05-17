@@ -262,7 +262,7 @@ Current test coverage includes:
 - dual-reference invoke-polymorphic decoding.
 - class interface formatting.
 - static field initial value formatting.
-- class, field, and method annotation formatting.
+- class, field, method, and method parameter annotation formatting.
 - debug directive formatting.
 - basic try/catch directive formatting.
 - method handle and call site table parsing.
@@ -281,7 +281,7 @@ Current test coverage includes:
 - Java-style `disassemble --jobs` / `-j` option runs class formatting in parallel worker threads.
 - Java-style `disassemble --api` / `-a` option wired into API-level opcode decoding/formatting for legacy opcode mappings.
 - Java-style `disassemble --debug-info` / `--di` option controls `.local`, `.param`, `.line`, and related debug directive output.
-- Java-style `disassemble --parameter-registers` / `--preg` / `--pr` option controls whether debug directives use `pNN` parameter register syntax.
+- Java-style `disassemble --parameter-registers` / `--preg` / `--pr` option controls whether debug directives and instruction operands use `pNN` parameter register syntax.
 - Java-style container entry path input such as `app.apk/classes2.dex`.
 - Improved `baksmali --help` and nested `list --help` output with visible aliases, value names, and command descriptions.
 - copied upstream Java baksmali test fixtures are present under `tests/fixtures/upstream/baksmali` and covered by Rust fixture inventory/disassembly tests.
