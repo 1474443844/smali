@@ -149,6 +149,7 @@ tests/fixtures/upstream/baksmali/smali/      # 复制自 Java baksmali src/test/
 - annotation item、annotation set、annotation directory
 - debug info state-machine opcode
 - 从 DEX map list 中发现 call site id 和 method handle 表
+- hidden API class data restriction flag
 
 ### `baksmali-format`
 
@@ -161,7 +162,7 @@ tests/fixtures/upstream/baksmali/smali/      # 复制自 Java baksmali src/test/
 - `.field`
 - static field 初始值
 - `.method`
-- `.registers`
+- `.registers`，以及可选的 Java baksmali 风格 `.locals`
 - 已支持 operand format 的 decoded instruction。
 - class、field、method annotation。
 - encoded value array 和 subannotation。
@@ -179,6 +180,7 @@ tests/fixtures/upstream/baksmali/smali/      # 复制自 Java baksmali src/test/
   - `.packed-switch`
   - `.sparse-switch`
   - `.array-data`
+- field/method 上的 hidden API restriction flag，例如 `whitelist`, `blacklist`, `greylist-max-q`, `core-platform-api`, `test-api`
 - Java baksmali 风格 section header：static fields、instance fields、direct methods、virtual methods。
 - field/method 声明中的 current-class descriptor 省略，例如输出 `<init>()V` 而不是 `LHello;-><init>()V`。
 - baksmali 风格 branch/payload label，例如 `:goto_23`, `:cond_53`, `:array_2e6`, `:sswitch_data_29c`。
@@ -214,6 +216,7 @@ baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --jobs <n> -o <ou
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --api <api-level> -o <out_dir>
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --debug-info <true|false> -o <out_dir>
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --parameter-registers <true|false> -o <out_dir>
+baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --use-locals -o <out_dir>
 baksmali list classes <input.dex|input.apk|input.jar|input.zip>
 baksmali list strings <input.dex|input.apk|input.jar|input.zip>
 baksmali list types <input.dex|input.apk|input.jar|input.zip>
@@ -274,6 +277,7 @@ baksmali list-dex <input.dex|input.apk|input.jar|input.zip>
 - Java-style switch payload key formatting 和 unresolved switch offset fallback。
 - Java-style likely float/double literal 和 payload comment formatting。
 - Java-style configured resource id comment formatting。
+- hidden API class data 解析，以及 Java 风格 field/method restriction flag formatting。
 - `--resolve-resources` 解析覆盖 multiline attribute、单引号、`=` 两侧空白，以及避免把非 `public` 元素前缀误判为 public。
 - Java 风格嵌套 `baksmali list <kind>` CLI 命令和 alias，且 `list classes` 像 Java baksmali 一样输出 class descriptor。
 - Java 风格 `disassemble` 命令 alias：`dis` 和 `d`。
@@ -282,6 +286,7 @@ baksmali list-dex <input.dex|input.apk|input.jar|input.zip>
 - Java 风格 `disassemble --api` / `-a` 参数已接入 API-level opcode decoding/formatting，用于 legacy opcode 映射。
 - Java 风格 `disassemble --debug-info` / `--di` 参数控制 `.local`、`.param`、`.line` 等 debug directive 输出。
 - Java 风格 `disassemble --parameter-registers` / `--preg` / `--pr` 参数控制 debug directive 和 instruction operand 是否使用 `pNN` parameter register 语法。
+- Java 风格 `disassemble --use-locals` / `-l` 参数输出 `.locals <非参数寄存器数>`，而不是 `.registers <总寄存器数>`。
 - Java 风格容器 entry 路径输入，例如 `app.apk/classes2.dex`。
 - 改进 `baksmali --help` 和嵌套 `list --help` 输出，显示 alias、value name 和命令说明。
 - 已将上游 Java baksmali 测试 fixture 复制到 `tests/fixtures/upstream/baksmali`，并增加 Rust fixture inventory/disassembly 测试覆盖。
@@ -298,7 +303,7 @@ cargo test --workspace
 最新结果：
 
 ```text
-All tests passed: 78 passed.
+All tests passed: 82 passed.
 ```
 
 ## 示例 Fixture 输出

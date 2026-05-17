@@ -179,7 +179,8 @@ fn help_shows_java_style_aliases_and_descriptions() {
         .stdout(predicates::str::contains("--jobs <N>"))
         .stdout(predicates::str::contains("--api <API_LEVEL>"))
         .stdout(predicates::str::contains("--debug-info <BOOLEAN>"))
-        .stdout(predicates::str::contains("--parameter-registers <BOOLEAN>"));
+        .stdout(predicates::str::contains("--parameter-registers <BOOLEAN>"))
+        .stdout(predicates::str::contains("--use-locals"));
 
     let mut command = Command::cargo_bin("baksmali").unwrap();
     command
@@ -314,6 +315,32 @@ fn accepts_java_style_parameter_registers_argument() {
         .success();
 
     assert!(output.join("Hello.smali").exists());
+    fs::remove_dir_all(output).unwrap();
+}
+
+#[test]
+fn disassemble_uses_locals_directive_like_java_baksmali() {
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let output = std::env::temp_dir().join(format!("baksmali-use-locals-test-{unique}"));
+
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+    command
+        .args([
+            "disassemble",
+            "../../tests/fixtures/hello.dex",
+            "--use-locals",
+            "-o",
+            output.to_str().unwrap(),
+        ])
+        .assert()
+        .success();
+
+    let text = fs::read_to_string(output.join("Hello.smali")).unwrap();
+    assert!(text.contains("    .locals 0\n"));
+    assert!(!text.contains(".registers"));
     fs::remove_dir_all(output).unwrap();
 }
 

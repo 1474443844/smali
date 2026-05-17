@@ -149,6 +149,7 @@ Container and structured data support:
 - annotation items, annotation sets, and annotation directories
 - debug info state-machine opcodes
 - call site id and method handle tables discovered from the DEX map list
+- hidden API class data restriction flags
 
 ### `baksmali-format`
 
@@ -160,8 +161,7 @@ Implemented smali text output for:
 - `.source`
 - `.field`
 - static field initial values
-- `.method`
-- `.registers`
+- `.method`, `.registers`, and optional Java baksmali-style `.locals`.
 - decoded instructions for supported operand formats.
 - class, field, and method annotations.
 - encoded value arrays and subannotations.
@@ -179,6 +179,7 @@ Implemented smali text output for:
   - `.packed-switch`
   - `.sparse-switch`
   - `.array-data`
+- hidden API restriction flags such as `whitelist`, `blacklist`, `greylist-max-q`, `core-platform-api`, and `test-api` on fields and methods
 - Java baksmali-style section headers for static fields, instance fields, direct methods, and virtual methods.
 - current-class descriptor elision in field and method declarations, such as `<init>()V` instead of `LHello;-><init>()V`.
 - baksmali-style branch and payload labels such as `:goto_23`, `:cond_53`, `:array_2e6`, and `:sswitch_data_29c`.
@@ -214,6 +215,7 @@ baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --jobs <n> -o <ou
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --api <api-level> -o <out_dir>
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --debug-info <true|false> -o <out_dir>
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --parameter-registers <true|false> -o <out_dir>
+baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --use-locals -o <out_dir>
 baksmali list classes <input.dex|input.apk|input.jar|input.zip>
 baksmali list strings <input.dex|input.apk|input.jar|input.zip>
 baksmali list types <input.dex|input.apk|input.jar|input.zip>
@@ -274,6 +276,7 @@ Current test coverage includes:
 - Java-style switch payload key formatting and unresolved switch offset fallback.
 - Java-style likely float/double literal and payload comment formatting.
 - Java-style configured resource id comment formatting.
+- hidden API class data parsing and Java-style field/method restriction flag formatting.
 - `--resolve-resources` parsing coverage for multiline attributes, single quotes, whitespace around `=`, and avoiding non-`public` element prefix matches.
 - Java-style nested `baksmali list <kind>` CLI commands and aliases, with `list classes` outputting class descriptors like Java baksmali.
 - Java-style `disassemble` command aliases: `dis` and `d`.
@@ -282,6 +285,7 @@ Current test coverage includes:
 - Java-style `disassemble --api` / `-a` option wired into API-level opcode decoding/formatting for legacy opcode mappings.
 - Java-style `disassemble --debug-info` / `--di` option controls `.local`, `.param`, `.line`, and related debug directive output.
 - Java-style `disassemble --parameter-registers` / `--preg` / `--pr` option controls whether debug directives and instruction operands use `pNN` parameter register syntax.
+- Java-style `disassemble --use-locals` / `-l` option emits `.locals <non-parameter-registers>` instead of `.registers <registers>`.
 - Java-style container entry path input such as `app.apk/classes2.dex`.
 - Improved `baksmali --help` and nested `list --help` output with visible aliases, value names, and command descriptions.
 - copied upstream Java baksmali test fixtures are present under `tests/fixtures/upstream/baksmali` and covered by Rust fixture inventory/disassembly tests.
@@ -298,7 +302,7 @@ cargo test --workspace
 Latest result:
 
 ```text
-All tests passed: 78 passed.
+All tests passed: 82 passed.
 ```
 
 ## Example Fixture Output

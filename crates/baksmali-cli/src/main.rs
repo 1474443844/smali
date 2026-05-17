@@ -1,6 +1,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::time::{Duration, Instant};
 
 use anyhow::{Context, Result, anyhow};
 use baksmali_format::{BaksmaliFormatter, Resolver};
@@ -73,6 +74,12 @@ enum Command {
             help = "Whether to use pNN syntax for registers that refer to method parameters"
         )]
         parameter_registers: bool,
+        #[arg(
+            short = 'l',
+            long = "use-locals",
+            help = "Output the .locals directive with the number of non-parameter registers"
+        )]
+        use_locals: bool,
     },
     #[command(about = "List DEX references or DEX entries")]
     #[command(visible_alias = "l")]
@@ -164,6 +171,7 @@ fn main() -> Result<()> {
             api,
             debug_info,
             parameter_registers,
+            use_locals,
         } => disassemble(
             &input,
             &output,
@@ -173,6 +181,7 @@ fn main() -> Result<()> {
             api,
             debug_info,
             parameter_registers,
+            use_locals,
         ),
         Command::List { command } => run_list(command),
         Command::ListClasses { input } => list_classes(&input),
@@ -208,6 +217,7 @@ fn disassemble(
     api_level: Option<u32>,
     debug_info: bool,
     parameter_registers: bool,
+    use_locals: bool,
 ) -> Result<()> {
     let resource_ids = load_resource_ids(resource_id_files)?;
     let class_filter = class_filter(classes);
@@ -218,14 +228,16 @@ fn disassemble(
         let dex = dex_reader::parse_dex(&entry.data)
             .with_context(|| format!("failed to parse {}", entry.name))?;
         let resolver = Resolver::new(&dex, &entry.data);
-        let formatter = BaksmaliFormatter::with_resource_ids_api_debug_info_and_parameter_registers(
-            &dex,
-            &entry.data,
-            resource_ids.clone(),
-            api_level,
-            debug_info,
-            parameter_registers,
-        );
+        let formatter =
+            BaksmaliFormatter::with_resource_ids_api_debug_info_parameter_registers_and_locals(
+                &dex,
+                &entry.data,
+                resource_ids.clone(),
+                api_level,
+                debug_info,
+                parameter_registers,
+                use_locals,
+            );
         let dex_output = if entries.len() == 1 {
             output.to_path_buf()
         } else {
@@ -251,6 +263,27 @@ fn disassemble_classes(
     class_filter: Option<&BTreeSet<String>>,
     jobs: usize,
 ) -> Result<()> {
+    disassemble_classes_with_observer(
+        formatter,
+        resolver,
+        dex_output,
+        class_filter,
+        jobs,
+        |_, _| {},
+    )
+}
+
+fn disassemble_classes_with_observer<F>(
+    formatter: &BaksmaliFormatter<'_>,
+    resolver: &Resolver<'_>,
+    dex_output: &Path,
+    class_filter: Option<&BTreeSet<String>>,
+    jobs: usize,
+    mut observer: F,
+) -> Result<()>
+where
+    F: FnMut(std::thread::ThreadId, Duration),
+{
     let selected = formatter
         .classes()
         .iter()
@@ -275,23 +308,28 @@ fn disassemble_classes(
     std::thread::scope(|scope| {
         let mut handles = Vec::with_capacity(jobs);
         for chunk in selected.chunks(selected.len().div_ceil(jobs)) {
-            handles.push(scope.spawn(move || -> Result<Vec<(PathBuf, String)>> {
-                chunk
-                    .iter()
-                    .map(|class_def| {
-                        let relative_name = formatter.class_file_name(class_def)?;
-                        let text = formatter.format_class(class_def)?;
-                        Ok((relative_name.into(), text))
-                    })
-                    .collect()
-            }));
+            handles.push(scope.spawn(
+                move || -> Result<(std::thread::ThreadId, Duration, Vec<(PathBuf, String)>)> {
+                    let start = Instant::now();
+                    let classes = chunk
+                        .iter()
+                        .map(|class_def| {
+                            let relative_name = formatter.class_file_name(class_def)?;
+                            let text = formatter.format_class(class_def)?;
+                            Ok((relative_name.into(), text))
+                        })
+                        .collect::<Result<Vec<_>>>()?;
+                    Ok((std::thread::current().id(), start.elapsed(), classes))
+                },
+            ));
         }
 
         for handle in handles {
-            for (relative_name, text) in handle
+            let (thread_id, elapsed, classes) = handle
                 .join()
-                .map_err(|_| anyhow!("worker thread panicked"))??
-            {
+                .map_err(|_| anyhow!("worker thread panicked"))??;
+            observer(thread_id, elapsed);
+            for (relative_name, text) in classes {
                 write_class_text(dex_output, &relative_name, text)?;
             }
         }
@@ -512,4 +550,68 @@ where
         f(&dex, &entry.data)?;
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use std::fs;
+    use std::time::{Instant, SystemTime, UNIX_EPOCH};
+
+    use baksmali_format::{BaksmaliFormatter, Resolver};
+
+    use super::*;
+
+    #[test]
+    fn disassemble_classes_reports_worker_thread_timings_for_classes2() {
+        let data = fs::read("../../tests/fixtures/classes2.dex").unwrap();
+        let dex = dex_reader::parse_dex(&data).unwrap();
+        let formatter = BaksmaliFormatter::new(&dex, &data);
+        let resolver = Resolver::new(&dex, &data);
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        // let serial_output =
+        //     std::env::temp_dir().join(format!("baksmali-thread-timing-serial-{unique}"));
+        let parallel_output =
+            std::env::temp_dir().join(format!("baksmali-thread-timing-parallel-{unique}"));
+        let mut parallel_timings = Vec::new();
+
+        // fs::create_dir_all(&serial_output).unwrap();
+        // let serial_start = Instant::now();
+        // disassemble_classes_with_observer(
+        //     &formatter,
+        //     &resolver,
+        //     &serial_output,
+        //     None,
+        //     1,
+        //     |_, _| {},
+        // )
+        // .unwrap();
+        // let serial_elapsed = serial_start.elapsed();
+
+        fs::create_dir_all(&parallel_output).unwrap();
+        let parallel_start = Instant::now();
+        disassemble_classes_with_observer(
+            &formatter,
+            &resolver,
+            &parallel_output,
+            None,
+            16,
+            |thread_id, elapsed| parallel_timings.push((thread_id, elapsed)),
+        )
+        .unwrap();
+        let parallel_elapsed = parallel_start.elapsed();
+
+        println!("classes2.dex disassemble timing:");
+        // println!("  jobs=1 total:  {:?}", serial_elapsed);
+        println!("  jobs=16 total: {:?}", parallel_elapsed);
+        println!("  jobs=16 worker timings:");
+        for (index, (thread_id, elapsed)) in parallel_timings.iter().enumerate() {
+            println!("    worker #{index}: thread={thread_id:?}, elapsed={elapsed:?}");
+        }
+
+        // fs::remove_dir_all(serial_output).unwrap();
+        fs::remove_dir_all(parallel_output).unwrap();
+    }
 }

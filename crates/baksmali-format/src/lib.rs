@@ -8,7 +8,8 @@ use std::fmt::Write;
 use dex_types::{
     AccessFlags, AnnotationDirectory, AnnotationVisibility, ClassDef, CodeItem, DebugInfoItem,
     DebugItemKind, DexFile, EncodedAnnotation, EncodedCatchHandlerList, EncodedField,
-    EncodedMethod, EncodedValue, InstructionOperands, PayloadInstruction, RawInstruction, Result,
+    EncodedMethod, EncodedValue, HiddenApiClassData, HiddenApiRestriction, InstructionOperands,
+    PayloadInstruction, RawInstruction, Result,
 };
 
 pub struct BaksmaliFormatter<'a> {
@@ -19,11 +20,12 @@ pub struct BaksmaliFormatter<'a> {
     api_level: Option<u32>,
     debug_info: bool,
     parameter_registers: bool,
+    use_locals: bool,
 }
 
 impl<'a> BaksmaliFormatter<'a> {
     pub fn new(dex: &'a DexFile, data: &'a [u8]) -> Self {
-        Self::with_options(dex, data, BTreeMap::new(), None, true, true)
+        Self::with_options(dex, data, BTreeMap::new(), None, true, true, false)
     }
 
     pub fn with_resource_ids(
@@ -31,7 +33,7 @@ impl<'a> BaksmaliFormatter<'a> {
         data: &'a [u8],
         resource_ids: BTreeMap<i32, String>,
     ) -> Self {
-        Self::with_options(dex, data, resource_ids, None, true, true)
+        Self::with_options(dex, data, resource_ids, None, true, true, false)
     }
 
     pub fn with_resource_ids_and_api(
@@ -40,7 +42,7 @@ impl<'a> BaksmaliFormatter<'a> {
         resource_ids: BTreeMap<i32, String>,
         api_level: Option<u32>,
     ) -> Self {
-        Self::with_options(dex, data, resource_ids, api_level, true, true)
+        Self::with_options(dex, data, resource_ids, api_level, true, true, false)
     }
 
     pub fn with_resource_ids_api_and_debug_info(
@@ -50,7 +52,7 @@ impl<'a> BaksmaliFormatter<'a> {
         api_level: Option<u32>,
         debug_info: bool,
     ) -> Self {
-        Self::with_options(dex, data, resource_ids, api_level, debug_info, true)
+        Self::with_options(dex, data, resource_ids, api_level, debug_info, true, false)
     }
 
     pub fn with_resource_ids_api_debug_info_and_parameter_registers(
@@ -68,6 +70,27 @@ impl<'a> BaksmaliFormatter<'a> {
             api_level,
             debug_info,
             parameter_registers,
+            false,
+        )
+    }
+
+    pub fn with_resource_ids_api_debug_info_parameter_registers_and_locals(
+        dex: &'a DexFile,
+        data: &'a [u8],
+        resource_ids: BTreeMap<i32, String>,
+        api_level: Option<u32>,
+        debug_info: bool,
+        parameter_registers: bool,
+        use_locals: bool,
+    ) -> Self {
+        Self::with_options(
+            dex,
+            data,
+            resource_ids,
+            api_level,
+            debug_info,
+            parameter_registers,
+            use_locals,
         )
     }
 
@@ -78,6 +101,7 @@ impl<'a> BaksmaliFormatter<'a> {
         api_level: Option<u32>,
         debug_info: bool,
         parameter_registers: bool,
+        use_locals: bool,
     ) -> Self {
         Self {
             dex,
@@ -87,6 +111,7 @@ impl<'a> BaksmaliFormatter<'a> {
             api_level,
             debug_info,
             parameter_registers,
+            use_locals,
         }
     }
 
@@ -166,6 +191,12 @@ impl<'a> BaksmaliFormatter<'a> {
             } else {
                 Vec::new()
             };
+            let hidden_api = self
+                .dex
+                .class_defs
+                .iter()
+                .position(|candidate| candidate.class_idx == class_def.class_idx)
+                .and_then(|index| self.dex.hidden_api_class_data.get(index));
             if !class_data.static_fields.is_empty() {
                 writeln!(out, "# static fields").unwrap();
                 for (index, field) in class_data.static_fields.iter().enumerate() {
@@ -174,6 +205,11 @@ impl<'a> BaksmaliFormatter<'a> {
                         field,
                         static_values.get(index),
                         annotation_directory.as_ref(),
+                        current_hidden_api_flags(
+                            hidden_api,
+                            HiddenApiMemberKind::StaticField,
+                            index,
+                        ),
                         class_descriptor,
                     )?;
                     writeln!(out).unwrap();
@@ -181,12 +217,17 @@ impl<'a> BaksmaliFormatter<'a> {
             }
             if !class_data.instance_fields.is_empty() {
                 writeln!(out, "# instance fields").unwrap();
-                for field in &class_data.instance_fields {
+                for (index, field) in class_data.instance_fields.iter().enumerate() {
                     self.format_field(
                         &mut out,
                         field,
                         None,
                         annotation_directory.as_ref(),
+                        current_hidden_api_flags(
+                            hidden_api,
+                            HiddenApiMemberKind::InstanceField,
+                            index,
+                        ),
                         class_descriptor,
                     )?;
                     writeln!(out).unwrap();
@@ -194,22 +235,32 @@ impl<'a> BaksmaliFormatter<'a> {
             }
             if !class_data.direct_methods.is_empty() {
                 writeln!(out, "# direct methods").unwrap();
-                for method in &class_data.direct_methods {
+                for (index, method) in class_data.direct_methods.iter().enumerate() {
                     self.format_method(
                         &mut out,
                         method,
                         annotation_directory.as_ref(),
+                        current_hidden_api_flags(
+                            hidden_api,
+                            HiddenApiMemberKind::DirectMethod,
+                            index,
+                        ),
                         class_descriptor,
                     )?;
                 }
             }
             if !class_data.virtual_methods.is_empty() {
                 writeln!(out, "# virtual methods").unwrap();
-                for method in &class_data.virtual_methods {
+                for (index, method) in class_data.virtual_methods.iter().enumerate() {
                     self.format_method(
                         &mut out,
                         method,
                         annotation_directory.as_ref(),
+                        current_hidden_api_flags(
+                            hidden_api,
+                            HiddenApiMemberKind::VirtualMethod,
+                            index,
+                        ),
                         class_descriptor,
                     )?;
                 }
@@ -225,6 +276,7 @@ impl<'a> BaksmaliFormatter<'a> {
         field: &EncodedField,
         static_value: Option<&EncodedValue>,
         annotation_directory: Option<&AnnotationDirectory>,
+        hidden_api_flags: Option<u32>,
         current_class: &str,
     ) -> Result<()> {
         let annotations_off = annotation_directory
@@ -239,11 +291,13 @@ impl<'a> BaksmaliFormatter<'a> {
             .map(|value| self.format_encoded_value(value))
             .transpose()?
             .map_or_else(String::new, |value| format!(" = {value}"));
+        let access_flags =
+            format_member_flags(field.access_flags, FlagContext::Field, hidden_api_flags);
         if annotations_off == 0 {
             writeln!(
                 out,
                 ".field {}{}{}",
-                format_access_flags(field.access_flags, FlagContext::Field),
+                access_flags,
                 self.field_declaration_descriptor(field.field_idx, current_class)?,
                 value
             )
@@ -252,7 +306,7 @@ impl<'a> BaksmaliFormatter<'a> {
             writeln!(
                 out,
                 ".field {}{}{}",
-                format_access_flags(field.access_flags, FlagContext::Field),
+                access_flags,
                 self.field_declaration_descriptor(field.field_idx, current_class)?,
                 value
             )
@@ -268,12 +322,13 @@ impl<'a> BaksmaliFormatter<'a> {
         out: &mut String,
         method: &EncodedMethod,
         annotation_directory: Option<&AnnotationDirectory>,
+        hidden_api_flags: Option<u32>,
         current_class: &str,
     ) -> Result<()> {
         writeln!(
             out,
             ".method {}{}",
-            format_access_flags(method.access_flags, FlagContext::Method),
+            format_member_flags(method.access_flags, FlagContext::Method, hidden_api_flags,),
             self.method_declaration_descriptor(method.method_idx, current_class)?
         )
         .unwrap();
@@ -296,7 +351,11 @@ impl<'a> BaksmaliFormatter<'a> {
             let mut debug_items = debug_items_by_address(debug_info.as_ref());
             let code_labels = collect_code_labels(&code);
             let label_names = label_names(&code);
-            writeln!(out, "    .registers {}", code.registers_size).unwrap();
+            if self.use_locals {
+                writeln!(out, "    .locals {}", parameter_base(&code)).unwrap();
+            } else {
+                writeln!(out, "    .registers {}", code.registers_size).unwrap();
+            }
             self.write_parameter_items(
                 out,
                 method,
@@ -1277,6 +1336,28 @@ fn format_register(register: u32, parameter_base: u32, parameter_registers: bool
     }
 }
 
+fn current_hidden_api_flags(
+    hidden_api: Option<&HiddenApiClassData>,
+    member_kind: HiddenApiMemberKind,
+    index: usize,
+) -> Option<u32> {
+    let flags = match member_kind {
+        HiddenApiMemberKind::StaticField => &hidden_api?.static_fields,
+        HiddenApiMemberKind::InstanceField => &hidden_api?.instance_fields,
+        HiddenApiMemberKind::DirectMethod => &hidden_api?.direct_methods,
+        HiddenApiMemberKind::VirtualMethod => &hidden_api?.virtual_methods,
+    };
+    flags.get(index).copied()
+}
+
+#[derive(Debug, Clone, Copy)]
+enum HiddenApiMemberKind {
+    StaticField,
+    InstanceField,
+    DirectMethod,
+    VirtualMethod,
+}
+
 fn method_annotations_off(directory: Option<&AnnotationDirectory>, method_idx: u32) -> Option<u32> {
     directory
         .and_then(|directory| {
@@ -1543,6 +1624,39 @@ fn branch_target(address: u32, offset: i32) -> u32 {
     address.wrapping_add_signed(offset)
 }
 
+fn format_member_flags(
+    flags: AccessFlags,
+    context: FlagContext,
+    hidden_api_flags: Option<u32>,
+) -> String {
+    let mut text = format_access_flags(flags, context);
+    if let Some(hidden_api_flags) = hidden_api_flags {
+        text.push_str(&format_hidden_api_flags(hidden_api_flags));
+    }
+    text
+}
+
+fn format_hidden_api_flags(flags: u32) -> String {
+    let mut parts = Vec::new();
+    parts.push(match HiddenApiRestriction::from_flags(flags) {
+        HiddenApiRestriction::Whitelist => "whitelist".to_owned(),
+        HiddenApiRestriction::Greylist => "greylist".to_owned(),
+        HiddenApiRestriction::Blacklist => "blacklist".to_owned(),
+        HiddenApiRestriction::GreylistMaxO => "greylist-max-o".to_owned(),
+        HiddenApiRestriction::GreylistMaxP => "greylist-max-p".to_owned(),
+        HiddenApiRestriction::GreylistMaxQ => "greylist-max-q".to_owned(),
+        HiddenApiRestriction::GreylistMaxR => "greylist-max-r".to_owned(),
+        HiddenApiRestriction::Unknown(value) => format!("hiddenapi-{value}"),
+    });
+    if flags & 0x08 != 0 {
+        parts.push("core-platform-api".to_owned());
+    }
+    if flags & 0x10 != 0 {
+        parts.push("test-api".to_owned());
+    }
+    format!("{} ", parts.join(" "))
+}
+
 #[derive(Debug, Clone, Copy)]
 enum FlagContext {
     Class,
@@ -1689,6 +1803,7 @@ mod tests {
             class_defs: Vec::new(),
             call_site_ids: Vec::new(),
             method_handles: Vec::new(),
+            hidden_api_class_data: Vec::new(),
             map: Vec::new(),
         }
     }
@@ -1937,10 +2052,10 @@ mod tests {
         let mut out = String::new();
 
         formatter
-            .format_field(&mut out, &field, None, Some(&directory), "LTest;")
+            .format_field(&mut out, &field, None, Some(&directory), None, "LTest;")
             .unwrap();
         formatter
-            .format_method(&mut out, &method, Some(&directory), "LTest;")
+            .format_method(&mut out, &method, Some(&directory), None, "LTest;")
             .unwrap();
 
         assert!(out.contains(".field public field:I"));
@@ -2140,15 +2255,47 @@ mod tests {
         let mut disabled_out = String::new();
 
         enabled
-            .format_method(&mut enabled_out, &method, None, "LTest;")
+            .format_method(&mut enabled_out, &method, None, None, "LTest;")
             .unwrap();
         disabled
-            .format_method(&mut disabled_out, &method, None, "LTest;")
+            .format_method(&mut disabled_out, &method, None, None, "LTest;")
             .unwrap();
 
         assert!(enabled_out.contains("    .line 1\n"));
         assert!(!disabled_out.contains(".line"));
         assert!(disabled_out.contains("    return-void\n"));
+    }
+
+    #[test]
+    fn format_method_can_use_locals_directive() {
+        let dex = test_dex();
+        let data = method_debug_data();
+        let method = method_with_debug_code();
+        let registers = BaksmaliFormatter::new(&dex, &data);
+        let locals =
+            BaksmaliFormatter::with_resource_ids_api_debug_info_parameter_registers_and_locals(
+                &dex,
+                &data,
+                BTreeMap::new(),
+                None,
+                true,
+                true,
+                true,
+            );
+        let mut registers_out = String::new();
+        let mut locals_out = String::new();
+
+        registers
+            .format_method(&mut registers_out, &method, None, None, "LTest;")
+            .unwrap();
+        locals
+            .format_method(&mut locals_out, &method, None, None, "LTest;")
+            .unwrap();
+
+        assert!(registers_out.contains("    .registers 1\n"));
+        assert!(!registers_out.contains(".locals"));
+        assert!(locals_out.contains("    .locals 0\n"));
+        assert!(!locals_out.contains(".registers"));
     }
 
     #[test]
@@ -2430,6 +2577,24 @@ mod tests {
     }
 
     #[test]
+    fn formats_hidden_api_restrictions() {
+        assert_eq!(format_hidden_api_flags(0), "whitelist ");
+        assert_eq!(
+            format_hidden_api_flags(0x0d),
+            "greylist-max-q core-platform-api "
+        );
+        assert_eq!(format_hidden_api_flags(0x15), "greylist-max-q test-api ");
+        assert_eq!(
+            format_member_flags(AccessFlags::PUBLIC, FlagContext::Field, Some(0x08)),
+            "public whitelist core-platform-api "
+        );
+        assert_eq!(
+            format_member_flags(AccessFlags::PRIVATE, FlagContext::Method, Some(0x15)),
+            "private greylist-max-q test-api "
+        );
+    }
+
+    #[test]
     fn formats_static_field_initial_value() {
         let dex = test_dex();
         let formatter = BaksmaliFormatter::new(&dex, &[]);
@@ -2444,6 +2609,7 @@ mod tests {
                 &mut out,
                 &field,
                 Some(&EncodedValue::Int(42)),
+                None,
                 None,
                 "LTest;",
             )

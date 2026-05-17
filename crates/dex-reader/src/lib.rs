@@ -8,16 +8,16 @@ mod section;
 mod value;
 
 use dex_types::{
-    AccessFlags, CallSiteId, ClassDef, DexError, DexFile, FieldId, MapItem, MapItemType,
-    MethodHandle, MethodHandleType, MethodId, ProtoId, Result, StringId, TypeId, TypeItem,
-    TypeList,
+    AccessFlags, CallSiteId, ClassDef, DexError, DexFile, FieldId, HiddenApiClassData, MapItem,
+    MapItemType, MethodHandle, MethodHandleType, MethodId, ProtoId, Result, StringId, TypeId,
+    TypeItem, TypeList,
 };
 
 use crate::header::parse_header;
 use crate::leb128::read_uleb128_at;
 use crate::section::{checked_table_range, read_u16, read_u32, u32_to_usize};
 
-pub use class::parse_class_data;
+pub use class::{parse_class_data, parse_hidden_api_class_data};
 pub use code::{parse_code_item, parse_code_item_with_api, parse_encoded_catch_handler_list};
 pub use container::{DexEntry, dex_entries_from_bytes, dex_entries_from_path};
 pub use debug::parse_debug_info_item;
@@ -46,6 +46,7 @@ pub fn parse_dex(data: &[u8]) -> Result<DexFile> {
     };
     let call_site_ids = parse_call_site_ids(data, &map)?;
     let method_handles = parse_method_handles(data, &map)?;
+    let hidden_api_class_data = parse_hidden_api_class_data_from_map(data, &map, &class_defs)?;
 
     let dex = DexFile {
         header,
@@ -58,6 +59,7 @@ pub fn parse_dex(data: &[u8]) -> Result<DexFile> {
         class_defs,
         call_site_ids,
         method_handles,
+        hidden_api_class_data,
         map,
     };
     validate_dex(&dex)?;
@@ -262,6 +264,20 @@ fn parse_method_handles(data: &[u8], map: &[MapItem]) -> Result<Vec<MethodHandle
             })
         })
         .collect()
+}
+
+fn parse_hidden_api_class_data_from_map(
+    data: &[u8],
+    map: &[MapItem],
+    class_defs: &[ClassDef],
+) -> Result<Vec<HiddenApiClassData>> {
+    let Some(item) = map
+        .iter()
+        .find(|item| item.item_type == MapItemType::HiddenApiClassData)
+    else {
+        return Ok(Vec::new());
+    };
+    class::parse_hidden_api_class_data(data, item.offset, class_defs)
 }
 
 fn parse_map_list(data: &[u8], offset: u32) -> Result<Vec<MapItem>> {

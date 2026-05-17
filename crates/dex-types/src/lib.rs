@@ -49,5 +49,6 @@ pub struct DexFile {
     pub class_defs: Vec<ClassDef>,
     pub call_site_ids: Vec<CallSiteId>,
     pub method_handles: Vec<MethodHandle>,
+    pub hidden_api_class_data: Vec<HiddenApiClassData>,
     pub map: Vec<MapItem>,
 }

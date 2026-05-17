@@ -85,6 +85,52 @@ pub struct ClassDef {
     pub static_values_off: u32,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct HiddenApiClassData {
+    pub static_fields: Vec<u32>,
+    pub instance_fields: Vec<u32>,
+    pub direct_methods: Vec<u32>,
+    pub virtual_methods: Vec<u32>,
+}
+
+impl HiddenApiClassData {
+    pub fn empty() -> Self {
+        Self {
+            static_fields: Vec::new(),
+            instance_fields: Vec::new(),
+            direct_methods: Vec::new(),
+            virtual_methods: Vec::new(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum HiddenApiRestriction {
+    Whitelist,
+    Greylist,
+    Blacklist,
+    GreylistMaxO,
+    GreylistMaxP,
+    GreylistMaxQ,
+    GreylistMaxR,
+    Unknown(u32),
+}
+
+impl HiddenApiRestriction {
+    pub fn from_flags(flags: u32) -> Self {
+        match flags & 0x7 {
+            0 => Self::Whitelist,
+            1 => Self::Greylist,
+            2 => Self::Blacklist,
+            3 => Self::GreylistMaxO,
+            4 => Self::GreylistMaxP,
+            5 => Self::GreylistMaxQ,
+            6 => Self::GreylistMaxR,
+            other => Self::Unknown(other),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct TypeItem {
     pub type_idx: u16,

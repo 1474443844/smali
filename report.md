@@ -67,7 +67,7 @@ Rust 工作区包含 4 个 crate：
 - code item、try/catch handler、动态 payload 指令宽度。
 - debug info state machine 的基础解析。
 - encoded value、encoded array、annotation item/set/directory 解析。
-- call site id 和 method handle table 解析。
+- call site id、method handle table 和 hidden API class data 解析。
 - raw `.dex` 与 `.apk`/`.jar`/`.zip` 容器中的 multidex entry 发现。
 - Java 风格容器 entry 路径选择，例如 `app.apk/classes2.dex`。
 - 多处 cross-reference index 校验，包括 type/proto/field/method/class/source/method-handle 引用。
@@ -79,7 +79,7 @@ Rust 工作区包含 4 个 crate：
 - `.class`, `.super`, `.implements`, `.source`。
 - Java baksmali 风格 section header：`# static fields`, `# instance fields`, `# direct methods`, `# virtual methods`。
 - `.field`，含静态初始值。
-- `.method`, `.registers`。
+- `.method`, `.registers`，以及 Java baksmali 风格可选 `.locals`。
 - 当前类 field/method 声明中的 descriptor 省略，例如 `<init>()V` 而不是 `LHello;-><init>()V`。
 - class/field/method/parameter annotation 的基础输出。
 - encoded value array 与 subannotation 的基础输出。
@@ -87,6 +87,7 @@ Rust 工作区包含 4 个 crate：
 - parameter register 名称，如可用时输出 `p0`。
 - branch/payload label：`:goto_x`, `:cond_x`, `:array_x`, `:sswitch_data_x`, `:pswitch_data_x` 等。
 - switch/array payload：`.packed-switch`, `.sparse-switch`, `.array-data`。
+- hidden API restriction flag，例如 `whitelist`, `blacklist`, `greylist-max-q`, `core-platform-api`, `test-api`。
 - Java 风格 `.array-data` 元素数字格式，包括 `t`/`s` 后缀和宽值 `L` 后缀。
 - Java 风格 switch key 数字格式，未解析 payload target 使用 signed decimal offset fallback。
 - literal 十六进制格式，包括 `const/4` 窄 literal 解码修复。
@@ -114,6 +115,7 @@ reference 解析当前覆盖：
 - `baksmali disassemble <input> --api <api-level> -o <out_dir>`
 - `baksmali disassemble <input> --debug-info <true|false> -o <out_dir>`
 - `baksmali disassemble <input> --parameter-registers <true|false> -o <out_dir>`
+- `baksmali disassemble <input> --use-locals -o <out_dir>`
 - `baksmali list classes <input>`
 - `baksmali list strings <input>`
 - `baksmali list types <input>`
@@ -208,15 +210,15 @@ cargo fmt --all && cargo test --workspace
 
 测试统计：
 
-- `baksmali-cli` integration tests：16 passed。
-- `baksmali-format` unit tests：21 passed。
+- `baksmali-cli` integration tests：17 passed。
+- `baksmali-format` unit tests：23 passed。
 - `baksmali-format` fixture tests：3 passed。
-- `dex-reader` unit tests：23 passed。
+- `dex-reader` unit tests：24 passed。
 - `dex-reader` fixture tests：6 passed。
 - `dex-types` opcode tests：9 passed。
 - doc tests：0。
 
-总计当前可见测试：78 passed。
+总计当前可见测试：82 passed。
 
 覆盖重点包括：
 
@@ -234,13 +236,16 @@ cargo fmt --all && cargo test --workspace
 - Java 风格 section header、当前类成员声明省略、payload label、array/switch 数字格式。
 - Java 风格 likely float/double literal 和 payload 注释。
 - Java 风格 resource-id 注释以及 `--resolve-resources` 常见 public.xml 格式变体解析。
+- Java 风格 hidden API restriction flag 解析与 field/method 输出。
 - Java 风格 `disassemble --classes` class descriptor 过滤。
 - Java 风格容器 entry 路径输入，例如 `app.apk/classes2.dex`。
 - Java 风格 `disassemble --jobs` / `-j` CLI 参数会使用并行 worker thread 格式化 class。
 - Java 风格 `disassemble --api` / `-a` 参数已接入 API-level opcode decoding/formatting，用于 legacy opcode 映射。
 - Java 风格 `disassemble --debug-info` / `--di` 参数控制 `.local`、`.param`、`.line` 等 debug directive 输出。
 - Java 风格 `disassemble --parameter-registers` / `--preg` / `--pr` 参数控制 debug directive 和 instruction operand 是否使用 `pNN` parameter register 语法。
+- Java 风格 `disassemble --use-locals` / `-l` 参数输出 `.locals <非参数寄存器数>`，而不是 `.registers <总寄存器数>`。
 - Java 风格 method parameter annotation block 输出。
+- hidden API class data 解析与 Java 风格 field/method restriction flag 输出。
 - 已复制上游 Java baksmali 测试案例到 `tests/fixtures/upstream/baksmali`：包含 `src/test/resources` 和 `src/test/smali` fixture；已用 Rust 移植 `BaksmaliTestUtils` normalization 检查、`MultiSwitchTest` 与 `ZeroArrayPayloadWidthTest`，并删除复制来的 Java 测试源码。
 
 ## 当前风险与问题
