@@ -206,7 +206,10 @@ tests/fixtures/upstream/baksmali/smali/      # 复制自 Java baksmali src/test/
 
 ```bash
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> -o <out_dir>
+baksmali dis <input.dex|input.apk|input.jar|input.zip> -o <out_dir>
+baksmali d <input.dex|input.apk|input.jar|input.zip> -o <out_dir>
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --resolve-resources <prefix> <public.xml> -o <out_dir>
+baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --classes <class-descriptor>[,<class-descriptor>...] -o <out_dir>
 baksmali list classes <input.dex|input.apk|input.jar|input.zip>
 baksmali list strings <input.dex|input.apk|input.jar|input.zip>
 baksmali list types <input.dex|input.apk|input.jar|input.zip>
@@ -268,6 +271,9 @@ baksmali list-dex <input.dex|input.apk|input.jar|input.zip>
 - Java-style configured resource id comment formatting。
 - `--resolve-resources` 解析覆盖 multiline attribute、单引号、`=` 两侧空白，以及避免把非 `public` 元素前缀误判为 public。
 - Java 风格嵌套 `baksmali list <kind>` CLI 命令和 alias，且 `list classes` 像 Java baksmali 一样输出 class descriptor。
+- Java 风格 `disassemble` 命令 alias：`dis` 和 `d`。
+- Java 风格 `disassemble --classes`，按 class descriptor 过滤输出 class。
+- 改进 `baksmali --help` 和嵌套 `list --help` 输出，显示 alias、value name 和命令说明。
 - 已将上游 Java baksmali 测试 fixture 复制到 `tests/fixtures/upstream/baksmali`，并增加 Rust fixture inventory/disassembly 测试覆盖。
 - 已用 Rust 移植 Java `BaksmaliTestUtils` normalization 检查、`MultiSwitchTest` 和 `ZeroArrayPayloadWidthTest`；复制来的 Java 测试源码已删除。
 - real `classes2.dex` fixture formatting coverage for `Lbin/mt/plus/ShortcutActivity;`。
@@ -282,7 +288,7 @@ cargo test --workspace
 最新结果：
 
 ```text
-All tests passed: 65 passed.
+All tests passed: 69 passed.
 ```
 
 ## 示例 Fixture 输出

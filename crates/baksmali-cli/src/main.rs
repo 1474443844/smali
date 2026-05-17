@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -9,6 +9,7 @@ use clap::{Parser, Subcommand};
 #[derive(Debug, Parser)]
 #[command(name = "baksmali")]
 #[command(about = "Rust baksmali implementation")]
+#[command(version)]
 struct Cli {
     #[command(subcommand)]
     command: Command,
@@ -16,52 +17,105 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Command {
+    #[command(about = "Disassemble DEX/APK/JAR/ZIP input to smali files")]
+    #[command(visible_alias = "dis", visible_alias = "d")]
     Disassemble {
+        #[arg(value_name = "INPUT")]
         input: PathBuf,
-        #[arg(short, long, default_value = "out")]
+        #[arg(
+            short,
+            long,
+            default_value = "out",
+            value_name = "DIR",
+            help = "Output directory"
+        )]
         output: PathBuf,
-        #[arg(long = "resolve-resources", alias = "rr", value_names = ["PREFIX", "PUBLIC_XML"], num_args = 2)]
+        #[arg(long = "resolve-resources", visible_alias = "rr", value_names = ["PREFIX", "PUBLIC_XML"], num_args = 2, help = "Load public.xml resource ids and add resource name comments")]
         resource_id_files: Vec<String>,
+        #[arg(
+            long = "classes",
+            value_name = "CLASSES",
+            value_delimiter = ',',
+            help = "Comma-separated class descriptors to disassemble"
+        )]
+        classes: Vec<String>,
     },
-    #[command(alias = "l")]
+    #[command(about = "List DEX references or DEX entries")]
+    #[command(visible_alias = "l")]
     List {
         #[command(subcommand)]
         command: ListCommand,
     },
+    #[command(about = "List class descriptors")]
     ListClasses {
+        #[arg(value_name = "INPUT")]
         input: PathBuf,
     },
+    #[command(about = "List string references")]
     ListStrings {
+        #[arg(value_name = "INPUT")]
         input: PathBuf,
     },
+    #[command(about = "List type descriptors")]
     ListTypes {
+        #[arg(value_name = "INPUT")]
         input: PathBuf,
     },
+    #[command(about = "List field descriptors")]
     ListFields {
+        #[arg(value_name = "INPUT")]
         input: PathBuf,
     },
+    #[command(about = "List method descriptors")]
     ListMethods {
+        #[arg(value_name = "INPUT")]
         input: PathBuf,
     },
+    #[command(about = "List DEX entries in an input container")]
     ListDex {
+        #[arg(value_name = "INPUT")]
         input: PathBuf,
     },
 }
 
 #[derive(Debug, Subcommand)]
 enum ListCommand {
-    #[command(alias = "class", alias = "c")]
-    Classes { input: PathBuf },
-    #[command(alias = "string", alias = "str", alias = "s")]
-    Strings { input: PathBuf },
-    #[command(alias = "type", alias = "t")]
-    Types { input: PathBuf },
-    #[command(alias = "field", alias = "f")]
-    Fields { input: PathBuf },
-    #[command(alias = "method", alias = "m")]
-    Methods { input: PathBuf },
-    #[command(alias = "d")]
-    Dex { input: PathBuf },
+    #[command(about = "List class descriptors")]
+    #[command(visible_alias = "class", visible_alias = "c")]
+    Classes {
+        #[arg(value_name = "INPUT")]
+        input: PathBuf,
+    },
+    #[command(about = "List string references")]
+    #[command(visible_alias = "string", visible_alias = "str", visible_alias = "s")]
+    Strings {
+        #[arg(value_name = "INPUT")]
+        input: PathBuf,
+    },
+    #[command(about = "List type descriptors")]
+    #[command(visible_alias = "type", visible_alias = "t")]
+    Types {
+        #[arg(value_name = "INPUT")]
+        input: PathBuf,
+    },
+    #[command(about = "List field descriptors")]
+    #[command(visible_alias = "field", visible_alias = "f")]
+    Fields {
+        #[arg(value_name = "INPUT")]
+        input: PathBuf,
+    },
+    #[command(about = "List method descriptors")]
+    #[command(visible_alias = "method", visible_alias = "m")]
+    Methods {
+        #[arg(value_name = "INPUT")]
+        input: PathBuf,
+    },
+    #[command(about = "List DEX entries in an input container")]
+    #[command(visible_alias = "d")]
+    Dex {
+        #[arg(value_name = "INPUT")]
+        input: PathBuf,
+    },
 }
 
 fn main() -> Result<()> {
@@ -71,7 +125,8 @@ fn main() -> Result<()> {
             input,
             output,
             resource_id_files,
-        } => disassemble(&input, &output, &resource_id_files),
+            classes,
+        } => disassemble(&input, &output, &resource_id_files, &classes),
         Command::List { command } => run_list(command),
         Command::ListClasses { input } => list_classes(&input),
         Command::ListStrings { input } => list_strings(&input),
@@ -93,14 +148,21 @@ fn run_list(command: ListCommand) -> Result<()> {
     }
 }
 
-fn disassemble(input: &Path, output: &Path, resource_id_files: &[String]) -> Result<()> {
+fn disassemble(
+    input: &Path,
+    output: &Path,
+    resource_id_files: &[String],
+    classes: &[String],
+) -> Result<()> {
     let resource_ids = load_resource_ids(resource_id_files)?;
+    let class_filter = class_filter(classes);
     let entries = dex_reader::dex_entries_from_path(input).context("failed to read dex input")?;
     fs::create_dir_all(output).with_context(|| format!("failed to create {}", output.display()))?;
 
     for (index, entry) in entries.iter().enumerate() {
         let dex = dex_reader::parse_dex(&entry.data)
             .with_context(|| format!("failed to parse {}", entry.name))?;
+        let resolver = Resolver::new(&dex, &entry.data);
         let formatter =
             BaksmaliFormatter::with_resource_ids(&dex, &entry.data, resource_ids.clone());
         let dex_output = if entries.len() == 1 {
@@ -111,6 +173,12 @@ fn disassemble(input: &Path, output: &Path, resource_id_files: &[String]) -> Res
         fs::create_dir_all(&dex_output)
             .with_context(|| format!("failed to create {}", dex_output.display()))?;
         for class_def in formatter.classes() {
+            if let Some(class_filter) = &class_filter {
+                let descriptor = resolver.type_descriptor(class_def.class_idx)?;
+                if !class_filter.contains(descriptor) {
+                    continue;
+                }
+            }
             let relative_name = formatter.class_file_name(class_def)?;
             let path = dex_output.join(relative_name);
             if let Some(parent) = path.parent() {
@@ -123,6 +191,14 @@ fn disassemble(input: &Path, output: &Path, resource_id_files: &[String]) -> Res
         }
     }
     Ok(())
+}
+
+fn class_filter(classes: &[String]) -> Option<BTreeSet<String>> {
+    if classes.is_empty() {
+        None
+    } else {
+        Some(classes.iter().cloned().collect())
+    }
 }
 
 fn load_resource_ids(resource_id_files: &[String]) -> Result<BTreeMap<i32, String>> {

@@ -106,6 +106,9 @@ reference 解析当前覆盖：
 `baksmali-cli` 当前支持的命令：
 
 - `baksmali disassemble <input> -o <out_dir>`
+- `baksmali dis <input> -o <out_dir>`
+- `baksmali d <input> -o <out_dir>`
+- `baksmali disassemble <input> --classes <class-descriptor>[,<class-descriptor>...] -o <out_dir>`
 - `baksmali list classes <input>`
 - `baksmali list strings <input>`
 - `baksmali list types <input>`
@@ -200,7 +203,7 @@ cargo fmt --all && cargo test --workspace
 
 测试统计：
 
-- `baksmali-cli` integration tests：6 passed。
+- `baksmali-cli` integration tests：10 passed。
 - `baksmali-format` unit tests：19 passed。
 - `baksmali-format` fixture tests：6 passed。
 - `dex-reader` unit tests：23 passed。
@@ -208,7 +211,7 @@ cargo fmt --all && cargo test --workspace
 - `dex-types` opcode tests：7 passed。
 - doc tests：0。
 
-总计当前可见测试：65 passed。
+总计当前可见测试：69 passed。
 
 覆盖重点包括：
 
@@ -226,6 +229,7 @@ cargo fmt --all && cargo test --workspace
 - Java 风格 section header、当前类成员声明省略、payload label、array/switch 数字格式。
 - Java 风格 likely float/double literal 和 payload 注释。
 - Java 风格 resource-id 注释以及 `--resolve-resources` 常见 public.xml 格式变体解析。
+- Java 风格 `disassemble --classes` class descriptor 过滤。
 - 已复制上游 Java baksmali 测试案例到 `tests/fixtures/upstream/baksmali`：包含 `src/test/resources` 和 `src/test/smali` fixture；已用 Rust 移植 `BaksmaliTestUtils` normalization 检查、`MultiSwitchTest` 与 `ZeroArrayPayloadWidthTest`，并删除复制来的 Java 测试源码。
 
 ## 当前风险与问题

@@ -58,6 +58,112 @@ fn lists_zip_dex_entries() {
 }
 
 #[test]
+fn disassemble_accepts_java_style_alias() {
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let output = std::env::temp_dir().join(format!("baksmali-dis-alias-test-{unique}"));
+
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+    command
+        .args([
+            "dis",
+            "../../tests/fixtures/hello.dex",
+            "-o",
+            output.to_str().unwrap(),
+        ])
+        .assert()
+        .success();
+
+    assert!(output.join("Hello.smali").exists());
+    fs::remove_dir_all(output).unwrap();
+}
+
+#[test]
+fn disassemble_filters_classes_like_java_baksmali() {
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let output = std::env::temp_dir().join(format!("baksmali-classes-filter-test-{unique}"));
+
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+    command
+        .args([
+            "disassemble",
+            "../../tests/fixtures/hello.dex",
+            "--classes",
+            "LNoSuchClass;",
+            "-o",
+            output.to_str().unwrap(),
+        ])
+        .assert()
+        .success();
+
+    assert!(!output.join("Hello.smali").exists());
+    fs::remove_dir_all(output).unwrap();
+}
+
+#[test]
+fn disassemble_accepts_comma_separated_class_filter() {
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let output = std::env::temp_dir().join(format!("baksmali-classes-filter-list-test-{unique}"));
+
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+    command
+        .args([
+            "disassemble",
+            "../../tests/fixtures/hello.dex",
+            "--classes",
+            "LNoSuchClass;,LHello;",
+            "-o",
+            output.to_str().unwrap(),
+        ])
+        .assert()
+        .success();
+
+    assert!(output.join("Hello.smali").exists());
+    fs::remove_dir_all(output).unwrap();
+}
+
+#[test]
+fn help_shows_java_style_aliases_and_descriptions() {
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+
+    command
+        .args(["--help"])
+        .assert()
+        .success()
+        .stdout(predicates::str::contains(
+            "Disassemble DEX/APK/JAR/ZIP input to smali files",
+        ))
+        .stdout(predicates::str::contains("aliases: dis, d"))
+        .stdout(predicates::str::contains(
+            "List DEX references or DEX entries",
+        ));
+
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+    command
+        .args(["disassemble", "--help"])
+        .assert()
+        .success()
+        .stdout(predicates::str::contains("--classes <CLASSES>"));
+
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+    command
+        .args(["list", "--help"])
+        .assert()
+        .success()
+        .stdout(predicates::str::contains("List class descriptors"))
+        .stdout(predicates::str::contains("aliases: class, c"))
+        .stdout(predicates::str::contains("aliases: string, str, s"));
+}
+
+#[test]
 fn accepts_resolve_resources_argument() {
     let unique = SystemTime::now()
         .duration_since(UNIX_EPOCH)
