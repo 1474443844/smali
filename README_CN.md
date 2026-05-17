@@ -212,6 +212,7 @@ baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --resolve-resourc
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --classes <class-descriptor>[,<class-descriptor>...] -o <out_dir>
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --jobs <n> -o <out_dir>
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --api <api-level> -o <out_dir>
+baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --debug-info <true|false> -o <out_dir>
 baksmali list classes <input.dex|input.apk|input.jar|input.zip>
 baksmali list strings <input.dex|input.apk|input.jar|input.zip>
 baksmali list types <input.dex|input.apk|input.jar|input.zip>
@@ -278,6 +279,7 @@ baksmali list-dex <input.dex|input.apk|input.jar|input.zip>
 - Java 风格 `disassemble --classes`，按 class descriptor 过滤输出 class。
 - Java 风格 `disassemble --jobs` / `-j` 参数会使用并行 worker thread 格式化 class。
 - Java 风格 `disassemble --api` / `-a` 参数已接入 API-level opcode decoding/formatting，用于 legacy opcode 映射。
+- Java 风格 `disassemble --debug-info` / `--di` 参数控制 `.local`、`.param`、`.line` 等 debug directive 输出。
 - Java 风格容器 entry 路径输入，例如 `app.apk/classes2.dex`。
 - 改进 `baksmali --help` 和嵌套 `list --help` 输出，显示 alias、value name 和命令说明。
 - 已将上游 Java baksmali 测试 fixture 复制到 `tests/fixtures/upstream/baksmali`，并增加 Rust fixture inventory/disassembly 测试覆盖。
@@ -294,7 +296,7 @@ cargo test --workspace
 最新结果：
 
 ```text
-All tests passed: 78 passed.
+All tests passed: 80 passed.
 ```
 
 ## 示例 Fixture 输出

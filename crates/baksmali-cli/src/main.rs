@@ -54,6 +54,15 @@ enum Command {
             help = "The numeric api level of the file being disassembled"
         )]
         api: Option<u32>,
+        #[arg(
+            long = "debug-info",
+            visible_alias = "di",
+            value_name = "BOOLEAN",
+            default_value_t = true,
+            num_args = 1,
+            help = "Whether to include debug information in the output"
+        )]
+        debug_info: bool,
     },
     #[command(about = "List DEX references or DEX entries")]
     #[command(visible_alias = "l")]
@@ -143,7 +152,16 @@ fn main() -> Result<()> {
             classes,
             jobs,
             api,
-        } => disassemble(&input, &output, &resource_id_files, &classes, jobs, api),
+            debug_info,
+        } => disassemble(
+            &input,
+            &output,
+            &resource_id_files,
+            &classes,
+            jobs,
+            api,
+            debug_info,
+        ),
         Command::List { command } => run_list(command),
         Command::ListClasses { input } => list_classes(&input),
         Command::ListStrings { input } => list_strings(&input),
@@ -176,6 +194,7 @@ fn disassemble(
     classes: &[String],
     jobs: usize,
     api_level: Option<u32>,
+    debug_info: bool,
 ) -> Result<()> {
     let resource_ids = load_resource_ids(resource_id_files)?;
     let class_filter = class_filter(classes);
@@ -186,11 +205,12 @@ fn disassemble(
         let dex = dex_reader::parse_dex(&entry.data)
             .with_context(|| format!("failed to parse {}", entry.name))?;
         let resolver = Resolver::new(&dex, &entry.data);
-        let formatter = BaksmaliFormatter::with_resource_ids_and_api(
+        let formatter = BaksmaliFormatter::with_resource_ids_api_and_debug_info(
             &dex,
             &entry.data,
             resource_ids.clone(),
             api_level,
+            debug_info,
         );
         let dex_output = if entries.len() == 1 {
             output.to_path_buf()

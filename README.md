@@ -212,6 +212,7 @@ baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --resolve-resourc
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --classes <class-descriptor>[,<class-descriptor>...] -o <out_dir>
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --jobs <n> -o <out_dir>
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --api <api-level> -o <out_dir>
+baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --debug-info <true|false> -o <out_dir>
 baksmali list classes <input.dex|input.apk|input.jar|input.zip>
 baksmali list strings <input.dex|input.apk|input.jar|input.zip>
 baksmali list types <input.dex|input.apk|input.jar|input.zip>
@@ -278,6 +279,7 @@ Current test coverage includes:
 - Java-style `disassemble --classes` filtering by class descriptor.
 - Java-style `disassemble --jobs` / `-j` option runs class formatting in parallel worker threads.
 - Java-style `disassemble --api` / `-a` option wired into API-level opcode decoding/formatting for legacy opcode mappings.
+- Java-style `disassemble --debug-info` / `--di` option controls `.local`, `.param`, `.line`, and related debug directive output.
 - Java-style container entry path input such as `app.apk/classes2.dex`.
 - Improved `baksmali --help` and nested `list --help` output with visible aliases, value names, and command descriptions.
 - copied upstream Java baksmali test fixtures are present under `tests/fixtures/upstream/baksmali` and covered by Rust fixture inventory/disassembly tests.
@@ -294,7 +296,7 @@ cargo test --workspace
 Latest result:
 
 ```text
-All tests passed: 78 passed.
+All tests passed: 80 passed.
 ```
 
 ## Example Fixture Output

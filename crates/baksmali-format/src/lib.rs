@@ -17,11 +17,12 @@ pub struct BaksmaliFormatter<'a> {
     resolver: Resolver<'a>,
     resource_ids: BTreeMap<i32, String>,
     api_level: Option<u32>,
+    debug_info: bool,
 }
 
 impl<'a> BaksmaliFormatter<'a> {
     pub fn new(dex: &'a DexFile, data: &'a [u8]) -> Self {
-        Self::with_options(dex, data, BTreeMap::new(), None)
+        Self::with_options(dex, data, BTreeMap::new(), None, true)
     }
 
     pub fn with_resource_ids(
@@ -29,7 +30,7 @@ impl<'a> BaksmaliFormatter<'a> {
         data: &'a [u8],
         resource_ids: BTreeMap<i32, String>,
     ) -> Self {
-        Self::with_options(dex, data, resource_ids, None)
+        Self::with_options(dex, data, resource_ids, None, true)
     }
 
     pub fn with_resource_ids_and_api(
@@ -38,7 +39,17 @@ impl<'a> BaksmaliFormatter<'a> {
         resource_ids: BTreeMap<i32, String>,
         api_level: Option<u32>,
     ) -> Self {
-        Self::with_options(dex, data, resource_ids, api_level)
+        Self::with_options(dex, data, resource_ids, api_level, true)
+    }
+
+    pub fn with_resource_ids_api_and_debug_info(
+        dex: &'a DexFile,
+        data: &'a [u8],
+        resource_ids: BTreeMap<i32, String>,
+        api_level: Option<u32>,
+        debug_info: bool,
+    ) -> Self {
+        Self::with_options(dex, data, resource_ids, api_level, debug_info)
     }
 
     fn with_options(
@@ -46,6 +57,7 @@ impl<'a> BaksmaliFormatter<'a> {
         data: &'a [u8],
         resource_ids: BTreeMap<i32, String>,
         api_level: Option<u32>,
+        debug_info: bool,
     ) -> Self {
         Self {
             dex,
@@ -53,6 +65,7 @@ impl<'a> BaksmaliFormatter<'a> {
             resolver: Resolver::new(dex, data),
             resource_ids,
             api_level,
+            debug_info,
         }
     }
 
@@ -251,7 +264,7 @@ impl<'a> BaksmaliFormatter<'a> {
         if method.code_off != 0 {
             let code =
                 dex_reader::parse_code_item_with_api(self.data, method.code_off, self.api_level)?;
-            let debug_info = if code.debug_info_off != 0 {
+            let debug_info = if self.debug_info && code.debug_info_off != 0 {
                 Some(dex_reader::parse_debug_info_item(
                     self.data,
                     code.debug_info_off,
@@ -1514,7 +1527,7 @@ mod tests {
                 link_size: 0,
                 link_off: 0,
                 map_off: 0,
-                string_ids_size: 3,
+                string_ids_size: 12,
                 string_ids_off: 0,
                 type_ids_size: 1,
                 type_ids_off: 0,
@@ -1933,6 +1946,58 @@ mod tests {
         assert_eq!(out, "    .param p1, \"name\"    # I\n    .end param\n");
         assert_eq!(format_register(0, 2), "v0");
         assert_eq!(format_register(2, 2), "p0");
+    }
+
+    fn method_debug_data() -> Vec<u8> {
+        let mut data = vec![0; 48];
+        data[1] = 1;
+        data[2] = 0;
+        data[3] = 0x0e;
+        data[4] = 0;
+        data[16..18].copy_from_slice(&1u16.to_le_bytes());
+        data[18..20].copy_from_slice(&1u16.to_le_bytes());
+        data[20..22].copy_from_slice(&0u16.to_le_bytes());
+        data[22..24].copy_from_slice(&0u16.to_le_bytes());
+        data[24..28].copy_from_slice(&1u32.to_le_bytes());
+        data[28..32].copy_from_slice(&1u32.to_le_bytes());
+        data[32..34].copy_from_slice(&0x000eu16.to_le_bytes());
+        data
+    }
+
+    fn method_with_debug_code() -> EncodedMethod {
+        EncodedMethod {
+            method_idx: 0,
+            access_flags: AccessFlags::PUBLIC | AccessFlags::STATIC,
+            code_off: 16,
+        }
+    }
+
+    #[test]
+    fn format_method_can_disable_debug_info() {
+        let dex = test_dex();
+        let data = method_debug_data();
+        let method = method_with_debug_code();
+        let enabled = BaksmaliFormatter::new(&dex, &data);
+        let disabled = BaksmaliFormatter::with_resource_ids_api_and_debug_info(
+            &dex,
+            &data,
+            BTreeMap::new(),
+            None,
+            false,
+        );
+        let mut enabled_out = String::new();
+        let mut disabled_out = String::new();
+
+        enabled
+            .format_method(&mut enabled_out, &method, None, "LTest;")
+            .unwrap();
+        disabled
+            .format_method(&mut disabled_out, &method, None, "LTest;")
+            .unwrap();
+
+        assert!(enabled_out.contains("    .line 1\n"));
+        assert!(!disabled_out.contains(".line"));
+        assert!(disabled_out.contains("    return-void\n"));
     }
 
     #[test]

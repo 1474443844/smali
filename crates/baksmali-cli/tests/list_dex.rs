@@ -177,7 +177,8 @@ fn help_shows_java_style_aliases_and_descriptions() {
         .success()
         .stdout(predicates::str::contains("--classes <CLASSES>"))
         .stdout(predicates::str::contains("--jobs <N>"))
-        .stdout(predicates::str::contains("--api <API_LEVEL>"));
+        .stdout(predicates::str::contains("--api <API_LEVEL>"))
+        .stdout(predicates::str::contains("--debug-info <BOOLEAN>"));
 
     let mut command = Command::cargo_bin("baksmali").unwrap();
     command
@@ -255,6 +256,31 @@ fn accepts_java_style_api_argument() {
             "../../tests/fixtures/hello.dex",
             "--api",
             "28",
+            "-o",
+            output.to_str().unwrap(),
+        ])
+        .assert()
+        .success();
+
+    assert!(output.join("Hello.smali").exists());
+    fs::remove_dir_all(output).unwrap();
+}
+
+#[test]
+fn accepts_java_style_debug_info_argument() {
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let output = std::env::temp_dir().join(format!("baksmali-debug-info-test-{unique}"));
+
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+    command
+        .args([
+            "disassemble",
+            "../../tests/fixtures/hello.dex",
+            "--debug-info",
+            "false",
             "-o",
             output.to_str().unwrap(),
         ])
