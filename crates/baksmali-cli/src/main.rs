@@ -63,6 +63,16 @@ enum Command {
             help = "Whether to include debug information in the output"
         )]
         debug_info: bool,
+        #[arg(
+            long = "parameter-registers",
+            visible_alias = "preg",
+            visible_alias = "pr",
+            value_name = "BOOLEAN",
+            default_value_t = true,
+            num_args = 1,
+            help = "Whether to use pNN syntax for registers that refer to method parameters"
+        )]
+        parameter_registers: bool,
     },
     #[command(about = "List DEX references or DEX entries")]
     #[command(visible_alias = "l")]
@@ -153,6 +163,7 @@ fn main() -> Result<()> {
             jobs,
             api,
             debug_info,
+            parameter_registers,
         } => disassemble(
             &input,
             &output,
@@ -161,6 +172,7 @@ fn main() -> Result<()> {
             jobs,
             api,
             debug_info,
+            parameter_registers,
         ),
         Command::List { command } => run_list(command),
         Command::ListClasses { input } => list_classes(&input),
@@ -195,6 +207,7 @@ fn disassemble(
     jobs: usize,
     api_level: Option<u32>,
     debug_info: bool,
+    parameter_registers: bool,
 ) -> Result<()> {
     let resource_ids = load_resource_ids(resource_id_files)?;
     let class_filter = class_filter(classes);
@@ -205,12 +218,13 @@ fn disassemble(
         let dex = dex_reader::parse_dex(&entry.data)
             .with_context(|| format!("failed to parse {}", entry.name))?;
         let resolver = Resolver::new(&dex, &entry.data);
-        let formatter = BaksmaliFormatter::with_resource_ids_api_and_debug_info(
+        let formatter = BaksmaliFormatter::with_resource_ids_api_debug_info_and_parameter_registers(
             &dex,
             &entry.data,
             resource_ids.clone(),
             api_level,
             debug_info,
+            parameter_registers,
         );
         let dex_output = if entries.len() == 1 {
             output.to_path_buf()

@@ -113,6 +113,7 @@ reference 解析当前覆盖：
 - `baksmali disassemble <input> --jobs <n> -o <out_dir>`
 - `baksmali disassemble <input> --api <api-level> -o <out_dir>`
 - `baksmali disassemble <input> --debug-info <true|false> -o <out_dir>`
+- `baksmali disassemble <input> --parameter-registers <true|false> -o <out_dir>`
 - `baksmali list classes <input>`
 - `baksmali list strings <input>`
 - `baksmali list types <input>`
@@ -207,15 +208,15 @@ cargo fmt --all && cargo test --workspace
 
 测试统计：
 
-- `baksmali-cli` integration tests：15 passed。
+- `baksmali-cli` integration tests：16 passed。
 - `baksmali-format` unit tests：21 passed。
-- `baksmali-format` fixture tests：6 passed。
+- `baksmali-format` fixture tests：3 passed。
 - `dex-reader` unit tests：23 passed。
 - `dex-reader` fixture tests：6 passed。
 - `dex-types` opcode tests：9 passed。
 - doc tests：0。
 
-总计当前可见测试：80 passed。
+总计当前可见测试：78 passed。
 
 覆盖重点包括：
 
@@ -238,6 +239,7 @@ cargo fmt --all && cargo test --workspace
 - Java 风格 `disassemble --jobs` / `-j` CLI 参数会使用并行 worker thread 格式化 class。
 - Java 风格 `disassemble --api` / `-a` 参数已接入 API-level opcode decoding/formatting，用于 legacy opcode 映射。
 - Java 风格 `disassemble --debug-info` / `--di` 参数控制 `.local`、`.param`、`.line` 等 debug directive 输出。
+- Java 风格 `disassemble --parameter-registers` / `--preg` / `--pr` 参数控制 debug directive 是否使用 `pNN` parameter register 语法。
 - 已复制上游 Java baksmali 测试案例到 `tests/fixtures/upstream/baksmali`：包含 `src/test/resources` 和 `src/test/smali` fixture；已用 Rust 移植 `BaksmaliTestUtils` normalization 检查、`MultiSwitchTest` 与 `ZeroArrayPayloadWidthTest`，并删除复制来的 Java 测试源码。
 
 ## 当前风险与问题

@@ -18,11 +18,12 @@ pub struct BaksmaliFormatter<'a> {
     resource_ids: BTreeMap<i32, String>,
     api_level: Option<u32>,
     debug_info: bool,
+    parameter_registers: bool,
 }
 
 impl<'a> BaksmaliFormatter<'a> {
     pub fn new(dex: &'a DexFile, data: &'a [u8]) -> Self {
-        Self::with_options(dex, data, BTreeMap::new(), None, true)
+        Self::with_options(dex, data, BTreeMap::new(), None, true, true)
     }
 
     pub fn with_resource_ids(
@@ -30,7 +31,7 @@ impl<'a> BaksmaliFormatter<'a> {
         data: &'a [u8],
         resource_ids: BTreeMap<i32, String>,
     ) -> Self {
-        Self::with_options(dex, data, resource_ids, None, true)
+        Self::with_options(dex, data, resource_ids, None, true, true)
     }
 
     pub fn with_resource_ids_and_api(
@@ -39,7 +40,7 @@ impl<'a> BaksmaliFormatter<'a> {
         resource_ids: BTreeMap<i32, String>,
         api_level: Option<u32>,
     ) -> Self {
-        Self::with_options(dex, data, resource_ids, api_level, true)
+        Self::with_options(dex, data, resource_ids, api_level, true, true)
     }
 
     pub fn with_resource_ids_api_and_debug_info(
@@ -49,7 +50,25 @@ impl<'a> BaksmaliFormatter<'a> {
         api_level: Option<u32>,
         debug_info: bool,
     ) -> Self {
-        Self::with_options(dex, data, resource_ids, api_level, debug_info)
+        Self::with_options(dex, data, resource_ids, api_level, debug_info, true)
+    }
+
+    pub fn with_resource_ids_api_debug_info_and_parameter_registers(
+        dex: &'a DexFile,
+        data: &'a [u8],
+        resource_ids: BTreeMap<i32, String>,
+        api_level: Option<u32>,
+        debug_info: bool,
+        parameter_registers: bool,
+    ) -> Self {
+        Self::with_options(
+            dex,
+            data,
+            resource_ids,
+            api_level,
+            debug_info,
+            parameter_registers,
+        )
     }
 
     fn with_options(
@@ -58,6 +77,7 @@ impl<'a> BaksmaliFormatter<'a> {
         resource_ids: BTreeMap<i32, String>,
         api_level: Option<u32>,
         debug_info: bool,
+        parameter_registers: bool,
     ) -> Self {
         Self {
             dex,
@@ -66,6 +86,7 @@ impl<'a> BaksmaliFormatter<'a> {
             resource_ids,
             api_level,
             debug_info,
+            parameter_registers,
         }
     }
 
@@ -333,7 +354,7 @@ impl<'a> BaksmaliFormatter<'a> {
                 writeln!(
                     out,
                     "    .param {}, \"{}\"    # {}",
-                    format_register(register, parameter_base),
+                    format_register(register, parameter_base, self.parameter_registers),
                     escape_string(self.resolver.string(*name_idx)?),
                     descriptor
                 )
@@ -380,11 +401,11 @@ impl<'a> BaksmaliFormatter<'a> {
             ),
             DebugItemKind::EndLocal { register } => Ok(Some(format!(
                 ".end local {}",
-                format_register(*register, parameter_base)
+                format_register(*register, parameter_base, self.parameter_registers)
             ))),
             DebugItemKind::RestartLocal { register } => Ok(Some(format!(
                 ".restart local {}",
-                format_register(*register, parameter_base)
+                format_register(*register, parameter_base, self.parameter_registers)
             ))),
             DebugItemKind::PrologueEnd => Ok(Some(".prologue".to_owned())),
             DebugItemKind::EpilogueBegin => Ok(Some(".epilogue".to_owned())),
@@ -414,7 +435,7 @@ impl<'a> BaksmaliFormatter<'a> {
         };
         let mut text = format!(
             ".local {}, \"{}\":{}",
-            format_register(register, parameter_base),
+            format_register(register, parameter_base, self.parameter_registers),
             escape_string(self.resolver.string(name_idx)?),
             self.resolver.type_descriptor(type_idx)?
         );
@@ -1182,8 +1203,8 @@ fn parameter_base(code: &CodeItem) -> u32 {
     code.registers_size as u32 - code.ins_size as u32
 }
 
-fn format_register(register: u32, parameter_base: u32) -> String {
-    if register >= parameter_base {
+fn format_register(register: u32, parameter_base: u32, parameter_registers: bool) -> String {
+    if parameter_registers && register >= parameter_base {
         format!("p{}", register - parameter_base)
     } else {
         format!("v{register}")
@@ -1853,7 +1874,17 @@ mod tests {
     fn formats_debug_items() {
         let dex = test_dex();
         let formatter = BaksmaliFormatter::new(&dex, &[]);
+        let without_parameter_registers =
+            BaksmaliFormatter::with_resource_ids_api_debug_info_and_parameter_registers(
+                &dex,
+                &[],
+                BTreeMap::new(),
+                None,
+                true,
+                false,
+            );
         let mut out = String::new();
+        let mut vreg_out = String::new();
 
         formatter
             .write_debug_items(
@@ -1894,6 +1925,22 @@ mod tests {
                 4,
             )
             .unwrap();
+        without_parameter_registers
+            .write_debug_items(
+                &mut vreg_out,
+                vec![
+                    DebugItemKind::StartLocal {
+                        register: 4,
+                        name_idx: Some(1),
+                        type_idx: Some(3),
+                        signature_idx: None,
+                    },
+                    DebugItemKind::EndLocal { register: 4 },
+                    DebugItemKind::RestartLocal { register: 4 },
+                ],
+                4,
+            )
+            .unwrap();
 
         assert_eq!(
             out,
@@ -1909,6 +1956,14 @@ mod tests {
                 "    .restart local p0\n",
             )
         );
+        assert_eq!(
+            vreg_out,
+            concat!(
+                "    .local v4, \"name\":I\n",
+                "    .end local v4\n",
+                "    .restart local v4\n",
+            )
+        );
     }
 
     #[test]
@@ -1917,6 +1972,15 @@ mod tests {
         dex.proto_ids[0].parameters_off = 1;
         let data = [0, 1, 0, 0, 0, 3, 0];
         let formatter = BaksmaliFormatter::new(&dex, &data);
+        let without_parameter_registers =
+            BaksmaliFormatter::with_resource_ids_api_debug_info_and_parameter_registers(
+                &dex,
+                &data,
+                BTreeMap::new(),
+                None,
+                true,
+                false,
+            );
         let method = EncodedMethod {
             method_idx: 0,
             access_flags: AccessFlags::PUBLIC,
@@ -1938,14 +2002,20 @@ mod tests {
             items: Vec::new(),
         };
         let mut out = String::new();
+        let mut vreg_out = String::new();
 
         formatter
             .write_parameter_debug_items(&mut out, &method, &code, Some(&debug_info))
             .unwrap();
+        without_parameter_registers
+            .write_parameter_debug_items(&mut vreg_out, &method, &code, Some(&debug_info))
+            .unwrap();
 
         assert_eq!(out, "    .param p1, \"name\"    # I\n    .end param\n");
-        assert_eq!(format_register(0, 2), "v0");
-        assert_eq!(format_register(2, 2), "p0");
+        assert_eq!(vreg_out, "    .param v2, \"name\"    # I\n    .end param\n");
+        assert_eq!(format_register(0, 2, true), "v0");
+        assert_eq!(format_register(2, 2, true), "p0");
+        assert_eq!(format_register(2, 2, false), "v2");
     }
 
     fn method_debug_data() -> Vec<u8> {
