@@ -7,7 +7,7 @@ use std::fmt::Write;
 
 use dex_types::{
     AccessFlags, AnnotationDirectory, AnnotationVisibility, ClassDef, CodeItem, DebugInfoItem,
-    DebugItemKind, DexFile, EncodedAnnotation, EncodedCatchHandlerList, EncodedField,
+    DebugItemKind, DexError, DexFile, EncodedAnnotation, EncodedCatchHandlerList, EncodedField,
     EncodedMethod, EncodedValue, HiddenApiClassData, HiddenApiRestriction, InstructionOperands,
     PayloadInstruction, RawInstruction, Result,
 };
@@ -781,7 +781,7 @@ impl<'a> BaksmaliFormatter<'a> {
         writeln!(
             out,
             "{indent}.annotation {} {}",
-            format_annotation_visibility(visibility),
+            format_annotation_visibility(visibility)?,
             self.resolver.type_descriptor(annotation.type_idx)?
         )
         .unwrap();
@@ -1765,12 +1765,15 @@ fn catch_handler_at(
         .find(|handler| handler.offset == handler_off)
 }
 
-fn format_annotation_visibility(visibility: AnnotationVisibility) -> &'static str {
+fn format_annotation_visibility(visibility: AnnotationVisibility) -> Result<&'static str> {
     match visibility {
-        AnnotationVisibility::Build => "build",
-        AnnotationVisibility::Runtime => "runtime",
-        AnnotationVisibility::System => "system",
-        AnnotationVisibility::Unknown(_) => "unknown",
+        AnnotationVisibility::Build => Ok("build"),
+        AnnotationVisibility::Runtime => Ok("runtime"),
+        AnnotationVisibility::System => Ok("system"),
+        AnnotationVisibility::Unknown(value) => Err(DexError::InvalidEncodedData {
+            offset: 0,
+            reason: format!("Invalid annotation visibility {value}"),
+        }),
     }
 }
 
@@ -3263,6 +3266,22 @@ mod tests {
         assert_eq!(
             out,
             ".annotation runtime LAnno;\n    name = \"value\"\n.end annotation\n"
+        );
+
+        let error = formatter
+            .format_annotation(
+                &mut String::new(),
+                AnnotationVisibility::Unknown(3),
+                &annotation,
+                "",
+            )
+            .unwrap_err();
+        assert_eq!(
+            error,
+            DexError::InvalidEncodedData {
+                offset: 0,
+                reason: "Invalid annotation visibility 3".to_owned(),
+            }
         );
     }
 
