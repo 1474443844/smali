@@ -217,6 +217,7 @@ baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --api <api-level>
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --debug-info <true|false> -o <out_dir>
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --parameter-registers <true|false> -o <out_dir>
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --use-locals -o <out_dir>
+baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --sequential-labels -o <out_dir>
 baksmali list classes <input.dex|input.apk|input.jar|input.zip>
 baksmali list strings <input.dex|input.apk|input.jar|input.zip>
 baksmali list types <input.dex|input.apk|input.jar|input.zip>
@@ -287,6 +288,7 @@ baksmali list-dex <input.dex|input.apk|input.jar|input.zip>
 - Java 风格 `disassemble --debug-info` / `--di` 参数控制 `.local`、`.param`、`.line` 等 debug directive 输出。
 - Java 风格 `disassemble --parameter-registers` / `--preg` / `--pr` 参数控制 debug directive 和 instruction operand 是否使用 `pNN` parameter register 语法。
 - Java 风格 `disassemble --use-locals` / `-l` 参数输出 `.locals <非参数寄存器数>`，而不是 `.registers <总寄存器数>`。
+- Java 风格 `disassemble --sequential-labels` / `-s` 参数输出 `:cond_0` 这类 sequential label，而不是地址型 label。
 - Java 风格容器 entry 路径输入，例如 `app.apk/classes2.dex`。
 - 改进 `baksmali --help` 和嵌套 `list --help` 输出，显示 alias、value name 和命令说明。
 - 已将上游 Java baksmali 测试 fixture 复制到 `tests/fixtures/upstream/baksmali`，并增加 Rust fixture inventory/disassembly 测试覆盖。
@@ -303,7 +305,7 @@ cargo test --workspace
 最新结果：
 
 ```text
-All tests passed: 82 passed.
+All tests passed: 86 passed.
 ```
 
 ## 示例 Fixture 输出

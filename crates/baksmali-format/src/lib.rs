@@ -21,11 +21,12 @@ pub struct BaksmaliFormatter<'a> {
     debug_info: bool,
     parameter_registers: bool,
     use_locals: bool,
+    sequential_labels: bool,
 }
 
 impl<'a> BaksmaliFormatter<'a> {
     pub fn new(dex: &'a DexFile, data: &'a [u8]) -> Self {
-        Self::with_options(dex, data, BTreeMap::new(), None, true, true, false)
+        Self::with_options(dex, data, BTreeMap::new(), None, true, true, false, false)
     }
 
     pub fn with_resource_ids(
@@ -33,7 +34,7 @@ impl<'a> BaksmaliFormatter<'a> {
         data: &'a [u8],
         resource_ids: BTreeMap<i32, String>,
     ) -> Self {
-        Self::with_options(dex, data, resource_ids, None, true, true, false)
+        Self::with_options(dex, data, resource_ids, None, true, true, false, false)
     }
 
     pub fn with_resource_ids_and_api(
@@ -42,7 +43,7 @@ impl<'a> BaksmaliFormatter<'a> {
         resource_ids: BTreeMap<i32, String>,
         api_level: Option<u32>,
     ) -> Self {
-        Self::with_options(dex, data, resource_ids, api_level, true, true, false)
+        Self::with_options(dex, data, resource_ids, api_level, true, true, false, false)
     }
 
     pub fn with_resource_ids_api_and_debug_info(
@@ -52,7 +53,16 @@ impl<'a> BaksmaliFormatter<'a> {
         api_level: Option<u32>,
         debug_info: bool,
     ) -> Self {
-        Self::with_options(dex, data, resource_ids, api_level, debug_info, true, false)
+        Self::with_options(
+            dex,
+            data,
+            resource_ids,
+            api_level,
+            debug_info,
+            true,
+            false,
+            false,
+        )
     }
 
     pub fn with_resource_ids_api_debug_info_and_parameter_registers(
@@ -71,6 +81,7 @@ impl<'a> BaksmaliFormatter<'a> {
             debug_info,
             parameter_registers,
             false,
+            false,
         )
     }
 
@@ -83,6 +94,28 @@ impl<'a> BaksmaliFormatter<'a> {
         parameter_registers: bool,
         use_locals: bool,
     ) -> Self {
+        Self::with_resource_ids_api_debug_info_parameter_registers_locals_and_sequential_labels(
+            dex,
+            data,
+            resource_ids,
+            api_level,
+            debug_info,
+            parameter_registers,
+            use_locals,
+            false,
+        )
+    }
+
+    pub fn with_resource_ids_api_debug_info_parameter_registers_locals_and_sequential_labels(
+        dex: &'a DexFile,
+        data: &'a [u8],
+        resource_ids: BTreeMap<i32, String>,
+        api_level: Option<u32>,
+        debug_info: bool,
+        parameter_registers: bool,
+        use_locals: bool,
+        sequential_labels: bool,
+    ) -> Self {
         Self::with_options(
             dex,
             data,
@@ -91,6 +124,7 @@ impl<'a> BaksmaliFormatter<'a> {
             debug_info,
             parameter_registers,
             use_locals,
+            sequential_labels,
         )
     }
 
@@ -102,6 +136,7 @@ impl<'a> BaksmaliFormatter<'a> {
         debug_info: bool,
         parameter_registers: bool,
         use_locals: bool,
+        sequential_labels: bool,
     ) -> Self {
         Self {
             dex,
@@ -112,6 +147,7 @@ impl<'a> BaksmaliFormatter<'a> {
             debug_info,
             parameter_registers,
             use_locals,
+            sequential_labels,
         }
     }
 
@@ -349,8 +385,8 @@ impl<'a> BaksmaliFormatter<'a> {
                 None
             };
             let mut debug_items = debug_items_by_address(debug_info.as_ref());
-            let code_labels = collect_code_labels(&code);
-            let label_names = label_names(&code);
+            let code_labels = collect_code_labels(&code, self.sequential_labels);
+            let label_names = label_names(&code, self.sequential_labels);
             if self.use_locals {
                 writeln!(out, "    .locals {}", parameter_base(&code)).unwrap();
             } else {
@@ -546,26 +582,39 @@ impl<'a> BaksmaliFormatter<'a> {
     }
 
     fn format_catch_directives(&self, out: &mut String, code: &CodeItem) -> Result<()> {
+        let catch_names = catch_label_names(code, self.sequential_labels);
         for try_item in &code.tries {
             if let Some(handler) = catch_handler_at(&code.handlers, try_item.handler_off) {
+                let try_start = catch_names
+                    .try_starts
+                    .get(&try_item.start_addr)
+                    .cloned()
+                    .unwrap_or_else(|| format!(":try_start_{:04x}", try_item.start_addr));
+                let try_end = catch_names
+                    .try_ends
+                    .get(&try_item.start_addr)
+                    .cloned()
+                    .unwrap_or_else(|| format!(":try_end_{:04x}", try_item.start_addr));
                 for pair in &handler.handlers {
+                    let catch = catch_names
+                        .catches
+                        .get(&pair.addr)
+                        .cloned()
+                        .unwrap_or_else(|| format!(":catch_{:04x}", pair.addr));
                     writeln!(
                         out,
-                        "    .catch {} {{:try_start_{:04x} .. :try_end_{:04x}}} :catch_{:04x}",
-                        self.resolver.type_descriptor(pair.type_idx)?,
-                        try_item.start_addr,
-                        try_item.start_addr,
-                        pair.addr
+                        "    .catch {} {{{try_start} .. {try_end}}} {catch}",
+                        self.resolver.type_descriptor(pair.type_idx)?
                     )
                     .unwrap();
                 }
                 if let Some(addr) = handler.catch_all_addr {
-                    writeln!(
-                        out,
-                        "    .catchall {{:try_start_{:04x} .. :try_end_{:04x}}} :catchall_{addr:04x}",
-                        try_item.start_addr, try_item.start_addr
-                    )
-                    .unwrap();
+                    let catchall = catch_names
+                        .catchalls
+                        .get(&addr)
+                        .cloned()
+                        .unwrap_or_else(|| format!(":catchall_{addr:04x}"));
+                    writeln!(out, "    .catchall {{{try_start} .. {try_end}}} {catchall}").unwrap();
                 }
             }
         }
@@ -1435,17 +1484,18 @@ fn escape_string(value: &str) -> String {
     out
 }
 
-fn label_names(code: &CodeItem) -> BTreeMap<u32, String> {
+fn label_names(code: &CodeItem, sequential_labels: bool) -> BTreeMap<u32, String> {
     let mut names = BTreeMap::new();
+    let mut generator = LabelGenerator::new(sequential_labels);
     for instruction in &code.instructions {
         match &instruction.operands {
             InstructionOperands::Branch8 { offset } => {
                 let target = branch_target(instruction.address, *offset as i32);
                 names.entry(target).or_insert_with(|| {
                     if instruction.opcode.value() == 0x28 || instruction.opcode.value() == 0x29 {
-                        format!(":goto_{target:x}")
+                        generator.label("goto", target)
                     } else {
-                        format!(":cond_{target:x}")
+                        generator.label("cond", target)
                     }
                 });
             }
@@ -1453,9 +1503,9 @@ fn label_names(code: &CodeItem) -> BTreeMap<u32, String> {
                 let target = branch_target(instruction.address, *offset as i32);
                 names.entry(target).or_insert_with(|| {
                     if instruction.opcode.value() == 0x28 || instruction.opcode.value() == 0x29 {
-                        format!(":goto_{target:x}")
+                        generator.label("goto", target)
                     } else {
-                        format!(":cond_{target:x}")
+                        generator.label("cond", target)
                     }
                 });
             }
@@ -1463,73 +1513,133 @@ fn label_names(code: &CodeItem) -> BTreeMap<u32, String> {
                 let target = branch_target(instruction.address, *offset);
                 names
                     .entry(target)
-                    .or_insert_with(|| format!(":goto_{target:x}"));
+                    .or_insert_with(|| generator.label("goto", target));
             }
             InstructionOperands::TwoRegistersBranch { offset, .. }
             | InstructionOperands::RegisterBranch { offset, .. } => {
                 let target = branch_target(instruction.address, *offset as i32);
                 names
                     .entry(target)
-                    .or_insert_with(|| format!(":cond_{target:x}"));
+                    .or_insert_with(|| generator.label("cond", target));
             }
             InstructionOperands::RegisterBranch32 { offset, .. } => {
                 let target = branch_target(instruction.address, *offset);
                 names.entry(target).or_insert_with(|| {
                     if matches!(instruction.opcode.value(), 0x26..=0x2c) {
-                        payload_instruction(code, target).map_or_else(
-                            || format!(":addr_{target:04x}"),
-                            |instruction| match &instruction.operands {
-                                InstructionOperands::Payload(
-                                    PayloadInstruction::SparseSwitch { .. },
-                                ) => {
-                                    format!(":sswitch_data_{target:x}")
+                        let prefix =
+                            payload_instruction(code, target).map_or("addr", |instruction| {
+                                match &instruction.operands {
+                                    InstructionOperands::Payload(
+                                        PayloadInstruction::SparseSwitch { .. },
+                                    ) => "sswitch_data",
+                                    InstructionOperands::Payload(
+                                        PayloadInstruction::PackedSwitch { .. },
+                                    ) => "pswitch_data",
+                                    InstructionOperands::Payload(PayloadInstruction::Array {
+                                        ..
+                                    }) => "array",
+                                    _ => "addr",
                                 }
-                                InstructionOperands::Payload(
-                                    PayloadInstruction::PackedSwitch { .. },
-                                ) => {
-                                    format!(":pswitch_data_{target:x}")
-                                }
-                                InstructionOperands::Payload(PayloadInstruction::Array {
-                                    ..
-                                }) => {
-                                    format!(":array_{target:x}")
-                                }
-                                _ => format!(":addr_{target:04x}"),
-                            },
-                        )
+                            });
+                        generator.label(prefix, target)
                     } else {
-                        format!(":cond_{target:x}")
+                        generator.label("cond", target)
                     }
                 });
             }
             InstructionOperands::Payload(PayloadInstruction::SparseSwitch { elements }) => {
                 names
                     .entry(instruction.address)
-                    .or_insert_with(|| format!(":sswitch_data_{:x}", instruction.address));
+                    .or_insert_with(|| generator.label("sswitch_data", instruction.address));
                 for element in elements {
                     let target = branch_target(instruction.address, element.target);
                     names
                         .entry(target)
-                        .or_insert_with(|| format!(":sswitch_{target:x}"));
+                        .or_insert_with(|| generator.label("sswitch", target));
                 }
             }
             InstructionOperands::Payload(PayloadInstruction::PackedSwitch { targets, .. }) => {
                 names
                     .entry(instruction.address)
-                    .or_insert_with(|| format!(":pswitch_data_{:x}", instruction.address));
+                    .or_insert_with(|| generator.label("pswitch_data", instruction.address));
                 for target in targets {
                     let target = branch_target(instruction.address, *target);
                     names
                         .entry(target)
-                        .or_insert_with(|| format!(":pswitch_{target:x}"));
+                        .or_insert_with(|| generator.label("pswitch", target));
                 }
             }
             InstructionOperands::Payload(PayloadInstruction::Array { .. }) => {
                 names
                     .entry(instruction.address)
-                    .or_insert_with(|| format!(":array_{:x}", instruction.address));
+                    .or_insert_with(|| generator.label("array", instruction.address));
             }
             _ => {}
+        }
+    }
+    names
+}
+
+struct LabelGenerator {
+    sequential: bool,
+    counters: BTreeMap<&'static str, usize>,
+}
+
+impl LabelGenerator {
+    fn new(sequential: bool) -> Self {
+        Self {
+            sequential,
+            counters: BTreeMap::new(),
+        }
+    }
+
+    fn label(&mut self, prefix: &'static str, address: u32) -> String {
+        if self.sequential {
+            let index = self.counters.entry(prefix).or_default();
+            let label = format!(":{prefix}_{index}");
+            *index += 1;
+            label
+        } else if prefix == "addr" || prefix.starts_with("try_") || prefix.starts_with("catch") {
+            format!(":{prefix}_{address:04x}")
+        } else {
+            format!(":{prefix}_{address:x}")
+        }
+    }
+}
+
+#[derive(Debug, Default)]
+struct CatchLabelNames {
+    try_starts: BTreeMap<u32, String>,
+    try_ends: BTreeMap<u32, String>,
+    catches: BTreeMap<u32, String>,
+    catchalls: BTreeMap<u32, String>,
+}
+
+fn catch_label_names(code: &CodeItem, sequential_labels: bool) -> CatchLabelNames {
+    let mut names = CatchLabelNames::default();
+    let mut generator = LabelGenerator::new(sequential_labels);
+    for try_item in &code.tries {
+        names
+            .try_starts
+            .entry(try_item.start_addr)
+            .or_insert_with(|| generator.label("try_start", try_item.start_addr));
+        names
+            .try_ends
+            .entry(try_item.start_addr)
+            .or_insert_with(|| generator.label("try_end", try_item.start_addr));
+        if let Some(handler) = catch_handler_at(&code.handlers, try_item.handler_off) {
+            for pair in &handler.handlers {
+                names
+                    .catches
+                    .entry(pair.addr)
+                    .or_insert_with(|| generator.label("catch", pair.addr));
+            }
+            if let Some(addr) = handler.catch_all_addr {
+                names
+                    .catchalls
+                    .entry(addr)
+                    .or_insert_with(|| generator.label("catchall", addr));
+            }
         }
     }
     names
@@ -1542,30 +1652,31 @@ fn payload_instruction(code: &CodeItem, address: u32) -> Option<&RawInstruction>
     })
 }
 
-fn collect_code_labels(code: &CodeItem) -> BTreeMap<u32, Vec<String>> {
+fn collect_code_labels(code: &CodeItem, sequential_labels: bool) -> BTreeMap<u32, Vec<String>> {
     let mut labels = BTreeMap::<u32, Vec<String>>::new();
-    let names = label_names(code);
+    let names = label_names(code, sequential_labels);
+    let catch_names = catch_label_names(code, sequential_labels);
     for try_item in &code.tries {
         labels
             .entry(try_item.start_addr)
             .or_default()
-            .push(format!(":try_start_{:04x}", try_item.start_addr));
+            .push(catch_names.try_starts[&try_item.start_addr].clone());
         labels
             .entry(try_item.start_addr + try_item.insn_count as u32)
             .or_default()
-            .push(format!(":try_end_{:04x}", try_item.start_addr));
+            .push(catch_names.try_ends[&try_item.start_addr].clone());
         if let Some(handler) = catch_handler_at(&code.handlers, try_item.handler_off) {
             for pair in &handler.handlers {
                 labels
                     .entry(pair.addr)
                     .or_default()
-                    .push(format!(":catch_{:04x}", pair.addr));
+                    .push(catch_names.catches[&pair.addr].clone());
             }
             if let Some(addr) = handler.catch_all_addr {
                 labels
                     .entry(addr)
                     .or_default()
-                    .push(format!(":catchall_{addr:04x}"));
+                    .push(catch_names.catchalls[&addr].clone());
             }
         }
     }
@@ -1845,6 +1956,35 @@ mod tests {
     }
 
     #[test]
+    fn formats_sequential_branch_labels() {
+        let code = CodeItem {
+            registers_size: 1,
+            ins_size: 0,
+            outs_size: 0,
+            tries_size: 0,
+            debug_info_off: 0,
+            instructions: vec![RawInstruction {
+                address: 0,
+                opcode: Opcode(0x38),
+                code_units: vec![0x0038],
+                operands: InstructionOperands::RegisterBranch {
+                    register: 0,
+                    offset: 3,
+                },
+            }],
+            tries: Vec::new(),
+            handlers: EncodedCatchHandlerList::empty(),
+        };
+
+        assert_eq!(label_names(&code, false).get(&3).unwrap(), ":cond_3");
+        assert_eq!(label_names(&code, true).get(&3).unwrap(), ":cond_0");
+        assert_eq!(
+            collect_code_labels(&code, true).get(&3).unwrap(),
+            &vec![":cond_0".to_owned()]
+        );
+    }
+
+    #[test]
     fn formats_basic_try_catch_directives() {
         let dex = test_dex();
         let formatter = BaksmaliFormatter::new(&dex, &[]);
@@ -1891,9 +2031,24 @@ mod tests {
             },
         };
 
-        let labels = collect_code_labels(&code);
+        let labels = collect_code_labels(&code, false);
         let mut out = String::new();
         formatter.format_catch_directives(&mut out, &code).unwrap();
+
+        let mut sequential_out = String::new();
+        let sequential = BaksmaliFormatter::with_resource_ids_api_debug_info_parameter_registers_locals_and_sequential_labels(
+            &dex,
+            &[],
+            BTreeMap::new(),
+            None,
+            true,
+            true,
+            false,
+            true,
+        );
+        sequential
+            .format_catch_directives(&mut sequential_out, &code)
+            .unwrap();
 
         assert_eq!(labels.get(&0).unwrap(), &vec![":try_start_0000".to_owned()]);
         assert_eq!(labels.get(&1).unwrap(), &vec![":try_end_0000".to_owned()]);
@@ -1901,6 +2056,10 @@ mod tests {
         assert_eq!(
             out,
             "    .catch Ljava/lang/Exception; {:try_start_0000 .. :try_end_0000} :catch_0002\n"
+        );
+        assert_eq!(
+            sequential_out,
+            "    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :catch_0\n"
         );
     }
 

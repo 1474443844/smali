@@ -80,6 +80,12 @@ enum Command {
             help = "Output the .locals directive with the number of non-parameter registers"
         )]
         use_locals: bool,
+        #[arg(
+            short = 's',
+            long = "sequential-labels",
+            help = "Create label names using sequential numbering"
+        )]
+        sequential_labels: bool,
     },
     #[command(about = "List DEX references or DEX entries")]
     #[command(visible_alias = "l")]
@@ -172,6 +178,7 @@ fn main() -> Result<()> {
             debug_info,
             parameter_registers,
             use_locals,
+            sequential_labels,
         } => disassemble(
             &input,
             &output,
@@ -182,6 +189,7 @@ fn main() -> Result<()> {
             debug_info,
             parameter_registers,
             use_locals,
+            sequential_labels,
         ),
         Command::List { command } => run_list(command),
         Command::ListClasses { input } => list_classes(&input),
@@ -218,6 +226,7 @@ fn disassemble(
     debug_info: bool,
     parameter_registers: bool,
     use_locals: bool,
+    sequential_labels: bool,
 ) -> Result<()> {
     let resource_ids = load_resource_ids(resource_id_files)?;
     let class_filter = class_filter(classes);
@@ -228,16 +237,16 @@ fn disassemble(
         let dex = dex_reader::parse_dex(&entry.data)
             .with_context(|| format!("failed to parse {}", entry.name))?;
         let resolver = Resolver::new(&dex, &entry.data);
-        let formatter =
-            BaksmaliFormatter::with_resource_ids_api_debug_info_parameter_registers_and_locals(
-                &dex,
-                &entry.data,
-                resource_ids.clone(),
-                api_level,
-                debug_info,
-                parameter_registers,
-                use_locals,
-            );
+        let formatter = BaksmaliFormatter::with_resource_ids_api_debug_info_parameter_registers_locals_and_sequential_labels(
+            &dex,
+            &entry.data,
+            resource_ids.clone(),
+            api_level,
+            debug_info,
+            parameter_registers,
+            use_locals,
+            sequential_labels,
+        );
         let dex_output = if entries.len() == 1 {
             output.to_path_buf()
         } else {
