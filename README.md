@@ -158,7 +158,7 @@ Implemented smali text output for:
 - `.class`
 - `.super`
 - `.implements`
-- `.source`
+- `.source`, including bare Java baksmali-style `.source` for null `DBG_SET_FILE`
 - `.field`
 - static field initial values
 - `.method`, `.registers`, and optional Java baksmali-style `.locals`.

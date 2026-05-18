@@ -158,7 +158,7 @@ tests/fixtures/upstream/baksmali/smali/      # 复制自 Java baksmali src/test/
 - `.class`
 - `.super`
 - `.implements`
-- `.source`
+- `.source`，包括 null `DBG_SET_FILE` 对应的 Java baksmali 风格裸 `.source`
 - `.field`
 - static field 初始值
 - `.method`

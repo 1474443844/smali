@@ -672,7 +672,7 @@ impl<'a> BaksmaliFormatter<'a> {
                 ".source \"{}\"",
                 escape_string(self.resolver.string(*name_idx)?)
             ))),
-            DebugItemKind::SetFile { name_idx: None } => Ok(None),
+            DebugItemKind::SetFile { name_idx: None } => Ok(Some(".source".to_owned())),
         }
     }
 
@@ -2648,6 +2648,7 @@ mod tests {
                 "    .prologue\n",
                 "    .epilogue\n",
                 "    .source \"Debug.java\"\n",
+                "    .source\n",
                 "    .local v1, \"name\":I\n",
                 "    .local v2, \"quote\\\"slash\\\\\\n\":I, \"value\"\n",
                 "    .local p0, \"name\":I\n",
