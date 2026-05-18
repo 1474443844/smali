@@ -167,7 +167,7 @@ Implemented smali text output for:
 - encoded value arrays and subannotations.
 - debug directives:
   - `.line`
-  - `.local`
+  - `.local`, including Java baksmali-style partial locals with missing name or type
   - `.end local`
   - `.restart local`
   - `.prologue`
@@ -270,7 +270,7 @@ Current test coverage includes:
 - class interface formatting.
 - static field initial value formatting.
 - class, field, method, and method parameter annotation formatting.
-- debug directive formatting.
+- debug directive formatting, including Java-style partial `.local` entries with missing name or type.
 - basic try/catch directive formatting.
 - method handle and call site table parsing.
 - method proto, method handle kind, and encoded-array call site reference rendering.
@@ -311,7 +311,7 @@ cargo test --workspace
 Latest result:
 
 ```text
-All tests passed: 93 passed.
+All tests passed: 94 passed.
 ```
 
 ## Example Fixture Output

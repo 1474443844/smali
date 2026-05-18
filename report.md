@@ -83,7 +83,7 @@ Rust 工作区包含 4 个 crate：
 - 当前类 field/method 声明中的 descriptor 省略，例如 `<init>()V` 而不是 `LHello;-><init>()V`。
 - class/field/method/parameter annotation 的基础输出。
 - encoded value array 与 subannotation 的基础输出。
-- debug item 的基础输出：`.line`, `.local`, `.end local`, `.restart local`, `.prologue`, `.epilogue`, `.source`, `.param`。
+- debug item 的基础输出：`.line`, `.local`, `.end local`, `.restart local`, `.prologue`, `.epilogue`, `.source`, `.param`，其中 `.local` 支持 Java baksmali 风格缺失 name/type 的 partial local。
 - parameter register 名称，如可用时输出 `p0`。
 - branch/payload label：`:goto_x`, `:cond_x`, `:array_x`, `:sswitch_data_x`, `:pswitch_data_x` 等。
 - switch/array payload：`.packed-switch`, `.sparse-switch`, `.array-data`。
@@ -219,20 +219,20 @@ cargo fmt --all && cargo test --workspace
 - `baksmali-cli` integration tests：22 passed。
 - `baksmali-format` unit tests：27 passed。
 - `baksmali-format` fixture tests：2 passed。
-- `baksmali-format` upstream fixture tests：2 passed。
+- `baksmali-format` upstream fixture tests：3 passed。
 - `dex-reader` unit tests：24 passed。
 - `dex-reader` fixture tests：6 passed。
 - `dex-types` opcode tests：9 passed。
 - doc tests：0。
 
-总计当前可见测试：93 passed。
+总计当前可见测试：94 passed。
 
 覆盖重点包括：
 
 - DEX header、string data、type list、class data、code item。
 - LEB128/SLEB128。
 - catch handler 与 try/catch handler offset。
-- debug info state machine。
+- debug info state machine，以及 Java 风格 partial `.local` 输出。
 - encoded value/array/annotation。
 - raw DEX 与 ZIP/APK DEX entry discovery，以及 Java 风格容器 entry 路径选择。
 - invalid cross-reference index rejection。

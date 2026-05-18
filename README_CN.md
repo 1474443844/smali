@@ -168,7 +168,7 @@ tests/fixtures/upstream/baksmali/smali/      # 复制自 Java baksmali src/test/
 - encoded value array 和 subannotation。
 - debug directive：
   - `.line`
-  - `.local`
+  - `.local`，包括 Java baksmali 风格缺失 name 或 type 的 partial local
   - `.end local`
   - `.restart local`
   - `.prologue`
@@ -271,7 +271,7 @@ baksmali list-dex <input.dex|input.apk|input.jar|input.zip>
 - class interface formatting。
 - static field initial value formatting。
 - class、field、method 和 method parameter annotation formatting。
-- debug directive formatting。
+- debug directive formatting，包括 Java 风格缺失 name 或 type 的 partial `.local`。
 - basic try/catch directive formatting。
 - method handle 和 call site table parsing。
 - method proto、method handle kind、encoded-array call site reference rendering。
@@ -312,7 +312,7 @@ cargo test --workspace
 最新结果：
 
 ```text
-All tests passed: 93 passed.
+All tests passed: 94 passed.
 ```
 
 ## 示例 Fixture 输出

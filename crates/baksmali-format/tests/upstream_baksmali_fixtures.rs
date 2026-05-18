@@ -36,3 +36,18 @@ fn formats_parameter_annotation_blocks_like_java_baksmali() {
     assert!(text.contains("        .end annotation\n"));
     assert!(text.contains("    .end param\n    return-void\n"));
 }
+
+#[test]
+fn formats_local_debug_items_with_missing_name_or_type_like_java_baksmali() {
+    let dex = dex_reader::parse_dex(LOCAL_TEST_DEX_FILE).unwrap();
+    let formatter = BaksmaliFormatter::new(&dex, LOCAL_TEST_DEX_FILE);
+    let class_def = &dex.class_defs[0];
+    let text = formatter.format_class(class_def).unwrap();
+
+    assert!(text.contains("    .local v4, null:I, \"some sig info:\\nblah.\"\n"));
+    assert!(text.contains("    .local v5\n"));
+    assert!(text.contains("    .local v6, null:I\n"));
+    assert!(text.contains("    .local v7\n"));
+    assert!(text.contains("    .local v8\n"));
+    assert!(text.contains("    .local v9\n"));
+}

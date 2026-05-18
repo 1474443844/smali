@@ -684,25 +684,35 @@ impl<'a> BaksmaliFormatter<'a> {
         signature_idx: Option<u32>,
         parameter_base: u32,
     ) -> Result<Option<String>> {
-        let Some(name_idx) = name_idx else {
-            return Ok(None);
+        let register = format_register(register, parameter_base, self.parameter_registers);
+        let text = match (name_idx, type_idx) {
+            (Some(name_idx), Some(type_idx)) => format!(
+                ".local {register}, \"{}\":{}",
+                escape_string(self.resolver.string(name_idx)?),
+                self.resolver.type_descriptor(type_idx)?
+            ),
+            (Some(name_idx), None) => format!(
+                ".local {register}, \"{}\"",
+                escape_string(self.resolver.string(name_idx)?)
+            ),
+            (None, Some(type_idx)) => {
+                format!(
+                    ".local {register}, null:{}",
+                    self.resolver.type_descriptor(type_idx)?
+                )
+            }
+            (None, None) => format!(".local {register}"),
         };
-        let Some(type_idx) = type_idx else {
-            return Ok(None);
-        };
-        let mut text = format!(
-            ".local {}, \"{}\":{}",
-            format_register(register, parameter_base, self.parameter_registers),
-            escape_string(self.resolver.string(name_idx)?),
-            self.resolver.type_descriptor(type_idx)?
-        );
-        if let Some(signature_idx) = signature_idx {
-            write!(
-                text,
-                ", \"{}\"",
-                escape_string(self.resolver.string(signature_idx)?)
-            )
-            .unwrap();
+        let mut text = text;
+        if type_idx.is_some() {
+            if let Some(signature_idx) = signature_idx {
+                write!(
+                    text,
+                    ", \"{}\"",
+                    escape_string(self.resolver.string(signature_idx)?)
+                )
+                .unwrap();
+            }
         }
         Ok(Some(text))
     }
@@ -2589,6 +2599,12 @@ mod tests {
                         register: 3,
                         name_idx: None,
                         type_idx: Some(3),
+                        signature_idx: Some(2),
+                    },
+                    DebugItemKind::StartLocal {
+                        register: 5,
+                        name_idx: None,
+                        type_idx: None,
                         signature_idx: None,
                     },
                 ],
@@ -2624,6 +2640,8 @@ mod tests {
                 "    .local p0, \"name\":I\n",
                 "    .end local v1\n",
                 "    .restart local p0\n",
+                "    .local v3, null:I, \"value\"\n",
+                "    .local p1\n",
             )
         );
         assert_eq!(
