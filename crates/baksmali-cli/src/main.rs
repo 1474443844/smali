@@ -102,6 +102,15 @@ enum Command {
             help = "Use implicit method and field references for the current class"
         )]
         implicit_references: bool,
+        #[arg(
+            long = "accessor-comments",
+            visible_alias = "ac",
+            value_name = "BOOLEAN",
+            default_value_t = true,
+            num_args = 1,
+            help = "Generate helper comments for synthetic accessors"
+        )]
+        accessor_comments: bool,
     },
     #[command(about = "List DEX references or DEX entries")]
     #[command(visible_alias = "l")]
@@ -197,6 +206,7 @@ fn main() -> Result<()> {
             sequential_labels,
             code_offsets,
             implicit_references,
+            accessor_comments,
         } => disassemble(
             &input,
             &output,
@@ -210,6 +220,7 @@ fn main() -> Result<()> {
             sequential_labels,
             code_offsets,
             implicit_references,
+            accessor_comments,
         ),
         Command::List { command } => run_list(command),
         Command::ListClasses { input } => list_classes(&input),
@@ -249,6 +260,7 @@ fn disassemble(
     sequential_labels: bool,
     code_offsets: bool,
     implicit_references: bool,
+    accessor_comments: bool,
 ) -> Result<()> {
     let resource_ids = load_resource_ids(resource_id_files)?;
     let class_filter = class_filter(classes);
@@ -259,7 +271,7 @@ fn disassemble(
         let dex = dex_reader::parse_dex(&entry.data)
             .with_context(|| format!("failed to parse {}", entry.name))?;
         let resolver = Resolver::new(&dex, &entry.data);
-        let formatter = BaksmaliFormatter::with_resource_ids_api_debug_info_parameter_registers_locals_sequential_labels_code_offsets_and_implicit_references(
+        let formatter = BaksmaliFormatter::with_resource_ids_api_debug_info_parameter_registers_locals_sequential_labels_code_offsets_implicit_references_and_accessor_comments(
             &dex,
             &entry.data,
             resource_ids.clone(),
@@ -270,6 +282,7 @@ fn disassemble(
             sequential_labels,
             code_offsets,
             implicit_references,
+            accessor_comments,
         );
         let dex_output = if entries.len() == 1 {
             output.to_path_buf()

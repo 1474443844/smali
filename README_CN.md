@@ -188,6 +188,7 @@ tests/fixtures/upstream/baksmali/smali/      # 复制自 Java baksmali src/test/
 - `.packed-switch` first key 和 `.sparse-switch` key 使用 Java encoded int 风格格式化，未解析 payload target 显示为 signed decimal offset。
 - Java baksmali 风格 likely float/double literal 和 payload 注释，包括 `(float)Math.PI`, `(float)Math.E`, `Math.PI`, `Math.E` 等命名常量。
 - 对配置的 `public.xml` 映射输出 Java baksmali 风格 resource id 注释，覆盖 narrow literal 和 switch/array payload。
+- Java baksmali 风格 synthetic accessor helper comment，覆盖简单 method、getter 和 setter accessor。
 - 已支持 literal instruction 的十六进制数字格式，包括正确的 `const/4` narrow literal 解码。
 - unknown/unimplemented format 使用 fallback raw instruction comment。
 
@@ -220,6 +221,7 @@ baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --use-locals -o <
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --sequential-labels -o <out_dir>
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --code-offsets -o <out_dir>
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --implicit-references -o <out_dir>
+baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --accessor-comments <true|false> -o <out_dir>
 baksmali list classes <input.dex|input.apk|input.jar|input.zip>
 baksmali list strings <input.dex|input.apk|input.jar|input.zip>
 baksmali list types <input.dex|input.apk|input.jar|input.zip>
@@ -293,6 +295,7 @@ baksmali list-dex <input.dex|input.apk|input.jar|input.zip>
 - Java 风格 `disassemble --sequential-labels` / `--seq` / `--sl` / `-s` 参数输出 `:cond_0` 这类 sequential label，而不是地址型 label。
 - Java 风格 `disassemble --code-offsets` 参数在 instruction 前输出 `#@<address>` code address comment。
 - Java 风格 `disassemble --implicit-references` 参数会省略同类 method/field reference 的当前类前缀。
+- Java 风格 `disassemble --accessor-comments` / `--ac` 参数控制 synthetic accessor helper comment。
 - Java 风格容器 entry 路径输入，例如 `app.apk/classes2.dex`。
 - 改进 `baksmali --help` 和嵌套 `list --help` 输出，显示 alias、value name 和命令说明。
 - 已将上游 Java baksmali 测试 fixture 复制到 `tests/fixtures/upstream/baksmali`，并增加 Rust fixture inventory/disassembly 测试覆盖。
@@ -309,7 +312,7 @@ cargo test --workspace
 最新结果：
 
 ```text
-All tests passed: 91 passed.
+All tests passed: 93 passed.
 ```
 
 ## 示例 Fixture 输出

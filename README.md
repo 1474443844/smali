@@ -187,6 +187,7 @@ Implemented smali text output for:
 - `.packed-switch` first keys and `.sparse-switch` keys formatted as Java encoded int values, with unresolved payload targets shown as signed decimal offsets.
 - Java baksmali-style literal and payload comments for likely float/double constants, including named constants such as `(float)Math.PI`, `(float)Math.E`, `Math.PI`, and `Math.E`.
 - Java baksmali-style resource id comments for configured `public.xml` mappings in narrow literals and switch/array payloads.
+- Java baksmali-style synthetic accessor helper comments for simple method, getter, and setter accessors.
 - hexadecimal numeric literal formatting for supported literal instructions, including correct `const/4` narrow literal decoding.
 - fallback raw instruction comments for unknown/unimplemented formats.
 
@@ -219,6 +220,7 @@ baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --use-locals -o <
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --sequential-labels -o <out_dir>
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --code-offsets -o <out_dir>
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --implicit-references -o <out_dir>
+baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --accessor-comments <true|false> -o <out_dir>
 baksmali list classes <input.dex|input.apk|input.jar|input.zip>
 baksmali list strings <input.dex|input.apk|input.jar|input.zip>
 baksmali list types <input.dex|input.apk|input.jar|input.zip>
@@ -292,6 +294,7 @@ Current test coverage includes:
 - Java-style `disassemble --sequential-labels` / `--seq` / `--sl` / `-s` option emits sequential labels such as `:cond_0` instead of address-based labels.
 - Java-style `disassemble --code-offsets` option emits `#@<address>` code address comments before instructions.
 - Java-style `disassemble --implicit-references` option omits the current class prefix from same-class method and field references.
+- Java-style `disassemble --accessor-comments` / `--ac` option controls synthetic accessor helper comments.
 - Java-style container entry path input such as `app.apk/classes2.dex`.
 - Improved `baksmali --help` and nested `list --help` output with visible aliases, value names, and command descriptions.
 - copied upstream Java baksmali test fixtures are present under `tests/fixtures/upstream/baksmali` and covered by Rust fixture inventory/disassembly tests.
@@ -308,7 +311,7 @@ cargo test --workspace
 Latest result:
 
 ```text
-All tests passed: 91 passed.
+All tests passed: 93 passed.
 ```
 
 ## Example Fixture Output

@@ -184,7 +184,8 @@ fn help_shows_java_style_aliases_and_descriptions() {
         .stdout(predicates::str::contains("--sequential-labels"))
         .stdout(predicates::str::contains("aliases: --seq, --sl"))
         .stdout(predicates::str::contains("--code-offsets"))
-        .stdout(predicates::str::contains("--implicit-references"));
+        .stdout(predicates::str::contains("--implicit-references"))
+        .stdout(predicates::str::contains("--accessor-comments <BOOLEAN>"));
 
     let mut command = Command::cargo_bin("baksmali").unwrap();
     command
@@ -439,6 +440,31 @@ fn accepts_java_style_implicit_references_argument() {
             "disassemble",
             "../../tests/fixtures/hello.dex",
             "--implicit-references",
+            "-o",
+            output.to_str().unwrap(),
+        ])
+        .assert()
+        .success();
+
+    assert!(output.join("Hello.smali").exists());
+    fs::remove_dir_all(output).unwrap();
+}
+
+#[test]
+fn accepts_java_style_accessor_comments_argument() {
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let output = std::env::temp_dir().join(format!("baksmali-accessor-comments-test-{unique}"));
+
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+    command
+        .args([
+            "disassemble",
+            "../../tests/fixtures/hello.dex",
+            "--accessor-comments",
+            "false",
             "-o",
             output.to_str().unwrap(),
         ])

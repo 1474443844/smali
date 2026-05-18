@@ -24,6 +24,7 @@ pub struct BaksmaliFormatter<'a> {
     sequential_labels: bool,
     code_offsets: bool,
     implicit_references: bool,
+    accessor_comments: bool,
 }
 
 impl<'a> BaksmaliFormatter<'a> {
@@ -39,6 +40,7 @@ impl<'a> BaksmaliFormatter<'a> {
             false,
             false,
             false,
+            true,
         )
     }
 
@@ -58,6 +60,7 @@ impl<'a> BaksmaliFormatter<'a> {
             false,
             false,
             false,
+            true,
         )
     }
 
@@ -78,6 +81,7 @@ impl<'a> BaksmaliFormatter<'a> {
             false,
             false,
             false,
+            true,
         )
     }
 
@@ -99,6 +103,7 @@ impl<'a> BaksmaliFormatter<'a> {
             false,
             false,
             false,
+            true,
         )
     }
 
@@ -121,6 +126,7 @@ impl<'a> BaksmaliFormatter<'a> {
             false,
             false,
             false,
+            true,
         )
     }
 
@@ -205,6 +211,34 @@ impl<'a> BaksmaliFormatter<'a> {
         code_offsets: bool,
         implicit_references: bool,
     ) -> Self {
+        Self::with_resource_ids_api_debug_info_parameter_registers_locals_sequential_labels_code_offsets_implicit_references_and_accessor_comments(
+            dex,
+            data,
+            resource_ids,
+            api_level,
+            debug_info,
+            parameter_registers,
+            use_locals,
+            sequential_labels,
+            code_offsets,
+            implicit_references,
+            true,
+        )
+    }
+
+    pub fn with_resource_ids_api_debug_info_parameter_registers_locals_sequential_labels_code_offsets_implicit_references_and_accessor_comments(
+        dex: &'a DexFile,
+        data: &'a [u8],
+        resource_ids: BTreeMap<i32, String>,
+        api_level: Option<u32>,
+        debug_info: bool,
+        parameter_registers: bool,
+        use_locals: bool,
+        sequential_labels: bool,
+        code_offsets: bool,
+        implicit_references: bool,
+        accessor_comments: bool,
+    ) -> Self {
         Self::with_options(
             dex,
             data,
@@ -216,6 +250,7 @@ impl<'a> BaksmaliFormatter<'a> {
             sequential_labels,
             code_offsets,
             implicit_references,
+            accessor_comments,
         )
     }
 
@@ -230,6 +265,7 @@ impl<'a> BaksmaliFormatter<'a> {
         sequential_labels: bool,
         code_offsets: bool,
         implicit_references: bool,
+        accessor_comments: bool,
     ) -> Self {
         Self {
             dex,
@@ -243,6 +279,7 @@ impl<'a> BaksmaliFormatter<'a> {
             sequential_labels,
             code_offsets,
             implicit_references,
+            accessor_comments,
         }
     }
 
@@ -507,6 +544,11 @@ impl<'a> BaksmaliFormatter<'a> {
                 )?;
                 if self.code_offsets {
                     writeln!(out, "    #@{:x}", instruction.address).unwrap();
+                }
+                if let Some(comment) =
+                    self.synthetic_accessor_comment(instruction, current_class)?
+                {
+                    writeln!(out, "    {comment}").unwrap();
                 }
                 writeln!(
                     out,
@@ -1053,6 +1095,70 @@ impl<'a> BaksmaliFormatter<'a> {
         )
     }
 
+    fn synthetic_accessor_comment(
+        &self,
+        instruction: &RawInstruction,
+        current_class: &str,
+    ) -> Result<Option<String>> {
+        if !self.accessor_comments {
+            return Ok(None);
+        }
+        let Some(method_idx) = invoke_method_reference(&instruction.operands) else {
+            return Ok(None);
+        };
+        let method_id = self.resolver.method_id(method_idx)?;
+        let name = self.resolver.string(method_id.name_idx)?;
+        if !looks_like_synthetic_accessor(name) {
+            return Ok(None);
+        }
+        let Some(accessor) = self.synthetic_accessor_for_method(method_idx, current_class)? else {
+            return Ok(None);
+        };
+        Ok(Some(format!("# {accessor}")))
+    }
+
+    fn synthetic_accessor_for_method(
+        &self,
+        method_idx: u32,
+        current_class: &str,
+    ) -> Result<Option<String>> {
+        let Some(method) = self
+            .dex
+            .class_defs
+            .iter()
+            .filter(|class_def| {
+                self.resolver.type_descriptor(class_def.class_idx).ok() == Some(current_class)
+            })
+            .flat_map(|class_def| class_data_methods(self.data, class_def))
+            .find(|method| method.method_idx == method_idx)
+        else {
+            return Ok(None);
+        };
+        if method.code_off == 0 {
+            return Ok(None);
+        }
+        let code =
+            dex_reader::parse_code_item_with_api(self.data, method.code_off, self.api_level)?;
+        if let Some(method_reference) = synthetic_invoked_method(&code.instructions) {
+            return Ok(Some(format!(
+                "invokes: {}",
+                self.implicit_method_reference(method_reference, current_class)?
+            )));
+        }
+        if let Some(field_reference) = synthetic_field_reference(&code.instructions) {
+            let prefix = if synthetic_has_field_write(&code.instructions) {
+                "setter for"
+            } else {
+                "getter for"
+            };
+            return Ok(Some(format!(
+                "{prefix}: {}",
+                self.implicit_field_reference(field_reference, current_class)?
+            )));
+        }
+        Ok(None)
+    }
+
     fn field_declaration_descriptor(&self, field_idx: u32, current_class: &str) -> Result<String> {
         let descriptor = self.resolver.field_descriptor(field_idx)?;
         let member = descriptor
@@ -1278,6 +1384,72 @@ impl<'a> BaksmaliFormatter<'a> {
     pub fn classes(&self) -> &[ClassDef] {
         &self.dex.class_defs
     }
+}
+
+fn class_data_methods(data: &[u8], class_def: &ClassDef) -> Vec<EncodedMethod> {
+    if class_def.class_data_off == 0 {
+        return Vec::new();
+    }
+    let Ok(class_data) = dex_reader::parse_class_data(data, class_def.class_data_off) else {
+        return Vec::new();
+    };
+    class_data
+        .direct_methods
+        .into_iter()
+        .chain(class_data.virtual_methods)
+        .collect()
+}
+
+fn invoke_method_reference(operands: &InstructionOperands) -> Option<u32> {
+    match operands {
+        InstructionOperands::Invoke { reference, .. }
+        | InstructionOperands::InvokeRange { reference, .. } => Some(*reference),
+        InstructionOperands::InvokePolymorphic {
+            method_reference, ..
+        }
+        | InstructionOperands::InvokePolymorphicRange {
+            method_reference, ..
+        } => Some(*method_reference),
+        _ => None,
+    }
+}
+
+fn looks_like_synthetic_accessor(name: &str) -> bool {
+    name.starts_with("access$")
+        && name
+            .as_bytes()
+            .get("access$".len()..)
+            .is_some_and(|suffix| !suffix.is_empty() && suffix.iter().all(u8::is_ascii_digit))
+}
+
+fn synthetic_invoked_method(instructions: &[RawInstruction]) -> Option<u32> {
+    instructions
+        .iter()
+        .find_map(|instruction| match &instruction.operands {
+            InstructionOperands::Invoke { reference, .. }
+            | InstructionOperands::InvokeRange { reference, .. } => Some(*reference),
+            _ => None,
+        })
+}
+
+fn synthetic_field_reference(instructions: &[RawInstruction]) -> Option<u32> {
+    instructions
+        .iter()
+        .find_map(|instruction| match &instruction.operands {
+            InstructionOperands::RegisterReference { reference, .. }
+            | InstructionOperands::RegisterReference32 { reference, .. }
+            | InstructionOperands::TwoRegistersReference { reference, .. } => Some(*reference),
+            _ => None,
+        })
+}
+
+fn synthetic_has_field_write(instructions: &[RawInstruction]) -> bool {
+    instructions.iter().any(|instruction| {
+        matches!(
+            instruction.opcode.value(),
+            0x59..=0x5f | 0x67..=0x6d | 0xe6..=0xeb
+        )
+    })
 }
 
 fn debug_items_by_address(debug_info: Option<&DebugInfoItem>) -> BTreeMap<u32, Vec<DebugItemKind>> {
@@ -2008,20 +2180,7 @@ mod tests {
                 data_size: 0,
                 data_off: 0,
             },
-            strings: vec![
-                "LAnno;".to_owned(),
-                "name".to_owned(),
-                "value".to_owned(),
-                "Ljava/lang/Exception;".to_owned(),
-                "LTest;".to_owned(),
-                "I".to_owned(),
-                "field".to_owned(),
-                "method".to_owned(),
-                "V".to_owned(),
-                "LInterface;".to_owned(),
-                "Debug.java".to_owned(),
-                "quote\"slash\\\n".to_owned(),
-            ],
+            strings: test_strings(),
             string_ids: vec![
                 StringId { string_data_off: 0 },
                 StringId { string_data_off: 0 },
@@ -2056,6 +2215,23 @@ mod tests {
             hidden_api_class_data: Vec::new(),
             map: Vec::new(),
         }
+    }
+
+    fn test_strings() -> Vec<String> {
+        vec![
+            "LAnno;".to_owned(),
+            "name".to_owned(),
+            "value".to_owned(),
+            "Ljava/lang/Exception;".to_owned(),
+            "LTest;".to_owned(),
+            "I".to_owned(),
+            "field".to_owned(),
+            "method".to_owned(),
+            "V".to_owned(),
+            "LInterface;".to_owned(),
+            "Debug.java".to_owned(),
+            "quote\"slash\\\n".to_owned(),
+        ]
     }
 
     fn empty_code() -> CodeItem {
@@ -2619,6 +2795,71 @@ mod tests {
             .unwrap();
 
         assert!(out.contains("    #@0\n    return-void\n"));
+    }
+
+    #[test]
+    fn formats_synthetic_accessor_comments_like_java_baksmali() {
+        let mut strings = test_strings();
+        strings.push("access$000".to_owned());
+        let dex = DexFile {
+            strings,
+            string_ids: vec![StringId { string_data_off: 0 }; 13],
+            type_ids: vec![
+                TypeId { descriptor_idx: 0 },
+                TypeId { descriptor_idx: 3 },
+                TypeId { descriptor_idx: 4 },
+                TypeId { descriptor_idx: 5 },
+                TypeId { descriptor_idx: 8 },
+                TypeId { descriptor_idx: 9 },
+            ],
+            proto_ids: vec![ProtoId {
+                shorty_idx: 8,
+                return_type_idx: 4,
+                parameters_off: 0,
+            }],
+            field_ids: vec![FieldId {
+                class_idx: 2,
+                type_idx: 3,
+                name_idx: 6,
+            }],
+            method_ids: vec![
+                MethodId {
+                    class_idx: 2,
+                    proto_idx: 0,
+                    name_idx: 7,
+                },
+                MethodId {
+                    class_idx: 2,
+                    proto_idx: 0,
+                    name_idx: 12,
+                },
+            ],
+            class_defs: vec![ClassDef {
+                class_idx: 2,
+                access_flags: AccessFlags::PUBLIC,
+                superclass_idx: None,
+                interfaces_off: 0,
+                source_file_idx: None,
+                annotations_off: 0,
+                class_data_off: 1,
+                static_values_off: 0,
+            }],
+            ..test_dex()
+        };
+        let mut data = vec![0; 80];
+        data[1..12].copy_from_slice(&[0, 0, 2, 0, 0, 0, 16, 1, 0x88, 0x20, 64]);
+        data[16..40].copy_from_slice(&[
+            1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0x71, 0x10, 1, 0, 0, 0, 0x0e, 0,
+        ]);
+        data[64..80].copy_from_slice(&[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0]);
+        data.extend_from_slice(&[0x60, 0x00, 0, 0, 0x0e, 0]);
+        let formatter = BaksmaliFormatter::new(&dex, &data);
+
+        let out = formatter.format_class(&dex.class_defs[0]).unwrap();
+
+        assert!(out.contains(
+            "    # getter for: LTest;->field:I\n    invoke-static {v0}, LTest;->access$000()V\n"
+        ));
     }
 
     #[test]

@@ -93,6 +93,7 @@ Rust 工作区包含 4 个 crate：
 - literal 十六进制格式，包括 `const/4` 窄 literal 解码修复。
 - likely float/double literal 与 payload 注释，例如 `(float)Math.PI`, `(float)Math.E`, `Math.PI`, `Math.E`。
 - configured resource-id 注释：通过 `--resolve-resources <prefix> <public.xml>` 读取 Java baksmali 风格 public.xml 映射，并在 narrow literal、switch payload、array-data 中输出资源名注释。
+- synthetic accessor helper comment：支持 Java baksmali 风格 `# invokes:`、`# getter for:`、`# setter for:` 基础注释，可通过 `--accessor-comments <true|false>` 控制。
 - 基础 try/catch directive。
 - 未完整支持格式的 raw instruction fallback comment。
 
@@ -119,6 +120,7 @@ reference 解析当前覆盖：
 - `baksmali disassemble <input> --sequential-labels -o <out_dir>`
 - `baksmali disassemble <input> --code-offsets -o <out_dir>`
 - `baksmali disassemble <input> --implicit-references -o <out_dir>`
+- `baksmali disassemble <input> --accessor-comments <true|false> -o <out_dir>`
 - `baksmali list classes <input>`
 - `baksmali list strings <input>`
 - `baksmali list types <input>`
@@ -214,8 +216,8 @@ cargo fmt --all && cargo test --workspace
 测试统计：
 
 - `baksmali` unit tests：1 passed。
-- `baksmali-cli` integration tests：21 passed。
-- `baksmali-format` unit tests：26 passed。
+- `baksmali-cli` integration tests：22 passed。
+- `baksmali-format` unit tests：27 passed。
 - `baksmali-format` fixture tests：2 passed。
 - `baksmali-format` upstream fixture tests：2 passed。
 - `dex-reader` unit tests：24 passed。
@@ -223,7 +225,7 @@ cargo fmt --all && cargo test --workspace
 - `dex-types` opcode tests：9 passed。
 - doc tests：0。
 
-总计当前可见测试：91 passed。
+总计当前可见测试：93 passed。
 
 覆盖重点包括：
 
@@ -252,6 +254,7 @@ cargo fmt --all && cargo test --workspace
 - Java 风格 `disassemble --sequential-labels` / `--seq` / `--sl` / `-s` 参数输出 sequential label。
 - Java 风格 `disassemble --code-offsets` 参数在 instruction 前输出 `#@<address>` code address comment。
 - Java 风格 `disassemble --implicit-references` 参数会省略同类 method/field reference 的当前类前缀。
+- Java 风格 `disassemble --accessor-comments` / `--ac` 参数控制 synthetic accessor helper comment 输出。
 - Java 风格 method parameter annotation block 输出。
 - hidden API class data 解析与 Java 风格 field/method restriction flag 输出。
 - 已复制上游 Java baksmali 测试案例到 `tests/fixtures/upstream/baksmali`：包含 `src/test/resources` 和 `src/test/smali` fixture；已用 Rust 移植 `BaksmaliTestUtils` normalization 检查、`MultiSwitchTest` 与 `ZeroArrayPayloadWidthTest`，并删除复制来的 Java 测试源码。

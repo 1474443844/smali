@@ -234,7 +234,7 @@ impl<'a> Resolver<'a> {
         self.dex.type_ids.len()
     }
 
-    fn field_id(&self, index: u32) -> Result<&'a FieldId> {
+    pub fn field_id(&self, index: u32) -> Result<&'a FieldId> {
         self.dex
             .field_ids
             .get(index as usize)
@@ -245,7 +245,7 @@ impl<'a> Resolver<'a> {
             })
     }
 
-    fn method_id(&self, index: u32) -> Result<&'a MethodId> {
+    pub fn method_id(&self, index: u32) -> Result<&'a MethodId> {
         self.dex
             .method_ids
             .get(index as usize)
