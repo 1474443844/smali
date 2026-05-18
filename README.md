@@ -164,7 +164,7 @@ Implemented smali text output for:
 - `.method`, `.registers`, and optional Java baksmali-style `.locals`.
 - decoded instructions for supported operand formats.
 - class, field, and method annotations, with invalid visibility values rejected like Java dexlib2.
-- encoded value arrays and subannotations.
+- encoded value arrays and subannotations, with Java baksmali-style hex integral values, enum prefixes, `.subannotation`, and array comma separators.
 - debug directives:
   - `.line`
   - `.local`, including Java baksmali-style partial locals with missing name or type

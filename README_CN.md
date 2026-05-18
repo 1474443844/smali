@@ -165,7 +165,7 @@ tests/fixtures/upstream/baksmali/smali/      # 复制自 Java baksmali src/test/
 - `.registers`，以及可选的 Java baksmali 风格 `.locals`
 - 已支持 operand format 的 decoded instruction。
 - class、field、method annotation，并像 Java dexlib2 一样拒绝非法 visibility 值。
-- encoded value array 和 subannotation。
+- encoded value array 和 subannotation，包含 Java baksmali 风格十六进制整数值、enum 前缀、`.subannotation` 和 array 逗号分隔。
 - debug directive：
   - `.line`
   - `.local`，包括 Java baksmali 风格缺失 name 或 type 的 partial local

@@ -800,11 +800,11 @@ impl<'a> BaksmaliFormatter<'a> {
 
     fn format_encoded_value(&self, value: &EncodedValue) -> Result<String> {
         match value {
-            EncodedValue::Byte(value) => Ok(format!("{value}t")),
-            EncodedValue::Short(value) => Ok(format!("{value}s")),
+            EncodedValue::Byte(value) => Ok(format_integral_value(i64::from(*value), Some('t'))),
+            EncodedValue::Short(value) => Ok(format_integral_value(i64::from(*value), Some('s'))),
             EncodedValue::Char(value) => Ok(format!("'{}'", escape_char(*value))),
-            EncodedValue::Int(value) => Ok(value.to_string()),
-            EncodedValue::Long(value) => Ok(format!("{value}L")),
+            EncodedValue::Int(value) => Ok(format_integral_value(i64::from(*value), None)),
+            EncodedValue::Long(value) => Ok(format_integral_value(*value, Some('L'))),
             EncodedValue::Float(value) => Ok(format!("{}f", f32::from_bits(*value))),
             EncodedValue::Double(value) => Ok(format!("{}", f64::from_bits(*value))),
             EncodedValue::MethodType(value) => self.resolver.proto_descriptor_by_index(*value),
@@ -814,8 +814,9 @@ impl<'a> BaksmaliFormatter<'a> {
                 escape_string(self.resolver.string(*value)?)
             )),
             EncodedValue::Type(value) => Ok(self.resolver.type_descriptor(*value)?.to_owned()),
-            EncodedValue::Field(value) | EncodedValue::Enum(value) => {
-                self.resolver.field_descriptor(*value)
+            EncodedValue::Field(value) => self.resolver.field_descriptor(*value),
+            EncodedValue::Enum(value) => {
+                Ok(format!(".enum {}", self.resolver.field_descriptor(*value)?))
             }
             EncodedValue::Method(value) => self.resolver.method_descriptor(*value),
             EncodedValue::Array(values) => self.format_encoded_array(values, ""),
@@ -831,13 +832,22 @@ impl<'a> BaksmaliFormatter<'a> {
         }
         let child_indent = format!("{indent}    ");
         let mut out = String::from("{");
-        for value in values {
-            write!(
-                out,
-                "\n{child_indent}{}",
-                self.format_encoded_value_with_indent(value, &child_indent)?
-            )
-            .unwrap();
+        for (index, value) in values.iter().enumerate() {
+            if index == 0 {
+                write!(
+                    out,
+                    "\n{child_indent}{}",
+                    self.format_encoded_value_with_indent(value, &child_indent)?
+                )
+                .unwrap();
+            } else {
+                write!(
+                    out,
+                    ",\n{child_indent}{}",
+                    self.format_encoded_value_with_indent(value, &child_indent)?
+                )
+                .unwrap();
+            }
         }
         write!(out, "\n{indent}}}").unwrap();
         Ok(out)
@@ -850,7 +860,7 @@ impl<'a> BaksmaliFormatter<'a> {
     ) -> Result<String> {
         let child_indent = format!("{indent}    ");
         let mut out = format!(
-            "subannotation {}",
+            ".subannotation {}",
             self.resolver.type_descriptor(annotation.type_idx)?
         );
         for element in &annotation.elements {
@@ -3119,6 +3129,30 @@ mod tests {
         assert_eq!(escape_char('\n' as u16), "\\n");
         assert_eq!(
             formatter
+                .format_encoded_value(&EncodedValue::Byte(18))
+                .unwrap(),
+            "0x12t"
+        );
+        assert_eq!(
+            formatter
+                .format_encoded_value(&EncodedValue::Short(18))
+                .unwrap(),
+            "0x12s"
+        );
+        assert_eq!(
+            formatter
+                .format_encoded_value(&EncodedValue::Int(18))
+                .unwrap(),
+            "0x12"
+        );
+        assert_eq!(
+            formatter
+                .format_encoded_value(&EncodedValue::Long(18))
+                .unwrap(),
+            "0x12L"
+        );
+        assert_eq!(
+            formatter
                 .format_encoded_value(&EncodedValue::String(11))
                 .unwrap(),
             "\"quote\\\"slash\\\\\\n\""
@@ -3139,6 +3173,18 @@ mod tests {
                 .format_encoded_value(&EncodedValue::MethodType(0))
                 .unwrap(),
             "()V"
+        );
+        assert_eq!(
+            formatter
+                .format_encoded_value(&EncodedValue::Field(0))
+                .unwrap(),
+            "LTest;->field:I"
+        );
+        assert_eq!(
+            formatter
+                .format_encoded_value(&EncodedValue::Enum(0))
+                .unwrap(),
+            ".enum LTest;->field:I"
         );
         assert_eq!(
             formatter
@@ -3243,7 +3289,7 @@ mod tests {
             )
             .unwrap();
 
-        assert_eq!(out, ".field public static field:I = 42\n");
+        assert_eq!(out, ".field public static field:I = 0x2a\n");
     }
 
     #[test]
@@ -3307,10 +3353,10 @@ mod tests {
             formatter.format_encoded_value(&value).unwrap(),
             concat!(
                 "{\n",
-                "    1\n",
-                "    subannotation LAnno;\n",
+                "    0x1,\n",
+                "    .subannotation LAnno;\n",
                 "        name = {\n",
-                "            \"value\"\n",
+                "            \"value\",\n",
                 "            true\n",
                 "        }\n",
                 "    .end subannotation\n",
