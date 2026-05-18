@@ -23,6 +23,7 @@ pub struct BaksmaliFormatter<'a> {
     use_locals: bool,
     sequential_labels: bool,
     code_offsets: bool,
+    implicit_references: bool,
 }
 
 impl<'a> BaksmaliFormatter<'a> {
@@ -34,6 +35,7 @@ impl<'a> BaksmaliFormatter<'a> {
             None,
             true,
             true,
+            false,
             false,
             false,
             false,
@@ -55,6 +57,7 @@ impl<'a> BaksmaliFormatter<'a> {
             false,
             false,
             false,
+            false,
         )
     }
 
@@ -71,6 +74,7 @@ impl<'a> BaksmaliFormatter<'a> {
             api_level,
             true,
             true,
+            false,
             false,
             false,
             false,
@@ -94,6 +98,7 @@ impl<'a> BaksmaliFormatter<'a> {
             false,
             false,
             false,
+            false,
         )
     }
 
@@ -112,6 +117,7 @@ impl<'a> BaksmaliFormatter<'a> {
             api_level,
             debug_info,
             parameter_registers,
+            false,
             false,
             false,
             false,
@@ -173,6 +179,32 @@ impl<'a> BaksmaliFormatter<'a> {
         sequential_labels: bool,
         code_offsets: bool,
     ) -> Self {
+        Self::with_resource_ids_api_debug_info_parameter_registers_locals_sequential_labels_code_offsets_and_implicit_references(
+            dex,
+            data,
+            resource_ids,
+            api_level,
+            debug_info,
+            parameter_registers,
+            use_locals,
+            sequential_labels,
+            code_offsets,
+            false,
+        )
+    }
+
+    pub fn with_resource_ids_api_debug_info_parameter_registers_locals_sequential_labels_code_offsets_and_implicit_references(
+        dex: &'a DexFile,
+        data: &'a [u8],
+        resource_ids: BTreeMap<i32, String>,
+        api_level: Option<u32>,
+        debug_info: bool,
+        parameter_registers: bool,
+        use_locals: bool,
+        sequential_labels: bool,
+        code_offsets: bool,
+        implicit_references: bool,
+    ) -> Self {
         Self::with_options(
             dex,
             data,
@@ -183,6 +215,7 @@ impl<'a> BaksmaliFormatter<'a> {
             use_locals,
             sequential_labels,
             code_offsets,
+            implicit_references,
         )
     }
 
@@ -196,6 +229,7 @@ impl<'a> BaksmaliFormatter<'a> {
         use_locals: bool,
         sequential_labels: bool,
         code_offsets: bool,
+        implicit_references: bool,
     ) -> Self {
         Self {
             dex,
@@ -208,6 +242,7 @@ impl<'a> BaksmaliFormatter<'a> {
             use_locals,
             sequential_labels,
             code_offsets,
+            implicit_references,
         }
     }
 
@@ -476,7 +511,7 @@ impl<'a> BaksmaliFormatter<'a> {
                 writeln!(
                     out,
                     "    {}",
-                    self.format_instruction(instruction, &label_names, &code)?
+                    self.format_instruction(instruction, &label_names, &code, current_class)?
                 )
                 .unwrap();
                 let next_address = instruction.address + instruction.code_units.len() as u32;
@@ -798,6 +833,7 @@ impl<'a> BaksmaliFormatter<'a> {
         instruction: &RawInstruction,
         label_names: &BTreeMap<u32, String>,
         code: &CodeItem,
+        current_class: &str,
     ) -> Result<String> {
         let opcode = instruction.opcode.name_for_api(self.api_level);
         let text = match &instruction.operands {
@@ -851,13 +887,13 @@ impl<'a> BaksmaliFormatter<'a> {
             } => format!(
                 "{opcode} {}, {}",
                 self.format_code_register(*register, code),
-                self.format_reference(instruction.opcode.value(), *reference)?
+                self.format_reference(instruction.opcode.value(), *reference, current_class)?
             ),
             InstructionOperands::TwoRegistersReference { a, b, reference } => format!(
                 "{opcode} {}, {}, {}",
                 self.format_code_register(*a, code),
                 self.format_code_register(*b, code),
-                self.format_reference(instruction.opcode.value(), *reference)?
+                self.format_reference(instruction.opcode.value(), *reference, current_class)?
             ),
             InstructionOperands::ThreeRegisters { a, b, c } => format!(
                 "{opcode} {}, {}, {}",
@@ -897,7 +933,11 @@ impl<'a> BaksmaliFormatter<'a> {
                     .join(", ");
                 format!(
                     "{opcode} {{{registers}}}, {}",
-                    self.format_invoke_reference(instruction.opcode.value(), *reference)?
+                    self.format_invoke_reference(
+                        instruction.opcode.value(),
+                        *reference,
+                        current_class
+                    )?
                 )
             }
             InstructionOperands::InvokeRange {
@@ -910,7 +950,11 @@ impl<'a> BaksmaliFormatter<'a> {
                     "{opcode} {{{} .. {}}}, {}",
                     self.format_code_register(*start_register, code),
                     self.format_code_register(end_register, code),
-                    self.format_invoke_reference(instruction.opcode.value(), *reference)?
+                    self.format_invoke_reference(
+                        instruction.opcode.value(),
+                        *reference,
+                        current_class
+                    )?
                 )
             }
             InstructionOperands::InvokePolymorphic {
@@ -925,7 +969,7 @@ impl<'a> BaksmaliFormatter<'a> {
                     .join(", ");
                 format!(
                     "{opcode} {{{registers}}}, {}, {}",
-                    self.resolver.method_descriptor(*method_reference)?,
+                    self.implicit_method_reference(*method_reference, current_class)?,
                     self.resolver.proto_descriptor_by_index(*proto_reference)?
                 )
             }
@@ -940,7 +984,7 @@ impl<'a> BaksmaliFormatter<'a> {
                     "{opcode} {{{} .. {}}}, {}, {}",
                     self.format_code_register(*start_register, code),
                     self.format_code_register(end_register, code),
-                    self.resolver.method_descriptor(*method_reference)?,
+                    self.implicit_method_reference(*method_reference, current_class)?,
                     self.resolver.proto_descriptor_by_index(*proto_reference)?
                 )
             }
@@ -949,7 +993,7 @@ impl<'a> BaksmaliFormatter<'a> {
                 reference,
             } => format!(
                 "{opcode} verification_error@{verification_error}, {}",
-                self.format_reference(instruction.opcode.value(), *reference)?
+                self.format_reference(instruction.opcode.value(), *reference, current_class)?
             ),
             InstructionOperands::Branch8 { offset } => {
                 format!(
@@ -1159,7 +1203,32 @@ impl<'a> BaksmaliFormatter<'a> {
         self.format_narrow_literal_comment(value)
     }
 
-    fn format_reference(&self, opcode: u16, reference: u32) -> Result<String> {
+    fn strip_current_class_reference(&self, descriptor: String, current_class: &str) -> String {
+        if self.implicit_references {
+            descriptor
+                .strip_prefix(current_class)
+                .and_then(|value| value.strip_prefix("->"))
+                .map_or(descriptor.clone(), ToOwned::to_owned)
+        } else {
+            descriptor
+        }
+    }
+
+    fn implicit_field_reference(&self, field_idx: u32, current_class: &str) -> Result<String> {
+        Ok(self.strip_current_class_reference(
+            self.resolver.field_descriptor(field_idx)?,
+            current_class,
+        ))
+    }
+
+    fn implicit_method_reference(&self, method_idx: u32, current_class: &str) -> Result<String> {
+        Ok(self.strip_current_class_reference(
+            self.resolver.method_descriptor(method_idx)?,
+            current_class,
+        ))
+    }
+
+    fn format_reference(&self, opcode: u16, reference: u32, current_class: &str) -> Result<String> {
         match opcode {
             0x1a | 0x1b => Ok(format!(
                 "\"{}\"",
@@ -1169,13 +1238,20 @@ impl<'a> BaksmaliFormatter<'a> {
                 .resolver
                 .type_descriptor(reference)
                 .map(ToOwned::to_owned),
-            0x52..=0x6d | 0xe3..=0xeb | 0xfc..=0xfe => self.resolver.field_descriptor(reference),
+            0x52..=0x6d | 0xe3..=0xeb | 0xfc..=0xfe => {
+                self.implicit_field_reference(reference, current_class)
+            }
             0xf2..=0xf7 => Ok(format!("field_offset@0x{reference:x}")),
             _ => Ok(format!("reference@{reference}")),
         }
     }
 
-    fn format_invoke_reference(&self, opcode: u16, reference: u32) -> Result<String> {
+    fn format_invoke_reference(
+        &self,
+        opcode: u16,
+        reference: u32,
+        current_class: &str,
+    ) -> Result<String> {
         match opcode {
             0xee | 0xef => Ok(format!("inline@{reference}")),
             0xf8 | 0xf9 => Ok(format!("vtable@{reference}")),
@@ -1183,7 +1259,7 @@ impl<'a> BaksmaliFormatter<'a> {
                 Ok(format!("vtable@{reference}"))
             }
             0xfc | 0xfd => self.resolver.call_site_descriptor(reference),
-            _ => self.resolver.method_descriptor(reference),
+            _ => self.implicit_method_reference(reference, current_class),
         }
     }
 
@@ -2546,6 +2622,41 @@ mod tests {
     }
 
     #[test]
+    fn formats_implicit_current_class_references_like_java_baksmali() {
+        let dex = test_dex();
+        let explicit = BaksmaliFormatter::new(&dex, &[]);
+        let implicit = BaksmaliFormatter::with_resource_ids_api_debug_info_parameter_registers_locals_sequential_labels_code_offsets_and_implicit_references(
+            &dex,
+            &[],
+            BTreeMap::new(),
+            None,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true,
+        );
+
+        assert_eq!(
+            explicit.implicit_method_reference(0, "LTest;").unwrap(),
+            "LTest;->method()V"
+        );
+        assert_eq!(
+            implicit.implicit_method_reference(0, "LTest;").unwrap(),
+            "method()V"
+        );
+        assert_eq!(
+            implicit.implicit_field_reference(0, "LTest;").unwrap(),
+            "field:I"
+        );
+        assert_eq!(
+            implicit.implicit_method_reference(0, "LOther;").unwrap(),
+            "LTest;->method()V"
+        );
+    }
+
+    #[test]
     fn formats_instruction_literals_as_hex() {
         let dex = test_dex();
         let formatter = BaksmaliFormatter::new(&dex, &[]);
@@ -2564,6 +2675,7 @@ mod tests {
                     },
                     &BTreeMap::new(),
                     &empty_code(),
+                    "LTest;",
                 )
                 .unwrap(),
             "const/4 v1, -0x1"
@@ -2582,6 +2694,7 @@ mod tests {
                     },
                     &BTreeMap::new(),
                     &empty_code(),
+                    "LTest;",
                 )
                 .unwrap(),
             "const v2, 0xff"
@@ -2600,6 +2713,7 @@ mod tests {
                     },
                     &BTreeMap::new(),
                     &empty_code(),
+                    "LTest;",
                 )
                 .unwrap(),
             "const-wide v3, -0x100L"
@@ -2627,6 +2741,7 @@ mod tests {
                     },
                     &BTreeMap::new(),
                     &empty_code(),
+                    "LTest;",
                 )
                 .unwrap(),
             "const v0, 0x40490fdb    # (float)Math.PI"
@@ -2645,6 +2760,7 @@ mod tests {
                     },
                     &BTreeMap::new(),
                     &empty_code(),
+                    "LTest;",
                 )
                 .unwrap(),
             "const-wide v1, 0x400921fb54442d18L    # Math.PI"
@@ -2706,6 +2822,7 @@ mod tests {
                     },
                     &BTreeMap::new(),
                     &empty_code(),
+                    "LTest;",
                 )
                 .unwrap(),
             "const v0, 0x7f010001    # app.R.string.label"
@@ -2804,7 +2921,9 @@ mod tests {
         let formatter = BaksmaliFormatter::new(&dex, &data);
 
         assert_eq!(
-            formatter.format_invoke_reference(0xfc, 0).unwrap(),
+            formatter
+                .format_invoke_reference(0xfc, 0, "LTest;")
+                .unwrap(),
             "call_site{invoke-static@LTest;->method()V, \"name\", ()V, \"value\"}"
         );
     }
@@ -2817,7 +2936,7 @@ mod tests {
         let instruction = RawInstruction::new_with_api(0, vec![0x21fa, 0x0000, 0x0010], Some(25));
         assert_eq!(
             formatter
-                .format_instruction(&instruction, &BTreeMap::new(), &empty_code())
+                .format_instruction(&instruction, &BTreeMap::new(), &empty_code(), "LTest;")
                 .unwrap(),
             "invoke-super-quick {v0, v1}, vtable@0"
         );

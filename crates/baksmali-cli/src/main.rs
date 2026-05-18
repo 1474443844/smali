@@ -93,6 +93,13 @@ enum Command {
             help = "Add code address comments before instructions"
         )]
         code_offsets: bool,
+        #[arg(
+            long = "implicit-references",
+            visible_alias = "implicit",
+            visible_alias = "ir",
+            help = "Use implicit method and field references for the current class"
+        )]
+        implicit_references: bool,
     },
     #[command(about = "List DEX references or DEX entries")]
     #[command(visible_alias = "l")]
@@ -187,6 +194,7 @@ fn main() -> Result<()> {
             use_locals,
             sequential_labels,
             code_offsets,
+            implicit_references,
         } => disassemble(
             &input,
             &output,
@@ -199,6 +207,7 @@ fn main() -> Result<()> {
             use_locals,
             sequential_labels,
             code_offsets,
+            implicit_references,
         ),
         Command::List { command } => run_list(command),
         Command::ListClasses { input } => list_classes(&input),
@@ -237,6 +246,7 @@ fn disassemble(
     use_locals: bool,
     sequential_labels: bool,
     code_offsets: bool,
+    implicit_references: bool,
 ) -> Result<()> {
     let resource_ids = load_resource_ids(resource_id_files)?;
     let class_filter = class_filter(classes);
@@ -247,7 +257,7 @@ fn disassemble(
         let dex = dex_reader::parse_dex(&entry.data)
             .with_context(|| format!("failed to parse {}", entry.name))?;
         let resolver = Resolver::new(&dex, &entry.data);
-        let formatter = BaksmaliFormatter::with_resource_ids_api_debug_info_parameter_registers_locals_sequential_labels_and_code_offsets(
+        let formatter = BaksmaliFormatter::with_resource_ids_api_debug_info_parameter_registers_locals_sequential_labels_code_offsets_and_implicit_references(
             &dex,
             &entry.data,
             resource_ids.clone(),
@@ -257,6 +267,7 @@ fn disassemble(
             use_locals,
             sequential_labels,
             code_offsets,
+            implicit_references,
         );
         let dex_output = if entries.len() == 1 {
             output.to_path_buf()

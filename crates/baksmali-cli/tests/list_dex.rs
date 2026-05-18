@@ -182,7 +182,8 @@ fn help_shows_java_style_aliases_and_descriptions() {
         .stdout(predicates::str::contains("--parameter-registers <BOOLEAN>"))
         .stdout(predicates::str::contains("--use-locals"))
         .stdout(predicates::str::contains("--sequential-labels"))
-        .stdout(predicates::str::contains("--code-offsets"));
+        .stdout(predicates::str::contains("--code-offsets"))
+        .stdout(predicates::str::contains("--implicit-references"));
 
     let mut command = Command::cargo_bin("baksmali").unwrap();
     command
@@ -394,6 +395,30 @@ fn disassemble_outputs_code_offsets_like_java_baksmali() {
 
     let text = fs::read_to_string(output.join("Hello.smali")).unwrap();
     assert!(text.contains("    #@0\n    return-void\n"));
+    fs::remove_dir_all(output).unwrap();
+}
+
+#[test]
+fn accepts_java_style_implicit_references_argument() {
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let output = std::env::temp_dir().join(format!("baksmali-implicit-references-test-{unique}"));
+
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+    command
+        .args([
+            "disassemble",
+            "../../tests/fixtures/hello.dex",
+            "--implicit-references",
+            "-o",
+            output.to_str().unwrap(),
+        ])
+        .assert()
+        .success();
+
+    assert!(output.join("Hello.smali").exists());
     fs::remove_dir_all(output).unwrap();
 }
 

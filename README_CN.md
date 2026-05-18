@@ -219,6 +219,7 @@ baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --parameter-regis
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --use-locals -o <out_dir>
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --sequential-labels -o <out_dir>
 baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --code-offsets -o <out_dir>
+baksmali disassemble <input.dex|input.apk|input.jar|input.zip> --implicit-references -o <out_dir>
 baksmali list classes <input.dex|input.apk|input.jar|input.zip>
 baksmali list strings <input.dex|input.apk|input.jar|input.zip>
 baksmali list types <input.dex|input.apk|input.jar|input.zip>
@@ -291,6 +292,7 @@ baksmali list-dex <input.dex|input.apk|input.jar|input.zip>
 - Java 风格 `disassemble --use-locals` / `-l` 参数输出 `.locals <非参数寄存器数>`，而不是 `.registers <总寄存器数>`。
 - Java 风格 `disassemble --sequential-labels` / `-s` 参数输出 `:cond_0` 这类 sequential label，而不是地址型 label。
 - Java 风格 `disassemble --code-offsets` 参数在 instruction 前输出 `#@<address>` code address comment。
+- Java 风格 `disassemble --implicit-references` 参数会省略同类 method/field reference 的当前类前缀。
 - Java 风格容器 entry 路径输入，例如 `app.apk/classes2.dex`。
 - 改进 `baksmali --help` 和嵌套 `list --help` 输出，显示 alias、value name 和命令说明。
 - 已将上游 Java baksmali 测试 fixture 复制到 `tests/fixtures/upstream/baksmali`，并增加 Rust fixture inventory/disassembly 测试覆盖。
@@ -307,7 +309,7 @@ cargo test --workspace
 最新结果：
 
 ```text
-All tests passed: 88 passed.
+All tests passed: 90 passed.
 ```
 
 ## 示例 Fixture 输出
