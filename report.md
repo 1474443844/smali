@@ -117,6 +117,7 @@ reference 解析当前覆盖：
 - `baksmali disassemble <input> --parameter-registers <true|false> -o <out_dir>`
 - `baksmali disassemble <input> --use-locals -o <out_dir>`
 - `baksmali disassemble <input> --sequential-labels -o <out_dir>`
+- `baksmali disassemble <input> --code-offsets -o <out_dir>`
 - `baksmali list classes <input>`
 - `baksmali list strings <input>`
 - `baksmali list types <input>`
@@ -212,8 +213,8 @@ cargo fmt --all && cargo test --workspace
 测试统计：
 
 - `baksmali` unit tests：1 passed。
-- `baksmali-cli` integration tests：18 passed。
-- `baksmali-format` unit tests：24 passed。
+- `baksmali-cli` integration tests：19 passed。
+- `baksmali-format` unit tests：25 passed。
 - `baksmali-format` fixture tests：2 passed。
 - `baksmali-format` upstream fixture tests：2 passed。
 - `dex-reader` unit tests：24 passed。
@@ -221,7 +222,7 @@ cargo fmt --all && cargo test --workspace
 - `dex-types` opcode tests：9 passed。
 - doc tests：0。
 
-总计当前可见测试：86 passed。
+总计当前可见测试：88 passed。
 
 覆盖重点包括：
 
@@ -248,6 +249,7 @@ cargo fmt --all && cargo test --workspace
 - Java 风格 `disassemble --parameter-registers` / `--preg` / `--pr` 参数控制 debug directive 和 instruction operand 是否使用 `pNN` parameter register 语法。
 - Java 风格 `disassemble --use-locals` / `-l` 参数输出 `.locals <非参数寄存器数>`，而不是 `.registers <总寄存器数>`。
 - Java 风格 `disassemble --sequential-labels` / `-s` 参数输出 sequential label。
+- Java 风格 `disassemble --code-offsets` 参数在 instruction 前输出 `#@<address>` code address comment。
 - Java 风格 method parameter annotation block 输出。
 - hidden API class data 解析与 Java 风格 field/method restriction flag 输出。
 - 已复制上游 Java baksmali 测试案例到 `tests/fixtures/upstream/baksmali`：包含 `src/test/resources` 和 `src/test/smali` fixture；已用 Rust 移植 `BaksmaliTestUtils` normalization 检查、`MultiSwitchTest` 与 `ZeroArrayPayloadWidthTest`，并删除复制来的 Java 测试源码。

@@ -22,11 +22,22 @@ pub struct BaksmaliFormatter<'a> {
     parameter_registers: bool,
     use_locals: bool,
     sequential_labels: bool,
+    code_offsets: bool,
 }
 
 impl<'a> BaksmaliFormatter<'a> {
     pub fn new(dex: &'a DexFile, data: &'a [u8]) -> Self {
-        Self::with_options(dex, data, BTreeMap::new(), None, true, true, false, false)
+        Self::with_options(
+            dex,
+            data,
+            BTreeMap::new(),
+            None,
+            true,
+            true,
+            false,
+            false,
+            false,
+        )
     }
 
     pub fn with_resource_ids(
@@ -34,7 +45,17 @@ impl<'a> BaksmaliFormatter<'a> {
         data: &'a [u8],
         resource_ids: BTreeMap<i32, String>,
     ) -> Self {
-        Self::with_options(dex, data, resource_ids, None, true, true, false, false)
+        Self::with_options(
+            dex,
+            data,
+            resource_ids,
+            None,
+            true,
+            true,
+            false,
+            false,
+            false,
+        )
     }
 
     pub fn with_resource_ids_and_api(
@@ -43,7 +64,17 @@ impl<'a> BaksmaliFormatter<'a> {
         resource_ids: BTreeMap<i32, String>,
         api_level: Option<u32>,
     ) -> Self {
-        Self::with_options(dex, data, resource_ids, api_level, true, true, false, false)
+        Self::with_options(
+            dex,
+            data,
+            resource_ids,
+            api_level,
+            true,
+            true,
+            false,
+            false,
+            false,
+        )
     }
 
     pub fn with_resource_ids_api_and_debug_info(
@@ -60,6 +91,7 @@ impl<'a> BaksmaliFormatter<'a> {
             api_level,
             debug_info,
             true,
+            false,
             false,
             false,
         )
@@ -80,6 +112,7 @@ impl<'a> BaksmaliFormatter<'a> {
             api_level,
             debug_info,
             parameter_registers,
+            false,
             false,
             false,
         )
@@ -116,6 +149,30 @@ impl<'a> BaksmaliFormatter<'a> {
         use_locals: bool,
         sequential_labels: bool,
     ) -> Self {
+        Self::with_resource_ids_api_debug_info_parameter_registers_locals_sequential_labels_and_code_offsets(
+            dex,
+            data,
+            resource_ids,
+            api_level,
+            debug_info,
+            parameter_registers,
+            use_locals,
+            sequential_labels,
+            false,
+        )
+    }
+
+    pub fn with_resource_ids_api_debug_info_parameter_registers_locals_sequential_labels_and_code_offsets(
+        dex: &'a DexFile,
+        data: &'a [u8],
+        resource_ids: BTreeMap<i32, String>,
+        api_level: Option<u32>,
+        debug_info: bool,
+        parameter_registers: bool,
+        use_locals: bool,
+        sequential_labels: bool,
+        code_offsets: bool,
+    ) -> Self {
         Self::with_options(
             dex,
             data,
@@ -125,6 +182,7 @@ impl<'a> BaksmaliFormatter<'a> {
             parameter_registers,
             use_locals,
             sequential_labels,
+            code_offsets,
         )
     }
 
@@ -137,6 +195,7 @@ impl<'a> BaksmaliFormatter<'a> {
         parameter_registers: bool,
         use_locals: bool,
         sequential_labels: bool,
+        code_offsets: bool,
     ) -> Self {
         Self {
             dex,
@@ -148,6 +207,7 @@ impl<'a> BaksmaliFormatter<'a> {
             parameter_registers,
             use_locals,
             sequential_labels,
+            code_offsets,
         }
     }
 
@@ -410,6 +470,9 @@ impl<'a> BaksmaliFormatter<'a> {
                     debug_items.remove(&instruction.address).unwrap_or_default(),
                     parameter_base(&code),
                 )?;
+                if self.code_offsets {
+                    writeln!(out, "    #@{:x}", instruction.address).unwrap();
+                }
                 writeln!(
                     out,
                     "    {}",
@@ -2455,6 +2518,31 @@ mod tests {
         assert!(!registers_out.contains(".locals"));
         assert!(locals_out.contains("    .locals 0\n"));
         assert!(!locals_out.contains(".registers"));
+    }
+
+    #[test]
+    fn format_method_can_emit_code_offsets() {
+        let dex = test_dex();
+        let data = method_debug_data();
+        let method = method_with_debug_code();
+        let formatter = BaksmaliFormatter::with_resource_ids_api_debug_info_parameter_registers_locals_sequential_labels_and_code_offsets(
+            &dex,
+            &data,
+            BTreeMap::new(),
+            None,
+            true,
+            true,
+            false,
+            false,
+            true,
+        );
+        let mut out = String::new();
+
+        formatter
+            .format_method(&mut out, &method, None, None, "LTest;")
+            .unwrap();
+
+        assert!(out.contains("    #@0\n    return-void\n"));
     }
 
     #[test]
