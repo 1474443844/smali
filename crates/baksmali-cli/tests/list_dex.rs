@@ -182,6 +182,7 @@ fn help_shows_java_style_aliases_and_descriptions() {
         .stdout(predicates::str::contains("--parameter-registers <BOOLEAN>"))
         .stdout(predicates::str::contains("--use-locals"))
         .stdout(predicates::str::contains("--sequential-labels"))
+        .stdout(predicates::str::contains("aliases: --seq, --sl"))
         .stdout(predicates::str::contains("--code-offsets"))
         .stdout(predicates::str::contains("--implicit-references"));
 
@@ -370,6 +371,32 @@ fn accepts_java_style_sequential_labels_argument() {
     let text = fs::read_to_string(output.join("ConstructorTest2.smali")).unwrap();
     assert!(text.contains("    if-eqz p0, :cond_0\n"));
     assert!(text.contains("    :cond_0\n"));
+    fs::remove_dir_all(output).unwrap();
+}
+
+#[test]
+fn accepts_java_style_sequential_labels_aliases() {
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let output =
+        std::env::temp_dir().join(format!("baksmali-sequential-labels-alias-test-{unique}"));
+
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+    command
+        .args([
+            "disassemble",
+            "../../tests/fixtures/upstream/baksmali/resources/ConstructorTest/classes.dex",
+            "--seq",
+            "-o",
+            output.to_str().unwrap(),
+        ])
+        .assert()
+        .success();
+
+    let text = fs::read_to_string(output.join("ConstructorTest2.smali")).unwrap();
+    assert!(text.contains("    if-eqz p0, :cond_0\n"));
     fs::remove_dir_all(output).unwrap();
 }
 

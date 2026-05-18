@@ -214,7 +214,7 @@ cargo fmt --all && cargo test --workspace
 测试统计：
 
 - `baksmali` unit tests：1 passed。
-- `baksmali-cli` integration tests：20 passed。
+- `baksmali-cli` integration tests：21 passed。
 - `baksmali-format` unit tests：26 passed。
 - `baksmali-format` fixture tests：2 passed。
 - `baksmali-format` upstream fixture tests：2 passed。
@@ -223,7 +223,7 @@ cargo fmt --all && cargo test --workspace
 - `dex-types` opcode tests：9 passed。
 - doc tests：0。
 
-总计当前可见测试：90 passed。
+总计当前可见测试：91 passed。
 
 覆盖重点包括：
 
@@ -249,7 +249,7 @@ cargo fmt --all && cargo test --workspace
 - Java 风格 `disassemble --debug-info` / `--di` 参数控制 `.local`、`.param`、`.line` 等 debug directive 输出。
 - Java 风格 `disassemble --parameter-registers` / `--preg` / `--pr` 参数控制 debug directive 和 instruction operand 是否使用 `pNN` parameter register 语法。
 - Java 风格 `disassemble --use-locals` / `-l` 参数输出 `.locals <非参数寄存器数>`，而不是 `.registers <总寄存器数>`。
-- Java 风格 `disassemble --sequential-labels` / `-s` 参数输出 sequential label。
+- Java 风格 `disassemble --sequential-labels` / `--seq` / `--sl` / `-s` 参数输出 sequential label。
 - Java 风格 `disassemble --code-offsets` 参数在 instruction 前输出 `#@<address>` code address comment。
 - Java 风格 `disassemble --implicit-references` 参数会省略同类 method/field reference 的当前类前缀。
 - Java 风格 method parameter annotation block 输出。

@@ -83,6 +83,8 @@ enum Command {
         #[arg(
             short = 's',
             long = "sequential-labels",
+            visible_alias = "seq",
+            visible_alias = "sl",
             help = "Create label names using sequential numbering"
         )]
         sequential_labels: bool,

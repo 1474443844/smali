@@ -290,7 +290,7 @@ baksmali list-dex <input.dex|input.apk|input.jar|input.zip>
 - Java 风格 `disassemble --debug-info` / `--di` 参数控制 `.local`、`.param`、`.line` 等 debug directive 输出。
 - Java 风格 `disassemble --parameter-registers` / `--preg` / `--pr` 参数控制 debug directive 和 instruction operand 是否使用 `pNN` parameter register 语法。
 - Java 风格 `disassemble --use-locals` / `-l` 参数输出 `.locals <非参数寄存器数>`，而不是 `.registers <总寄存器数>`。
-- Java 风格 `disassemble --sequential-labels` / `-s` 参数输出 `:cond_0` 这类 sequential label，而不是地址型 label。
+- Java 风格 `disassemble --sequential-labels` / `--seq` / `--sl` / `-s` 参数输出 `:cond_0` 这类 sequential label，而不是地址型 label。
 - Java 风格 `disassemble --code-offsets` 参数在 instruction 前输出 `#@<address>` code address comment。
 - Java 风格 `disassemble --implicit-references` 参数会省略同类 method/field reference 的当前类前缀。
 - Java 风格容器 entry 路径输入，例如 `app.apk/classes2.dex`。
@@ -309,7 +309,7 @@ cargo test --workspace
 最新结果：
 
 ```text
-All tests passed: 90 passed.
+All tests passed: 91 passed.
 ```
 
 ## 示例 Fixture 输出

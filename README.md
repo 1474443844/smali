@@ -289,7 +289,7 @@ Current test coverage includes:
 - Java-style `disassemble --debug-info` / `--di` option controls `.local`, `.param`, `.line`, and related debug directive output.
 - Java-style `disassemble --parameter-registers` / `--preg` / `--pr` option controls whether debug directives and instruction operands use `pNN` parameter register syntax.
 - Java-style `disassemble --use-locals` / `-l` option emits `.locals <non-parameter-registers>` instead of `.registers <registers>`.
-- Java-style `disassemble --sequential-labels` / `-s` option emits sequential labels such as `:cond_0` instead of address-based labels.
+- Java-style `disassemble --sequential-labels` / `--seq` / `--sl` / `-s` option emits sequential labels such as `:cond_0` instead of address-based labels.
 - Java-style `disassemble --code-offsets` option emits `#@<address>` code address comments before instructions.
 - Java-style `disassemble --implicit-references` option omits the current class prefix from same-class method and field references.
 - Java-style container entry path input such as `app.apk/classes2.dex`.
@@ -308,7 +308,7 @@ cargo test --workspace
 Latest result:
 
 ```text
-All tests passed: 90 passed.
+All tests passed: 91 passed.
 ```
 
 ## Example Fixture Output
