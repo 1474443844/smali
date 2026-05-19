@@ -180,7 +180,7 @@ Implemented smali text output for:
   - `.sparse-switch`
   - `.array-data`
 - hidden API restriction flags such as `whitelist`, `blacklist`, `greylist-max-q`, `core-platform-api`, and `test-api` on fields and methods
-- Java baksmali-style section headers for static fields, instance fields, direct methods, and virtual methods.
+- Java baksmali-style `# interfaces` section placement after `.source`.
 - current-class descriptor elision in field and method declarations, such as `<init>()V` instead of `LHello;-><init>()V`.
 - baksmali-style branch and payload labels such as `:goto_23`, `:cond_53`, `:array_2e6`, and `:sswitch_data_29c`.
 - `.array-data` elements formatted according to Java `ArrayDataMethodItem`/`BaksmaliWriter` rules, including `t`/`s` suffixes and `L` for wide out-of-int-range values.
@@ -267,7 +267,7 @@ Current test coverage includes:
 - operand decoding for many instruction formats.
 - payload decoding.
 - dual-reference invoke-polymorphic decoding.
-- class interface formatting.
+- class interface formatting with Java-style `# interfaces` section ordering.
 - static field initial value formatting.
 - class, field, method, and method parameter annotation formatting.
 - debug directive formatting, including Java-style partial `.local` entries with missing name or type and Java-compatible `.prologue` output for epilogue-begin debug items.

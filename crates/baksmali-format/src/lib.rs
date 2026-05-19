@@ -310,7 +310,16 @@ impl<'a> BaksmaliFormatter<'a> {
             )
             .unwrap();
         }
+        if let Some(source_file_idx) = class_def.source_file_idx {
+            writeln!(
+                out,
+                ".source \"{}\"",
+                escape_string(self.resolver.string(source_file_idx)?)
+            )
+            .unwrap();
+        }
         if class_def.interfaces_off != 0 {
+            writeln!(out, "\n# interfaces").unwrap();
             for item in dex_reader::parse_type_list(self.data, class_def.interfaces_off)?.items {
                 writeln!(
                     out,
@@ -319,14 +328,6 @@ impl<'a> BaksmaliFormatter<'a> {
                 )
                 .unwrap();
             }
-        }
-        if let Some(source_file_idx) = class_def.source_file_idx {
-            writeln!(
-                out,
-                ".source \"{}\"",
-                escape_string(self.resolver.string(source_file_idx)?)
-            )
-            .unwrap();
         }
         writeln!(out).unwrap();
 
@@ -2281,9 +2282,9 @@ mod tests {
         let class_def = ClassDef {
             class_idx: 2,
             access_flags: AccessFlags::PUBLIC,
-            superclass_idx: None,
+            superclass_idx: Some(4),
             interfaces_off: 16,
-            source_file_idx: None,
+            source_file_idx: Some(10),
             annotations_off: 0,
             class_data_off: 0,
             static_values_off: 0,
@@ -2291,7 +2292,9 @@ mod tests {
 
         let out = formatter.format_class(&class_def).unwrap();
 
-        assert!(out.contains(".implements LInterface;"));
+        assert!(out.contains(
+            ".super V\n.source \"Debug.java\"\n\n# interfaces\n.implements LInterface;\n"
+        ));
     }
 
     #[test]

@@ -181,7 +181,7 @@ tests/fixtures/upstream/baksmali/smali/      # 复制自 Java baksmali src/test/
   - `.sparse-switch`
   - `.array-data`
 - field/method 上的 hidden API restriction flag，例如 `whitelist`, `blacklist`, `greylist-max-q`, `core-platform-api`, `test-api`
-- Java baksmali 风格 section header：static fields、instance fields、direct methods、virtual methods。
+- Java baksmali 风格 `# interfaces` section，位置对齐到 `.source` 之后。
 - field/method 声明中的 current-class descriptor 省略，例如输出 `<init>()V` 而不是 `LHello;-><init>()V`。
 - baksmali 风格 branch/payload label，例如 `:goto_23`, `:cond_53`, `:array_2e6`, `:sswitch_data_29c`。
 - `.array-data` 元素按照 Java `ArrayDataMethodItem` / `BaksmaliWriter` 规则格式化，包括 `t`/`s` 后缀，以及超出 int 范围的 wide 值 `L` 后缀。
@@ -268,7 +268,7 @@ baksmali list-dex <input.dex|input.apk|input.jar|input.zip>
 - 多种 instruction format 的 operand decoding。
 - payload decoding。
 - dual-reference invoke-polymorphic decoding。
-- class interface formatting。
+- class interface formatting，包括 Java 风格 `# interfaces` section ordering。
 - static field initial value formatting。
 - class、field、method 和 method parameter annotation formatting。
 - debug directive formatting，包括 Java 风格缺失 name 或 type 的 partial `.local`，以及 epilogue-begin debug item 的 Java 兼容 `.prologue` 输出。

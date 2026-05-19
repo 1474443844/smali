@@ -77,7 +77,7 @@ Rust 工作区包含 4 个 crate：
 `baksmali-format` 当前可以输出：
 
 - `.class`, `.super`, `.implements`, `.source`。
-- Java baksmali 风格 section header：`# static fields`, `# instance fields`, `# direct methods`, `# virtual methods`。
+- Java baksmali 风格 section header：`# interfaces`, `# static fields`, `# instance fields`, `# direct methods`, `# virtual methods`。
 - `.field`，含静态初始值。
 - `.method`, `.registers`，以及 Java baksmali 风格可选 `.locals`。
 - 当前类 field/method 声明中的 descriptor 省略，例如 `<init>()V` 而不是 `LHello;-><init>()V`。
