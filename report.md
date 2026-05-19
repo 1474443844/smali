@@ -232,7 +232,7 @@ cargo fmt --all && cargo test --workspace
 - DEX header、string data、type list、class data、code item。
 - LEB128/SLEB128。
 - catch handler 与 try/catch handler offset。
-- debug info state machine，以及 Java 风格 partial `.local` 输出。
+- debug info state machine，以及 Java 风格 partial `.local` 和 epilogue-begin `.prologue` 输出。
 - encoded value/array/annotation。
 - raw DEX 与 ZIP/APK DEX entry discovery，以及 Java 风格容器 entry 路径选择。
 - invalid cross-reference index rejection。

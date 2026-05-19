@@ -271,7 +271,7 @@ baksmali list-dex <input.dex|input.apk|input.jar|input.zip>
 - class interface formatting。
 - static field initial value formatting。
 - class、field、method 和 method parameter annotation formatting。
-- debug directive formatting，包括 Java 风格缺失 name 或 type 的 partial `.local`。
+- debug directive formatting，包括 Java 风格缺失 name 或 type 的 partial `.local`，以及 epilogue-begin debug item 的 Java 兼容 `.prologue` 输出。
 - basic try/catch directive formatting。
 - method handle 和 call site table parsing。
 - method proto、method handle kind、encoded-array call site reference rendering。

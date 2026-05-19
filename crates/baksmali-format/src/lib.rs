@@ -664,8 +664,9 @@ impl<'a> BaksmaliFormatter<'a> {
                 ".restart local {}",
                 format_register(*register, parameter_base, self.parameter_registers)
             ))),
-            DebugItemKind::PrologueEnd => Ok(Some(".prologue".to_owned())),
-            DebugItemKind::EpilogueBegin => Ok(Some(".epilogue".to_owned())),
+            DebugItemKind::PrologueEnd | DebugItemKind::EpilogueBegin => {
+                Ok(Some(".prologue".to_owned()))
+            }
             DebugItemKind::SetFile {
                 name_idx: Some(name_idx),
             } => Ok(Some(format!(
@@ -2646,7 +2647,7 @@ mod tests {
             concat!(
                 "    .line 123\n",
                 "    .prologue\n",
-                "    .epilogue\n",
+                "    .prologue\n",
                 "    .source \"Debug.java\"\n",
                 "    .source\n",
                 "    .local v1, \"name\":I\n",

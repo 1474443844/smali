@@ -270,7 +270,7 @@ Current test coverage includes:
 - class interface formatting.
 - static field initial value formatting.
 - class, field, method, and method parameter annotation formatting.
-- debug directive formatting, including Java-style partial `.local` entries with missing name or type.
+- debug directive formatting, including Java-style partial `.local` entries with missing name or type and Java-compatible `.prologue` output for epilogue-begin debug items.
 - basic try/catch directive formatting.
 - method handle and call site table parsing.
 - method proto, method handle kind, and encoded-array call site reference rendering.
