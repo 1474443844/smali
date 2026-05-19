@@ -169,8 +169,7 @@ tests/fixtures/upstream/baksmali/smali/      # 复制自 Java baksmali src/test/
 - debug directive：
   - `.line`
   - `.local`，包括 Java baksmali 风格缺失 name 或 type 的 partial local
-  - `.end local`
-  - `.restart local`
+  - `.end local` 和 `.restart local`，包括 Java baksmali 风格 trailing local comment
   - `.prologue`
   - `.epilogue`
   - `.param`

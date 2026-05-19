@@ -657,14 +657,32 @@ impl<'a> BaksmaliFormatter<'a> {
                 *signature_idx,
                 parameter_base,
             ),
-            DebugItemKind::EndLocal { register } => Ok(Some(format!(
-                ".end local {}",
-                format_register(*register, parameter_base, self.parameter_registers)
-            ))),
-            DebugItemKind::RestartLocal { register } => Ok(Some(format!(
-                ".restart local {}",
-                format_register(*register, parameter_base, self.parameter_registers)
-            ))),
+            DebugItemKind::EndLocal {
+                register,
+                name_idx,
+                type_idx,
+                signature_idx,
+            } => self.format_local_end_or_restart(
+                ".end local",
+                *register,
+                *name_idx,
+                *type_idx,
+                *signature_idx,
+                parameter_base,
+            ),
+            DebugItemKind::RestartLocal {
+                register,
+                name_idx,
+                type_idx,
+                signature_idx,
+            } => self.format_local_end_or_restart(
+                ".restart local",
+                *register,
+                *name_idx,
+                *type_idx,
+                *signature_idx,
+                parameter_base,
+            ),
             DebugItemKind::PrologueEnd | DebugItemKind::EpilogueBegin => {
                 Ok(Some(".prologue".to_owned()))
             }
@@ -676,6 +694,44 @@ impl<'a> BaksmaliFormatter<'a> {
             ))),
             DebugItemKind::SetFile { name_idx: None } => Ok(Some(".source".to_owned())),
         }
+    }
+
+    fn format_local_end_or_restart(
+        &self,
+        directive: &str,
+        register: u32,
+        name_idx: Option<u32>,
+        type_idx: Option<u32>,
+        signature_idx: Option<u32>,
+        parameter_base: u32,
+    ) -> Result<Option<String>> {
+        let register = format_register(register, parameter_base, self.parameter_registers);
+        let mut text = format!("{directive} {register}");
+        write!(
+            text,
+            "    # {}:{}",
+            name_idx
+                .map(|name_idx| Ok(format!(
+                    "\"{}\"",
+                    escape_string(self.resolver.string(name_idx)?)
+                )))
+                .transpose()?
+                .unwrap_or_else(|| "null".to_owned()),
+            type_idx
+                .map(|type_idx| self.resolver.type_descriptor(type_idx))
+                .transpose()?
+                .unwrap_or("V")
+        )
+        .unwrap();
+        if let Some(signature_idx) = signature_idx {
+            write!(
+                text,
+                ", \"{}\"",
+                escape_string(self.resolver.string(signature_idx)?)
+            )
+            .unwrap();
+        }
+        Ok(Some(text))
     }
 
     fn format_start_local(
@@ -2610,8 +2666,18 @@ mod tests {
                         type_idx: Some(3),
                         signature_idx: None,
                     },
-                    DebugItemKind::EndLocal { register: 1 },
-                    DebugItemKind::RestartLocal { register: 4 },
+                    DebugItemKind::EndLocal {
+                        register: 1,
+                        name_idx: Some(1),
+                        type_idx: Some(3),
+                        signature_idx: None,
+                    },
+                    DebugItemKind::RestartLocal {
+                        register: 4,
+                        name_idx: None,
+                        type_idx: None,
+                        signature_idx: Some(2),
+                    },
                     DebugItemKind::StartLocal {
                         register: 3,
                         name_idx: None,
@@ -2638,8 +2704,18 @@ mod tests {
                         type_idx: Some(3),
                         signature_idx: None,
                     },
-                    DebugItemKind::EndLocal { register: 4 },
-                    DebugItemKind::RestartLocal { register: 4 },
+                    DebugItemKind::EndLocal {
+                        register: 4,
+                        name_idx: Some(1),
+                        type_idx: Some(3),
+                        signature_idx: None,
+                    },
+                    DebugItemKind::RestartLocal {
+                        register: 4,
+                        name_idx: Some(1),
+                        type_idx: Some(3),
+                        signature_idx: Some(2),
+                    },
                 ],
                 4,
             )
@@ -2656,8 +2732,8 @@ mod tests {
                 "    .local v1, \"name\":I\n",
                 "    .local v2, \"quote\\\"slash\\\\\\n\":I, \"value\"\n",
                 "    .local p0, \"name\":I\n",
-                "    .end local v1\n",
-                "    .restart local p0\n",
+                "    .end local v1    # \"name\":I\n",
+                "    .restart local p0    # null:V, \"value\"\n",
                 "    .local v3, null:I, \"value\"\n",
                 "    .local p1\n",
             )
@@ -2666,8 +2742,8 @@ mod tests {
             vreg_out,
             concat!(
                 "    .local v4, \"name\":I\n",
-                "    .end local v4\n",
-                "    .restart local v4\n",
+                "    .end local v4    # \"name\":I\n",
+                "    .restart local v4    # \"name\":I, \"value\"\n",
             )
         );
     }

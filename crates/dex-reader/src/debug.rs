@@ -32,6 +32,7 @@ pub fn parse_debug_info_item(data: &[u8], offset: u32) -> Result<DebugInfoItem> 
     let mut address = 0u32;
     let mut line = line_start as i32;
     let mut items = Vec::new();
+    let mut locals = Vec::new();
 
     loop {
         checked_range(data, cursor, 1)?;
@@ -60,6 +61,12 @@ pub fn parse_debug_info_item(data: &[u8], offset: u32) -> Result<DebugInfoItem> 
                 cursor += used;
                 let (type_idx, used) = read_uleb128p1_at(data, cursor)?;
                 cursor += used;
+                let local = LocalInfo {
+                    name_idx,
+                    type_idx,
+                    signature_idx: None,
+                };
+                set_local(&mut locals, register, local.clone())?;
                 items.push(DebugItem {
                     address,
                     kind: DebugItemKind::StartLocal {
@@ -79,6 +86,12 @@ pub fn parse_debug_info_item(data: &[u8], offset: u32) -> Result<DebugInfoItem> 
                 cursor += used;
                 let (signature_idx, used) = read_uleb128p1_at(data, cursor)?;
                 cursor += used;
+                let local = LocalInfo {
+                    name_idx,
+                    type_idx,
+                    signature_idx,
+                };
+                set_local(&mut locals, register, local.clone())?;
                 items.push(DebugItem {
                     address,
                     kind: DebugItemKind::StartLocal {
@@ -92,17 +105,30 @@ pub fn parse_debug_info_item(data: &[u8], offset: u32) -> Result<DebugInfoItem> 
             DBG_END_LOCAL => {
                 let (register, used) = read_uleb128_at(data, cursor)?;
                 cursor += used;
+                let local = local_at(&locals, register).cloned().unwrap_or_default();
                 items.push(DebugItem {
                     address,
-                    kind: DebugItemKind::EndLocal { register },
+                    kind: DebugItemKind::EndLocal {
+                        register,
+                        name_idx: local.name_idx,
+                        type_idx: local.type_idx,
+                        signature_idx: local.signature_idx,
+                    },
                 });
             }
             DBG_RESTART_LOCAL => {
                 let (register, used) = read_uleb128_at(data, cursor)?;
                 cursor += used;
+                let local = local_at(&locals, register).cloned().unwrap_or_default();
+                set_local(&mut locals, register, local.clone())?;
                 items.push(DebugItem {
                     address,
-                    kind: DebugItemKind::RestartLocal { register },
+                    kind: DebugItemKind::RestartLocal {
+                        register,
+                        name_idx: local.name_idx,
+                        type_idx: local.type_idx,
+                        signature_idx: local.signature_idx,
+                    },
                 });
             }
             DBG_PROLOGUE_END => items.push(DebugItem {
@@ -144,6 +170,29 @@ pub fn parse_debug_info_item(data: &[u8], offset: u32) -> Result<DebugInfoItem> 
         parameters,
         items,
     })
+}
+
+#[derive(Debug, Clone, Default)]
+struct LocalInfo {
+    name_idx: Option<u32>,
+    type_idx: Option<u32>,
+    signature_idx: Option<u32>,
+}
+
+fn set_local(locals: &mut Vec<LocalInfo>, register: u32, local: LocalInfo) -> Result<()> {
+    let index =
+        usize::try_from(register).map_err(|_| invalid_debug(0, "debug register overflow"))?;
+    if index >= locals.len() {
+        locals.resize_with(index + 1, LocalInfo::default);
+    }
+    locals[index] = local;
+    Ok(())
+}
+
+fn local_at(locals: &[LocalInfo], register: u32) -> Option<&LocalInfo> {
+    usize::try_from(register)
+        .ok()
+        .and_then(|index| locals.get(index))
 }
 
 fn read_uleb128p1_at(data: &[u8], offset: usize) -> Result<(Option<u32>, usize)> {
@@ -285,11 +334,21 @@ mod tests {
                 },
                 DebugItem {
                     address: 0,
-                    kind: DebugItemKind::EndLocal { register: 0 },
+                    kind: DebugItemKind::EndLocal {
+                        register: 0,
+                        name_idx: Some(0),
+                        type_idx: Some(1),
+                        signature_idx: Some(2),
+                    },
                 },
                 DebugItem {
                     address: 0,
-                    kind: DebugItemKind::RestartLocal { register: 0 },
+                    kind: DebugItemKind::RestartLocal {
+                        register: 0,
+                        name_idx: Some(0),
+                        type_idx: Some(1),
+                        signature_idx: Some(2),
+                    },
                 },
                 DebugItem {
                     address: 0,

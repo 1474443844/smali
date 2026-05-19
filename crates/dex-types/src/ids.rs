@@ -200,9 +200,15 @@ pub enum DebugItemKind {
     },
     EndLocal {
         register: u32,
+        name_idx: Option<u32>,
+        type_idx: Option<u32>,
+        signature_idx: Option<u32>,
     },
     RestartLocal {
         register: u32,
+        name_idx: Option<u32>,
+        type_idx: Option<u32>,
+        signature_idx: Option<u32>,
     },
     PrologueEnd,
     EpilogueBegin,

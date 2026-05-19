@@ -168,8 +168,7 @@ Implemented smali text output for:
 - debug directives:
   - `.line`
   - `.local`, including Java baksmali-style partial locals with missing name or type
-  - `.end local`
-  - `.restart local`
+  - `.end local` and `.restart local`, including Java baksmali-style trailing local comments
   - `.prologue`
   - `.epilogue`
   - `.param`

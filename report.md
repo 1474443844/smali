@@ -83,7 +83,7 @@ Rust 工作区包含 4 个 crate：
 - 当前类 field/method 声明中的 descriptor 省略，例如 `<init>()V` 而不是 `LHello;-><init>()V`。
 - class/field/method/parameter annotation 的基础输出，并像 Java dexlib2 一样拒绝非法 annotation visibility。
 - encoded value array 与 subannotation 的基础输出，包括 Java baksmali 风格十六进制整数值、enum 前缀、`.subannotation` 和 array 逗号分隔。
-- debug item 的基础输出：`.line`, `.local`, `.end local`, `.restart local`, `.prologue`, `.epilogue`, `.source`, `.param`，其中 `.local` 支持 Java baksmali 风格缺失 name/type 的 partial local，null `DBG_SET_FILE` 输出裸 `.source`。
+- debug item 的基础输出：`.line`, `.local`, `.end local`, `.restart local`, `.prologue`, `.epilogue`, `.source`, `.param`，其中 `.local` 支持 Java baksmali 风格缺失 name/type 的 partial local，`.end local` / `.restart local` 支持 Java baksmali 风格 trailing local comment，null `DBG_SET_FILE` 输出裸 `.source`。
 - parameter register 名称，如可用时输出 `p0`。
 - branch/payload label：`:goto_x`, `:cond_x`, `:array_x`, `:sswitch_data_x`, `:pswitch_data_x` 等。
 - switch/array payload：`.packed-switch`, `.sparse-switch`, `.array-data`。
