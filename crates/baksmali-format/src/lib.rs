@@ -1546,12 +1546,23 @@ impl<'a> BaksmaliFormatter<'a> {
     }
 }
 
+const MAX_FILENAME_LENGTH: usize = 255;
+const NUMERIC_SUFFIX_RESERVE: usize = 6;
+const MAX_CLASS_FILE_PATH_COMPONENT_BYTES: usize = MAX_FILENAME_LENGTH - NUMERIC_SUFFIX_RESERVE;
+
 fn normalize_class_file_path_component(component: String) -> String {
-    if is_windows_reserved_file_name(&component) {
+    let mut component = if is_windows_reserved_file_name(&component) {
         add_suffix_before_extension(&component, "#")
     } else {
         component
+    };
+
+    let utf8_len = component.len();
+    if utf8_len > MAX_CLASS_FILE_PATH_COMPONENT_BYTES {
+        component =
+            shorten_path_component(&component, utf8_len - MAX_CLASS_FILE_PATH_COMPONENT_BYTES);
     }
+    component
 }
 
 fn is_windows_reserved_file_name(name: &str) -> bool {
@@ -1569,6 +1580,39 @@ fn add_suffix_before_extension(path_element: &str, suffix: &str) -> String {
         Some((name, extension)) => format!("{name}{suffix}.{extension}"),
         None => format!("{path_element}{suffix}"),
     }
+}
+
+fn shorten_path_component(path_component: &str, bytes_to_remove: usize) -> String {
+    let bytes_to_remove = bytes_to_remove + 1;
+    let code_points = path_component.chars().collect::<Vec<_>>();
+    let mid_point = code_points.len() / 2;
+
+    let mut first_end = mid_point;
+    let mut second_start = mid_point + 1;
+    let mut bytes_removed = code_points[mid_point].len_utf8();
+
+    if code_points.len().is_multiple_of(2) && bytes_removed < bytes_to_remove {
+        bytes_removed += code_points[second_start].len_utf8();
+        second_start += 1;
+    }
+
+    while bytes_removed < bytes_to_remove && (first_end > 0 || second_start < code_points.len()) {
+        if first_end > 0 {
+            first_end -= 1;
+            bytes_removed += code_points[first_end].len_utf8();
+        }
+
+        if bytes_removed < bytes_to_remove && second_start < code_points.len() {
+            bytes_removed += code_points[second_start].len_utf8();
+            second_start += 1;
+        }
+    }
+
+    let mut out = String::new();
+    out.extend(code_points[..first_end].iter());
+    out.push('#');
+    out.extend(code_points[second_start..].iter());
+    out
 }
 
 fn class_data_methods(data: &[u8], class_def: &ClassDef) -> Vec<EncodedMethod> {
@@ -2582,6 +2626,62 @@ mod tests {
                 })
                 .unwrap(),
             "pkg/Foo.smali"
+        );
+    }
+
+    #[test]
+    fn shortens_long_class_file_path_components_like_java_baksmali() {
+        let one_byte = (0..100).map(char::from).collect::<String>();
+        let shortened = shorten_path_component(&one_byte, 5);
+        assert_eq!(shortened.len(), 95);
+        assert_eq!(shortened.len(), 95);
+
+        let two_byte = (0x80..0x80 + 100)
+            .map(char::from_u32)
+            .collect::<Option<String>>()
+            .unwrap();
+        let shortened = shorten_path_component(&two_byte, 4);
+        assert_eq!(two_byte.len(), 200);
+        assert_eq!(shortened.len(), 195);
+        assert_eq!(shortened.chars().count(), 98);
+        let shortened = shorten_path_component(&two_byte, 5);
+        assert_eq!(shortened.len(), 195);
+        assert_eq!(shortened.chars().count(), 98);
+
+        let three_byte = (0x800..0x800 + 100)
+            .map(char::from_u32)
+            .collect::<Option<String>>()
+            .unwrap();
+        let shortened = shorten_path_component(&three_byte, 6);
+        assert_eq!(three_byte.len(), 300);
+        assert_eq!(shortened.len(), 292);
+        assert_eq!(shortened.chars().count(), 98);
+        let shortened = shorten_path_component(&three_byte, 7);
+        assert_eq!(shortened.len(), 292);
+        assert_eq!(shortened.chars().count(), 98);
+
+        let four_byte = (0x10000..0x10000 + 100)
+            .map(char::from_u32)
+            .collect::<Option<String>>()
+            .unwrap();
+        let shortened = shorten_path_component(&four_byte, 8);
+        assert_eq!(four_byte.len(), 400);
+        assert_eq!(shortened.len(), 389);
+        assert_eq!(shortened.encode_utf16().count(), 195);
+        let shortened = shorten_path_component(&four_byte, 7);
+        assert_eq!(shortened.len(), 393);
+        assert_eq!(shortened.encode_utf16().count(), 197);
+    }
+
+    #[test]
+    fn normalizes_class_file_path_components_to_java_byte_budget() {
+        let long_component = "a".repeat(260);
+        let normalized = normalize_class_file_path_component(long_component);
+
+        assert_eq!(normalized.len(), MAX_CLASS_FILE_PATH_COMPONENT_BYTES);
+        assert_eq!(
+            normalized,
+            format!("{}#{}", "a".repeat(125), "a".repeat(123))
         );
     }
 
