@@ -296,6 +296,7 @@ baksmali list-dex <input.dex|input.apk|input.jar|input.zip>
 - Java 风格 `disassemble --implicit-references` 参数会省略同类 method/field reference 的当前类前缀。
 - Java 风格 `disassemble --accessor-comments` / `--ac` 参数控制 synthetic accessor helper comment。
 - Java 风格容器 entry 路径输入，例如 `app.apk/classes2.dex`。
+- Java `ClassFileNameHandler` 风格输出文件名，处理 `CON`、`AUX`、`COM1`、`LPT1` 等 Windows 保留路径组件。
 - 改进 `baksmali --help` 和嵌套 `list --help` 输出，显示 alias、value name 和命令说明。
 - 已将上游 Java baksmali 测试 fixture 复制到 `tests/fixtures/upstream/baksmali`，并增加 Rust fixture inventory/disassembly 测试覆盖。
 - 已用 Rust 移植 Java `BaksmaliTestUtils` normalization 检查、`MultiSwitchTest` 和 `ZeroArrayPayloadWidthTest`；复制来的 Java 测试源码已删除。

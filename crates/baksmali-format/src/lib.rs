@@ -289,7 +289,15 @@ impl<'a> BaksmaliFormatter<'a> {
             .strip_prefix('L')
             .and_then(|value| value.strip_suffix(';'))
             .unwrap_or(descriptor);
-        Ok(format!("{name}.smali"))
+        let mut components = name.split('/').map(str::to_owned).collect::<Vec<_>>();
+        if let Some(last) = components.last_mut() {
+            last.push_str(".smali");
+        }
+        Ok(components
+            .into_iter()
+            .map(normalize_class_file_path_component)
+            .collect::<Vec<_>>()
+            .join("/"))
     }
 
     pub fn format_class(&self, class_def: &ClassDef) -> Result<String> {
@@ -1538,6 +1546,31 @@ impl<'a> BaksmaliFormatter<'a> {
     }
 }
 
+fn normalize_class_file_path_component(component: String) -> String {
+    if is_windows_reserved_file_name(&component) {
+        add_suffix_before_extension(&component, "#")
+    } else {
+        component
+    }
+}
+
+fn is_windows_reserved_file_name(name: &str) -> bool {
+    let stem = name.split_once('.').map_or(name, |(stem, _)| stem);
+    let upper = stem.to_ascii_uppercase();
+    matches!(upper.as_str(), "CON" | "PRN" | "AUX" | "NUL")
+        || upper
+            .strip_prefix("COM")
+            .or_else(|| upper.strip_prefix("LPT"))
+            .is_some_and(|suffix| suffix.len() == 1 && matches!(suffix.as_bytes()[0], b'1'..=b'9'))
+}
+
+fn add_suffix_before_extension(path_element: &str, suffix: &str) -> String {
+    match path_element.rsplit_once('.') {
+        Some((name, extension)) => format!("{name}{suffix}.{extension}"),
+        None => format!("{path_element}{suffix}"),
+    }
+}
+
 fn class_data_methods(data: &[u8], class_def: &ClassDef) -> Vec<EncodedMethod> {
     if class_def.class_data_off == 0 {
         return Vec::new();
@@ -2376,6 +2409,10 @@ mod tests {
                 TypeId { descriptor_idx: 5 },
                 TypeId { descriptor_idx: 8 },
                 TypeId { descriptor_idx: 9 },
+                TypeId { descriptor_idx: 15 },
+                TypeId { descriptor_idx: 16 },
+                TypeId { descriptor_idx: 17 },
+                TypeId { descriptor_idx: 18 },
             ],
             proto_ids: vec![ProtoId {
                 shorty_idx: 8,
@@ -2436,6 +2473,10 @@ mod tests {
             "defaultField".to_owned(),
             "nonDefaultField".to_owned(),
             "<clinit>".to_owned(),
+            "LCON;".to_owned(),
+            "Lpkg/AUX;".to_owned(),
+            "LCOM1/Foo;".to_owned(),
+            "Lpkg/Foo;".to_owned(),
         ]
     }
 
@@ -2475,6 +2516,73 @@ mod tests {
         assert!(out.contains(
             ".super V\n.source \"Debug.java\"\n\n# interfaces\n.implements LInterface;\n"
         ));
+    }
+
+    #[test]
+    fn formats_class_file_names_with_java_windows_reserved_component_rules() {
+        let dex = test_dex();
+        let formatter = BaksmaliFormatter::new(&dex, &[]);
+
+        assert_eq!(
+            formatter
+                .class_file_name(&ClassDef {
+                    class_idx: 6,
+                    access_flags: AccessFlags::PUBLIC,
+                    superclass_idx: None,
+                    interfaces_off: 0,
+                    source_file_idx: None,
+                    annotations_off: 0,
+                    class_data_off: 0,
+                    static_values_off: 0,
+                })
+                .unwrap(),
+            "CON#.smali"
+        );
+        assert_eq!(
+            formatter
+                .class_file_name(&ClassDef {
+                    class_idx: 7,
+                    access_flags: AccessFlags::PUBLIC,
+                    superclass_idx: None,
+                    interfaces_off: 0,
+                    source_file_idx: None,
+                    annotations_off: 0,
+                    class_data_off: 0,
+                    static_values_off: 0,
+                })
+                .unwrap(),
+            "pkg/AUX#.smali"
+        );
+        assert_eq!(
+            formatter
+                .class_file_name(&ClassDef {
+                    class_idx: 8,
+                    access_flags: AccessFlags::PUBLIC,
+                    superclass_idx: None,
+                    interfaces_off: 0,
+                    source_file_idx: None,
+                    annotations_off: 0,
+                    class_data_off: 0,
+                    static_values_off: 0,
+                })
+                .unwrap(),
+            "COM1#/Foo.smali"
+        );
+        assert_eq!(
+            formatter
+                .class_file_name(&ClassDef {
+                    class_idx: 9,
+                    access_flags: AccessFlags::PUBLIC,
+                    superclass_idx: None,
+                    interfaces_off: 0,
+                    source_file_idx: None,
+                    annotations_off: 0,
+                    class_data_off: 0,
+                    static_values_off: 0,
+                })
+                .unwrap(),
+            "pkg/Foo.smali"
+        );
     }
 
     #[test]
@@ -3141,6 +3249,7 @@ mod tests {
     fn formats_synthetic_accessor_comments_like_java_baksmali() {
         let mut strings = test_strings();
         strings.push("access$000".to_owned());
+        let access_method_name_idx = strings.len() as u32 - 1;
         let dex = DexFile {
             strings,
             string_ids: vec![StringId { string_data_off: 0 }; 13],
@@ -3171,7 +3280,7 @@ mod tests {
                 MethodId {
                     class_idx: 2,
                     proto_idx: 0,
-                    name_idx: 15,
+                    name_idx: access_method_name_idx,
                 },
             ],
             class_defs: vec![ClassDef {
