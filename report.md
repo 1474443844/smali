@@ -78,7 +78,7 @@ Rust 工作区包含 4 个 crate：
 
 - `.class`, `.super`, `.implements`, `.source`。
 - Java baksmali 风格 section header：`# interfaces`, `# static fields`, `# instance fields`, `# direct methods`, `# virtual methods`。
-- `.field`，含静态初始值。
+- `.field`，含静态初始值，并按 Java baksmali 处理在 `<clinit>` 中赋值的 `static final` field。
 - `.method`, `.registers`，以及 Java baksmali 风格可选 `.locals`。
 - 当前类 field/method 声明中的 descriptor 省略，例如 `<init>()V` 而不是 `LHello;-><init>()V`。
 - class/field/method/parameter annotation 的基础输出，并像 Java dexlib2 一样拒绝非法 annotation visibility；method annotation 的位置按 Java baksmali 放在 register/parameter 声明之后。

@@ -160,7 +160,7 @@ tests/fixtures/upstream/baksmali/smali/      # 复制自 Java baksmali src/test/
 - `.implements`
 - `.source`，包括 null `DBG_SET_FILE` 对应的 Java baksmali 风格裸 `.source`
 - `.field`
-- static field 初始值
+- static field 初始值，包括 Java baksmali 风格处理在 `<clinit>` 中赋值的 `static final` field。
 - `.method`
 - `.registers`，以及可选的 Java baksmali 风格 `.locals`
 - 已支持 operand format 的 decoded instruction。

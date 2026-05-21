@@ -160,7 +160,7 @@ Implemented smali text output for:
 - `.implements`
 - `.source`, including bare Java baksmali-style `.source` for null `DBG_SET_FILE`
 - `.field`
-- static field initial values
+- static field initial values, including Java baksmali-style handling for `static final` fields set in `<clinit>`.
 - `.method`, `.registers`, and optional Java baksmali-style `.locals`.
 - decoded instructions for supported operand formats.
 - class, field, and method annotations, with invalid visibility values rejected like Java dexlib2 and method annotations placed after register/parameter declarations like Java baksmali.

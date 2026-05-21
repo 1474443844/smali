@@ -360,6 +360,8 @@ impl<'a> BaksmaliFormatter<'a> {
             } else {
                 Vec::new()
             };
+            let fields_set_in_static_constructor =
+                self.fields_set_in_static_constructor(&class_data, class_descriptor)?;
             let hidden_api = self
                 .dex
                 .class_defs
@@ -380,6 +382,8 @@ impl<'a> BaksmaliFormatter<'a> {
                             index,
                         ),
                         class_descriptor,
+                        fields_set_in_static_constructor
+                            .contains(&self.short_field_descriptor(field.field_idx)?),
                     )?;
                     writeln!(out).unwrap();
                 }
@@ -398,6 +402,7 @@ impl<'a> BaksmaliFormatter<'a> {
                             index,
                         ),
                         class_descriptor,
+                        false,
                     )?;
                     writeln!(out).unwrap();
                 }
@@ -439,6 +444,45 @@ impl<'a> BaksmaliFormatter<'a> {
         Ok(out)
     }
 
+    fn fields_set_in_static_constructor(
+        &self,
+        class_data: &dex_types::ClassData,
+        current_class: &str,
+    ) -> Result<BTreeSet<String>> {
+        let mut fields = BTreeSet::new();
+        for method in &class_data.direct_methods {
+            let method_id = self.resolver.method_id(method.method_idx)?;
+            if self.resolver.string(method_id.name_idx)? != "<clinit>" || method.code_off == 0 {
+                continue;
+            }
+            let code =
+                dex_reader::parse_code_item_with_api(self.data, method.code_off, self.api_level)?;
+            for instruction in code.instructions {
+                if !is_sput_opcode(instruction.opcode.name_for_api(self.api_level)) {
+                    continue;
+                }
+                if let InstructionOperands::RegisterReference { reference, .. } =
+                    instruction.operands
+                {
+                    let field = self.resolver.field_id(reference)?;
+                    if self.resolver.type_descriptor(field.class_idx as u32)? == current_class {
+                        fields.insert(self.short_field_descriptor(reference)?);
+                    }
+                }
+            }
+        }
+        Ok(fields)
+    }
+
+    fn short_field_descriptor(&self, field_idx: u32) -> Result<String> {
+        let field = self.resolver.field_id(field_idx)?;
+        Ok(format!(
+            "{}:{}",
+            self.resolver.string(field.name_idx)?,
+            self.resolver.type_descriptor(field.type_idx as u32)?
+        ))
+    }
+
     fn format_field(
         &self,
         out: &mut String,
@@ -447,6 +491,7 @@ impl<'a> BaksmaliFormatter<'a> {
         annotation_directory: Option<&AnnotationDirectory>,
         hidden_api_flags: Option<u32>,
         current_class: &str,
+        set_in_static_constructor: bool,
     ) -> Result<()> {
         let annotations_off = annotation_directory
             .and_then(|directory| {
@@ -456,6 +501,23 @@ impl<'a> BaksmaliFormatter<'a> {
                     .find(|annotation| annotation.field_idx == field.field_idx)
             })
             .map_or(0, |annotation| annotation.annotations_off);
+        let mut static_value = static_value;
+        if set_in_static_constructor
+            && field.access_flags.contains(AccessFlags::STATIC)
+            && field.access_flags.contains(AccessFlags::FINAL)
+        {
+            if let Some(value) = static_value {
+                if is_default_encoded_value(value) {
+                    static_value = None;
+                } else {
+                    writeln!(
+                        out,
+                        "# The value of this static final field might be set in the static constructor"
+                    )
+                    .unwrap();
+                }
+            }
+        }
         let value = static_value
             .map(|value| self.format_encoded_value(value))
             .transpose()?
@@ -1808,6 +1870,34 @@ enum HiddenApiMemberKind {
     VirtualMethod,
 }
 
+fn is_sput_opcode(opcode: &str) -> bool {
+    matches!(
+        opcode,
+        "sput"
+            | "sput-wide"
+            | "sput-object"
+            | "sput-boolean"
+            | "sput-byte"
+            | "sput-char"
+            | "sput-short"
+    )
+}
+
+fn is_default_encoded_value(value: &EncodedValue) -> bool {
+    match value {
+        EncodedValue::Byte(value) => *value == 0,
+        EncodedValue::Short(value) => *value == 0,
+        EncodedValue::Char(value) => *value == 0,
+        EncodedValue::Int(value) => *value == 0,
+        EncodedValue::Long(value) => *value == 0,
+        EncodedValue::Float(value) => *value == 0,
+        EncodedValue::Double(value) => *value == 0,
+        EncodedValue::Null => true,
+        EncodedValue::Boolean(value) => !*value,
+        _ => false,
+    }
+}
+
 fn method_annotations_off(directory: Option<&AnnotationDirectory>, method_idx: u32) -> Option<u32> {
     directory
         .and_then(|directory| {
@@ -2292,16 +2382,35 @@ mod tests {
                 return_type_idx: 4,
                 parameters_off: 0,
             }],
-            field_ids: vec![FieldId {
-                class_idx: 2,
-                type_idx: 3,
-                name_idx: 6,
-            }],
-            method_ids: vec![MethodId {
-                class_idx: 2,
-                proto_idx: 0,
-                name_idx: 7,
-            }],
+            field_ids: vec![
+                FieldId {
+                    class_idx: 2,
+                    type_idx: 3,
+                    name_idx: 6,
+                },
+                FieldId {
+                    class_idx: 2,
+                    type_idx: 3,
+                    name_idx: 12,
+                },
+                FieldId {
+                    class_idx: 2,
+                    type_idx: 3,
+                    name_idx: 13,
+                },
+            ],
+            method_ids: vec![
+                MethodId {
+                    class_idx: 2,
+                    proto_idx: 0,
+                    name_idx: 7,
+                },
+                MethodId {
+                    class_idx: 2,
+                    proto_idx: 0,
+                    name_idx: 14,
+                },
+            ],
             class_defs: Vec::new(),
             call_site_ids: Vec::new(),
             method_handles: Vec::new(),
@@ -2324,6 +2433,9 @@ mod tests {
             "LInterface;".to_owned(),
             "Debug.java".to_owned(),
             "quote\"slash\\\n".to_owned(),
+            "defaultField".to_owned(),
+            "nonDefaultField".to_owned(),
+            "<clinit>".to_owned(),
         ]
     }
 
@@ -2621,7 +2733,15 @@ mod tests {
         let mut out = String::new();
 
         formatter
-            .format_field(&mut out, &field, None, Some(&directory), None, "LTest;")
+            .format_field(
+                &mut out,
+                &field,
+                None,
+                Some(&directory),
+                None,
+                "LTest;",
+                false,
+            )
             .unwrap();
         formatter
             .format_method(&mut out, &method, Some(&directory), None, "LTest;")
@@ -2766,6 +2886,60 @@ mod tests {
                 "    .restart local v4    # \"name\":I, \"value\"\n",
             )
         );
+    }
+
+    fn class_with_static_constructor_data() -> Vec<u8> {
+        let mut data = vec![0; 96];
+        data[16] = 2;
+        data[17] = 0;
+        data[18] = 1;
+        data[19] = 0;
+        data[20] = 1;
+        data[21] = 0x19;
+        data[22] = 1;
+        data[23] = 0x19;
+        data[24] = 1;
+        data[25] = 0x08;
+        data[26] = 56;
+        data[40] = 2;
+        data[41] = 0x04;
+        data[42] = 0;
+        data[43] = 0x04;
+        data[44] = 0x20;
+        data[56..58].copy_from_slice(&1u16.to_le_bytes());
+        data[68..72].copy_from_slice(&5u32.to_le_bytes());
+        data[72..74].copy_from_slice(&0x0067u16.to_le_bytes());
+        data[74..76].copy_from_slice(&1u16.to_le_bytes());
+        data[76..78].copy_from_slice(&0x0067u16.to_le_bytes());
+        data[78..80].copy_from_slice(&2u16.to_le_bytes());
+        data[80..82].copy_from_slice(&0x000eu16.to_le_bytes());
+        data
+    }
+
+    #[test]
+    fn formats_static_final_fields_set_in_static_constructor_like_java_baksmali() {
+        let dex = test_dex();
+        let data = class_with_static_constructor_data();
+        let formatter = BaksmaliFormatter::new(&dex, &data);
+        let class_def = ClassDef {
+            class_idx: 2,
+            access_flags: AccessFlags::PUBLIC,
+            superclass_idx: Some(4),
+            interfaces_off: 0,
+            source_file_idx: None,
+            annotations_off: 0,
+            class_data_off: 16,
+            static_values_off: 40,
+        };
+
+        let out = formatter.format_class(&class_def).unwrap();
+
+        assert!(out.contains(".field public static final defaultField:I"));
+        assert!(!out.contains("defaultField:I = 0x0"));
+        assert!(out.contains(
+            "# The value of this static final field might be set in the static constructor"
+        ));
+        assert!(out.contains(".field public static final nonDefaultField:I = 0x20"));
     }
 
     #[test]
@@ -2997,7 +3171,7 @@ mod tests {
                 MethodId {
                     class_idx: 2,
                     proto_idx: 0,
-                    name_idx: 12,
+                    name_idx: 15,
                 },
             ],
             class_defs: vec![ClassDef {
@@ -3421,6 +3595,7 @@ mod tests {
                 None,
                 None,
                 "LTest;",
+                false,
             )
             .unwrap();
 
