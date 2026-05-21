@@ -81,7 +81,7 @@ Rust 工作区包含 4 个 crate：
 - `.field`，含静态初始值。
 - `.method`, `.registers`，以及 Java baksmali 风格可选 `.locals`。
 - 当前类 field/method 声明中的 descriptor 省略，例如 `<init>()V` 而不是 `LHello;-><init>()V`。
-- class/field/method/parameter annotation 的基础输出，并像 Java dexlib2 一样拒绝非法 annotation visibility。
+- class/field/method/parameter annotation 的基础输出，并像 Java dexlib2 一样拒绝非法 annotation visibility；method annotation 的位置按 Java baksmali 放在 register/parameter 声明之后。
 - encoded value array 与 subannotation 的基础输出，包括 Java baksmali 风格十六进制整数值、enum 前缀、`.subannotation` 和 array 逗号分隔。
 - debug item 的基础输出：`.line`, `.local`, `.end local`, `.restart local`, `.prologue`, `.epilogue`, `.source`, `.param`，其中 `.local` 支持 Java baksmali 风格缺失 name/type 的 partial local，`.end local` / `.restart local` 支持 Java baksmali 风格 trailing local comment，null `DBG_SET_FILE` 输出裸 `.source`。
 - parameter register 名称，如可用时输出 `p0`。

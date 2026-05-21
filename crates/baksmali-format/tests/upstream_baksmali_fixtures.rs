@@ -34,7 +34,7 @@ fn formats_parameter_annotation_blocks_like_java_baksmali() {
     assert!(text.contains("    .param p1    # J\n"));
     assert!(text.contains("        .annotation runtime LAnnotationWithValues;\n"));
     assert!(text.contains("        .end annotation\n"));
-    assert!(text.contains("    .end param\n    return-void\n"));
+    assert!(text.contains("    .end param\n\n    return-void\n"));
 }
 
 #[test]

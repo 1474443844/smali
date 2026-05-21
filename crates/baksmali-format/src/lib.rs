@@ -501,11 +501,6 @@ impl<'a> BaksmaliFormatter<'a> {
             self.method_declaration_descriptor(method.method_idx, current_class)?
         )
         .unwrap();
-        if let Some(annotations_off) =
-            method_annotations_off(annotation_directory, method.method_idx)
-        {
-            self.format_annotation_set(out, annotations_off, "    ")?;
-        }
         if method.code_off != 0 {
             let code =
                 dex_reader::parse_code_item_with_api(self.data, method.code_off, self.api_level)?;
@@ -532,6 +527,12 @@ impl<'a> BaksmaliFormatter<'a> {
                 &code,
                 debug_info.as_ref(),
             )?;
+            if let Some(annotations_off) =
+                method_annotations_off(annotation_directory, method.method_idx)
+            {
+                self.format_annotation_set(out, annotations_off, "    ")?;
+            }
+            writeln!(out).unwrap();
             for instruction in &code.instructions {
                 if let Some(labels) = code_labels.get(&instruction.address) {
                     for label in labels {
@@ -570,6 +571,12 @@ impl<'a> BaksmaliFormatter<'a> {
                 self.write_debug_items(out, items, parameter_base(&code))?;
             }
             self.format_catch_directives(out, &code)?;
+        } else {
+            if let Some(annotations_off) =
+                method_annotations_off(annotation_directory, method.method_idx)
+            {
+                self.format_annotation_set(out, annotations_off, "    ")?;
+            }
         }
         writeln!(out, ".end method").unwrap();
         writeln!(out).unwrap();
@@ -782,7 +789,12 @@ impl<'a> BaksmaliFormatter<'a> {
         indent: &str,
     ) -> Result<()> {
         let set = dex_reader::parse_annotation_set(self.data, annotations_off)?;
+        let mut first = true;
         for annotation_off in set.entries {
+            if !first {
+                writeln!(out).unwrap();
+            }
+            first = false;
             let item = dex_reader::parse_annotation_item(self.data, annotation_off)?;
             self.format_annotation(out, item.visibility, &item.annotation, indent)?;
         }
@@ -2619,8 +2631,16 @@ mod tests {
         assert!(out.contains("    .annotation runtime LAnno;"));
         assert!(out.contains("        name = \"value\""));
         assert!(out.contains(".end field"));
-        assert!(out.contains(".method public method()V"));
-        assert!(out.contains(".end method"));
+        assert_eq!(
+            out[out.find(".method public method()V").unwrap()..].to_owned(),
+            concat!(
+                ".method public method()V\n",
+                "    .annotation runtime LAnno;\n",
+                "        name = \"value\"\n",
+                "    .end annotation\n",
+                ".end method\n\n",
+            )
+        );
     }
 
     #[test]
@@ -2822,6 +2842,40 @@ mod tests {
             access_flags: AccessFlags::PUBLIC | AccessFlags::STATIC,
             code_off: 16,
         }
+    }
+
+    #[test]
+    fn formats_method_annotations_after_registers_like_java_baksmali() {
+        let dex = test_dex();
+        let mut data = method_debug_data();
+        data.extend_from_slice(&[1, 0, 0, 0, 56, 0, 0, 0, 1, 0, 1, 1, 0x17, 2]);
+        let formatter = BaksmaliFormatter::new(&dex, &data);
+        let directory = AnnotationDirectory {
+            class_annotations_off: 0,
+            field_annotations: Vec::new(),
+            method_annotations: vec![MethodAnnotation {
+                method_idx: 0,
+                annotations_off: 48,
+            }],
+            parameter_annotations: Vec::new(),
+        };
+        let method = method_with_debug_code();
+        let mut out = String::new();
+
+        formatter
+            .format_method(&mut out, &method, Some(&directory), None, "LTest;")
+            .unwrap();
+
+        assert!(out.contains(concat!(
+            ".method public static method()V\n",
+            "    .registers 1\n",
+            "    .annotation runtime LAnno;\n",
+            "        name = \"value\"\n",
+            "    .end annotation\n",
+            "\n",
+            "    .line 1\n",
+            "    return-void\n",
+        )));
     }
 
     #[test]
