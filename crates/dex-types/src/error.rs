@@ -28,6 +28,8 @@ pub enum DexError {
     InvalidString { offset: u32, reason: String },
     #[error("invalid encoded data at offset {offset}: {reason}")]
     InvalidEncodedData { offset: u32, reason: String },
+    #[error("not a valid dalvik class name: {0}")]
+    InvalidClassDescriptor(String),
 }
 
 pub type Result<T> = std::result::Result<T, DexError>;

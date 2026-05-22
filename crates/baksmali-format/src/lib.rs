@@ -285,10 +285,7 @@ impl<'a> BaksmaliFormatter<'a> {
 
     pub fn class_file_name(&self, class_def: &ClassDef) -> Result<String> {
         let descriptor = self.resolver.type_descriptor(class_def.class_idx)?;
-        let name = descriptor
-            .strip_prefix('L')
-            .and_then(|value| value.strip_suffix(';'))
-            .unwrap_or(descriptor);
+        let name = validate_class_file_descriptor(descriptor)?;
         let mut components = name.split('/').map(str::to_owned).collect::<Vec<_>>();
         if let Some(last) = components.last_mut() {
             last.push_str(".smali");
@@ -1550,6 +1547,21 @@ const MAX_FILENAME_LENGTH: usize = 255;
 const NUMERIC_SUFFIX_RESERVE: usize = 6;
 const MAX_CLASS_FILE_PATH_COMPONENT_BYTES: usize = MAX_FILENAME_LENGTH - NUMERIC_SUFFIX_RESERVE;
 
+fn validate_class_file_descriptor(descriptor: &str) -> Result<&str> {
+    let Some(name) = descriptor
+        .strip_prefix('L')
+        .and_then(|value| value.strip_suffix(';'))
+    else {
+        return Err(DexError::InvalidClassDescriptor(descriptor.to_owned()));
+    };
+
+    if name.is_empty() || name.split('/').any(str::is_empty) {
+        return Err(DexError::InvalidClassDescriptor(descriptor.to_owned()));
+    }
+
+    Ok(name)
+}
+
 fn normalize_class_file_path_component(component: String) -> String {
     let mut component = if is_windows_reserved_file_name(&component) {
         add_suffix_before_extension(&component, "#")
@@ -2457,6 +2469,11 @@ mod tests {
                 TypeId { descriptor_idx: 16 },
                 TypeId { descriptor_idx: 17 },
                 TypeId { descriptor_idx: 18 },
+                TypeId { descriptor_idx: 19 },
+                TypeId { descriptor_idx: 20 },
+                TypeId { descriptor_idx: 21 },
+                TypeId { descriptor_idx: 22 },
+                TypeId { descriptor_idx: 23 },
             ],
             proto_ids: vec![ProtoId {
                 shorty_idx: 8,
@@ -2521,6 +2538,11 @@ mod tests {
             "Lpkg/AUX;".to_owned(),
             "LCOM1/Foo;".to_owned(),
             "Lpkg/Foo;".to_owned(),
+            "a/b;".to_owned(),
+            "La/b".to_owned(),
+            "L/a;".to_owned(),
+            "La//b;".to_owned(),
+            "La/b/;".to_owned(),
         ]
     }
 
@@ -2627,6 +2649,36 @@ mod tests {
                 .unwrap(),
             "pkg/Foo.smali"
         );
+    }
+
+    #[test]
+    fn rejects_invalid_class_file_descriptors_like_java_baksmali() {
+        let dex = test_dex();
+        let formatter = BaksmaliFormatter::new(&dex, &[]);
+
+        for class_idx in 10..=14 {
+            let err = formatter
+                .class_file_name(&ClassDef {
+                    class_idx,
+                    access_flags: AccessFlags::PUBLIC,
+                    superclass_idx: None,
+                    interfaces_off: 0,
+                    source_file_idx: None,
+                    annotations_off: 0,
+                    class_data_off: 0,
+                    static_values_off: 0,
+                })
+                .unwrap_err();
+
+            assert!(matches!(err, DexError::InvalidClassDescriptor(_)));
+        }
+    }
+
+    #[test]
+    fn accepts_basic_class_file_paths_like_java_baksmali() {
+        assert_eq!(validate_class_file_descriptor("La/b/c/d;"), Ok("a/b/c/d"));
+        assert_eq!(validate_class_file_descriptor("La/b;"), Ok("a/b"));
+        assert_eq!(validate_class_file_descriptor("Lb;"), Ok("b"));
     }
 
     #[test]

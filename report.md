@@ -246,7 +246,7 @@ cargo fmt --all && cargo test --workspace
 - Java 风格 hidden API restriction flag 解析与 field/method 输出。
 - Java 风格 `disassemble --classes` class descriptor 过滤。
 - Java 风格容器 entry 路径输入，例如 `app.apk/classes2.dex`。
-- Java `ClassFileNameHandler` 风格输出文件名，处理 `CON`、`AUX`、`COM1`、`LPT1` 等 Windows 保留路径组件，以及过长 UTF-8 路径组件缩短。
+- Java `ClassFileNameHandler` 风格输出文件名，包括 Dalvik class descriptor 校验、`CON`、`AUX`、`COM1`、`LPT1` 等 Windows 保留路径组件处理，以及过长 UTF-8 路径组件缩短。
 - Java 风格 `disassemble --jobs` / `-j` CLI 参数会使用并行 worker thread 格式化 class。
 - Java 风格 `disassemble --api` / `-a` 参数已接入 API-level opcode decoding/formatting，用于 legacy opcode 映射。
 - Java 风格 `disassemble --debug-info` / `--di` 参数控制 `.local`、`.param`、`.line` 等 debug directive 输出。

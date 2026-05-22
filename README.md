@@ -295,7 +295,7 @@ Current test coverage includes:
 - Java-style `disassemble --implicit-references` option omits the current class prefix from same-class method and field references.
 - Java-style `disassemble --accessor-comments` / `--ac` option controls synthetic accessor helper comments.
 - Java-style container entry path input such as `app.apk/classes2.dex`.
-- Java `ClassFileNameHandler`-style output filenames for Windows reserved path components such as `CON`, `AUX`, `COM1`, and `LPT1`, plus long UTF-8 path component shortening.
+- Java `ClassFileNameHandler`-style output filenames, including Dalvik class descriptor validation, Windows reserved path components such as `CON`, `AUX`, `COM1`, and `LPT1`, plus long UTF-8 path component shortening.
 - Improved `baksmali --help` and nested `list --help` output with visible aliases, value names, and command descriptions.
 - copied upstream Java baksmali test fixtures are present under `tests/fixtures/upstream/baksmali` and covered by Rust fixture inventory/disassembly tests.
 - Rust ports of Java `BaksmaliTestUtils` normalization checks, `MultiSwitchTest`, and `ZeroArrayPayloadWidthTest` are present; the copied Java test source has been removed.
