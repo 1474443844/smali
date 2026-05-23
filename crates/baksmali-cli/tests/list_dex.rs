@@ -95,6 +95,63 @@ fn list_strings_quotes_references_like_java_baksmali() {
 }
 
 #[test]
+fn list_types_formats_references_like_java_baksmali() {
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+
+    command
+        .args(["list", "types", "../../tests/fixtures/hello.dex"])
+        .assert()
+        .success()
+        .stdout("LHello;\nLjava/lang/Object;\nV\n");
+}
+
+#[test]
+fn list_fields_formats_references_like_java_baksmali() {
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+
+    command
+        .args(["list", "fields", "../../tests/fixtures/test.dex"])
+        .assert()
+        .success()
+        .stdout("Ljava/lang/System;->out:Ljava/io/PrintStream;\n");
+}
+
+#[test]
+fn list_methods_formats_references_like_java_baksmali() {
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+
+    command
+        .args(["list", "methods", "../../tests/fixtures/hello.dex"])
+        .assert()
+        .success()
+        .stdout("LHello;-><init>()V\n");
+}
+
+#[test]
+fn supports_java_style_reference_list_aliases() {
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+    command
+        .args(["l", "t", "../../tests/fixtures/hello.dex"])
+        .assert()
+        .success()
+        .stdout("LHello;\nLjava/lang/Object;\nV\n");
+
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+    command
+        .args(["l", "f", "../../tests/fixtures/test.dex"])
+        .assert()
+        .success()
+        .stdout("Ljava/lang/System;->out:Ljava/io/PrintStream;\n");
+
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+    command
+        .args(["l", "m", "../../tests/fixtures/hello.dex"])
+        .assert()
+        .success()
+        .stdout("LHello;-><init>()V\n");
+}
+
+#[test]
 fn lists_zip_dex_entries() {
     let mut command = Command::cargo_bin("baksmali").unwrap();
 

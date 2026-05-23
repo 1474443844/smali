@@ -12,6 +12,13 @@ use dex_types::{
     PayloadInstruction, RawInstruction, Result,
 };
 
+pub enum ReferenceKind {
+    String,
+    Type,
+    Field,
+    Method,
+}
+
 pub struct BaksmaliFormatter<'a> {
     dex: &'a DexFile,
     data: &'a [u8],
@@ -295,6 +302,15 @@ impl<'a> BaksmaliFormatter<'a> {
             .map(normalize_class_file_path_component)
             .collect::<Vec<_>>()
             .join("/"))
+    }
+
+    pub fn reference(&self, reference_type: ReferenceKind, index: u32) -> Result<String> {
+        match reference_type {
+            ReferenceKind::String => Ok(quote_string(self.resolver.string(index)?)),
+            ReferenceKind::Type => self.resolver.type_descriptor(index).map(ToOwned::to_owned),
+            ReferenceKind::Field => self.resolver.field_descriptor(index),
+            ReferenceKind::Method => self.resolver.method_descriptor(index),
+        }
     }
 
     pub fn format_class(&self, class_def: &ClassDef) -> Result<String> {
@@ -1493,11 +1509,10 @@ impl<'a> BaksmaliFormatter<'a> {
 
     fn format_reference(&self, opcode: u16, reference: u32, current_class: &str) -> Result<String> {
         match opcode {
-            0x1a | 0x1b => Ok(quote_string(self.resolver.string(reference)?)),
-            0x1c | 0x1f | 0x20 | 0x22 | 0x23 | 0x24 | 0x25 => self
-                .resolver
-                .type_descriptor(reference)
-                .map(ToOwned::to_owned),
+            0x1a | 0x1b => self.reference(ReferenceKind::String, reference),
+            0x1c | 0x1f | 0x20 | 0x22 | 0x23 | 0x24 | 0x25 => {
+                self.reference(ReferenceKind::Type, reference)
+            }
             0x52..=0x6d | 0xe3..=0xeb | 0xfc..=0xfe => {
                 self.implicit_field_reference(reference, current_class)
             }

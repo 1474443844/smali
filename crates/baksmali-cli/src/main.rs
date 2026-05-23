@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 
 use anyhow::{Context, Result, anyhow};
-use baksmali_format::{BaksmaliFormatter, Resolver, quote_string};
+use baksmali_format::{BaksmaliFormatter, ReferenceKind, Resolver};
 use clap::{Parser, Subcommand};
 
 #[derive(Debug, Parser)]
@@ -540,9 +540,13 @@ fn list_classes(input: &Path) -> Result<()> {
 }
 
 fn list_strings(input: &Path) -> Result<()> {
-    for_primary_loaded_dex(input, |dex, _data| {
-        for string in &dex.strings {
-            println!("{}", quote_string(string));
+    for_primary_loaded_dex(input, |dex, data| {
+        let formatter = BaksmaliFormatter::new(dex, data);
+        for index in 0..dex.strings.len() {
+            println!(
+                "{}",
+                formatter.reference(ReferenceKind::String, index as u32)?
+            );
         }
         Ok(())
     })
@@ -550,9 +554,12 @@ fn list_strings(input: &Path) -> Result<()> {
 
 fn list_types(input: &Path) -> Result<()> {
     for_primary_loaded_dex(input, |dex, data| {
-        let resolver = Resolver::new(dex, data);
-        for index in 0..resolver.type_count() {
-            println!("{}", resolver.type_descriptor(index as u32)?);
+        let formatter = BaksmaliFormatter::new(dex, data);
+        for index in 0..dex.type_ids.len() {
+            println!(
+                "{}",
+                formatter.reference(ReferenceKind::Type, index as u32)?
+            );
         }
         Ok(())
     })
@@ -560,9 +567,12 @@ fn list_types(input: &Path) -> Result<()> {
 
 fn list_fields(input: &Path) -> Result<()> {
     for_primary_loaded_dex(input, |dex, data| {
-        let resolver = Resolver::new(dex, data);
-        for index in 0..resolver.field_count() {
-            println!("{}", resolver.field_descriptor(index as u32)?);
+        let formatter = BaksmaliFormatter::new(dex, data);
+        for index in 0..dex.field_ids.len() {
+            println!(
+                "{}",
+                formatter.reference(ReferenceKind::Field, index as u32)?
+            );
         }
         Ok(())
     })
@@ -570,9 +580,12 @@ fn list_fields(input: &Path) -> Result<()> {
 
 fn list_methods(input: &Path) -> Result<()> {
     for_primary_loaded_dex(input, |dex, data| {
-        let resolver = Resolver::new(dex, data);
-        for index in 0..resolver.method_count() {
-            println!("{}", resolver.method_descriptor(index as u32)?);
+        let formatter = BaksmaliFormatter::new(dex, data);
+        for index in 0..dex.method_ids.len() {
+            println!(
+                "{}",
+                formatter.reference(ReferenceKind::Method, index as u32)?
+            );
         }
         Ok(())
     })

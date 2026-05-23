@@ -134,7 +134,7 @@ reference 解析当前覆盖：
 - `baksmali list-methods <input>`
 - `baksmali list-dex <input>`
 
-输入支持 raw DEX 以及 APK/JAR/ZIP 容器。支持 Java 风格容器 entry 路径选择，例如 `app.apk/classes2.dex`。list classes/strings/types/fields/methods 对容器输入默认只加载 primary dex，以对齐 Java baksmali；list strings 输出带引号和转义的 Java reference 字符串；list dex 仍枚举容器中的 DEX entry。单 DEX 输出到目标目录，多 DEX 容器会拆分到 `dex1`, `dex2` 等目录。
+输入支持 raw DEX 以及 APK/JAR/ZIP 容器。支持 Java 风格容器 entry 路径选择，例如 `app.apk/classes2.dex`。list classes/strings/types/fields/methods 对容器输入默认只加载 primary dex，以对齐 Java baksmali；list strings/types/fields/methods 通过 formatter reference 路径输出，其中 list strings 输出带引号和转义的 Java reference 字符串；list dex 仍枚举容器中的 DEX entry。单 DEX 输出到目标目录，多 DEX 容器会拆分到 `dex1`, `dex2` 等目录。
 
 ## 与 Java 原项目的覆盖对比
 
