@@ -530,7 +530,7 @@ fn parse_resource_id(value: &str) -> Result<i32> {
 }
 
 fn list_classes(input: &Path) -> Result<()> {
-    for_loaded_dex(input, |dex, data| {
+    for_primary_loaded_dex(input, |dex, data| {
         let resolver = Resolver::new(dex, data);
         for class_def in &dex.class_defs {
             println!("{}", resolver.type_descriptor(class_def.class_idx)?);
@@ -540,7 +540,7 @@ fn list_classes(input: &Path) -> Result<()> {
 }
 
 fn list_strings(input: &Path) -> Result<()> {
-    for_loaded_dex(input, |dex, _data| {
+    for_primary_loaded_dex(input, |dex, _data| {
         for string in &dex.strings {
             println!("{string}");
         }
@@ -549,7 +549,7 @@ fn list_strings(input: &Path) -> Result<()> {
 }
 
 fn list_types(input: &Path) -> Result<()> {
-    for_loaded_dex(input, |dex, data| {
+    for_primary_loaded_dex(input, |dex, data| {
         let resolver = Resolver::new(dex, data);
         for index in 0..resolver.type_count() {
             println!("{}", resolver.type_descriptor(index as u32)?);
@@ -559,7 +559,7 @@ fn list_types(input: &Path) -> Result<()> {
 }
 
 fn list_fields(input: &Path) -> Result<()> {
-    for_loaded_dex(input, |dex, data| {
+    for_primary_loaded_dex(input, |dex, data| {
         let resolver = Resolver::new(dex, data);
         for index in 0..resolver.field_count() {
             println!("{}", resolver.field_descriptor(index as u32)?);
@@ -569,7 +569,7 @@ fn list_fields(input: &Path) -> Result<()> {
 }
 
 fn list_methods(input: &Path) -> Result<()> {
-    for_loaded_dex(input, |dex, data| {
+    for_primary_loaded_dex(input, |dex, data| {
         let resolver = Resolver::new(dex, data);
         for index in 0..resolver.method_count() {
             println!("{}", resolver.method_descriptor(index as u32)?);
@@ -585,17 +585,15 @@ fn list_dex(input: &Path) -> Result<()> {
     Ok(())
 }
 
-fn for_loaded_dex<F>(input: &Path, mut f: F) -> Result<()>
+fn for_primary_loaded_dex<F>(input: &Path, mut f: F) -> Result<()>
 where
     F: FnMut(&dex_types::DexFile, &[u8]) -> Result<()>,
 {
     let entries = dex_reader::dex_entries_from_path(input).context("failed to read dex input")?;
-    for entry in entries {
-        let dex = dex_reader::parse_dex(&entry.data)
-            .with_context(|| format!("failed to parse {}", entry.name))?;
-        f(&dex, &entry.data)?;
-    }
-    Ok(())
+    let entry = entries.first().context("no dex entries found")?;
+    let dex = dex_reader::parse_dex(&entry.data)
+        .with_context(|| format!("failed to parse {}", entry.name))?;
+    f(&dex, &entry.data)
 }
 
 #[cfg(test)]

@@ -282,7 +282,7 @@ Current test coverage includes:
 - Java-style configured resource id comment formatting.
 - hidden API class data parsing and Java-style field/method restriction flag formatting.
 - `--resolve-resources` parsing coverage for multiline attributes, single quotes, whitespace around `=`, and avoiding non-`public` element prefix matches.
-- Java-style nested `baksmali list <kind>` CLI commands and aliases, with `list classes` outputting class descriptors like Java baksmali.
+- Java-style `baksmali list <kind>` commands load the primary dex from APK/JAR/ZIP input, matching Java's default list behavior for container inputs.
 - Java-style `disassemble` command aliases: `dis` and `d`.
 - Java-style `disassemble --classes` filtering by class descriptor.
 - Java-style `disassemble --jobs` / `-j` option runs class formatting in parallel worker threads.

@@ -60,6 +60,17 @@ fn lists_classes_as_descriptors_like_java_baksmali() {
 }
 
 #[test]
+fn list_classes_uses_primary_dex_from_apk_like_java_baksmali() {
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+
+    command
+        .args(["list", "classes", "../../tests/fixtures/hello.apk"])
+        .assert()
+        .success()
+        .stdout("LHello;\n");
+}
+
+#[test]
 fn supports_java_style_list_aliases() {
     let mut command = Command::cargo_bin("baksmali").unwrap();
 
