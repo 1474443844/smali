@@ -283,7 +283,7 @@ baksmali list-dex <input.dex|input.apk|input.jar|input.zip>
 - Java-style configured resource id comment formatting。
 - hidden API class data 解析，以及 Java 风格 field/method restriction flag formatting。
 - `--resolve-resources` 解析覆盖 multiline attribute、单引号、`=` 两侧空白，以及避免把非 `public` 元素前缀误判为 public。
-- Java 风格嵌套 `baksmali list <kind>` CLI 命令和 alias；对 APK/JAR/ZIP 输入会像 Java 默认 list 行为一样只加载 primary dex。
+- Java 风格嵌套 `baksmali list <kind>` CLI 命令和 alias，包括带引号/转义的 `list strings` 输出，以及 APK/JAR/ZIP 输入的 primary-dex 选择。
 - Java 风格 `disassemble` 命令 alias：`dis` 和 `d`。
 - Java 风格 `disassemble --classes`，按 class descriptor 过滤输出 class。
 - Java 风格 `disassemble --jobs` / `-j` 参数会使用并行 worker thread 格式化 class。

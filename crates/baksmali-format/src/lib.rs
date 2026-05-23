@@ -1493,10 +1493,7 @@ impl<'a> BaksmaliFormatter<'a> {
 
     fn format_reference(&self, opcode: u16, reference: u32, current_class: &str) -> Result<String> {
         match opcode {
-            0x1a | 0x1b => Ok(format!(
-                "\"{}\"",
-                escape_string(self.resolver.string(reference)?)
-            )),
+            0x1a | 0x1b => Ok(quote_string(self.resolver.string(reference)?)),
             0x1c | 0x1f | 0x20 | 0x22 | 0x23 | 0x24 | 0x25 => self
                 .resolver
                 .type_descriptor(reference)
@@ -2034,6 +2031,10 @@ fn format_annotation_visibility(visibility: AnnotationVisibility) -> Result<&'st
             reason: format!("Invalid annotation visibility {value}"),
         }),
     }
+}
+
+pub fn quote_string(value: &str) -> String {
+    format!("\"{}\"", escape_string(value))
 }
 
 fn escape_char(value: u16) -> String {

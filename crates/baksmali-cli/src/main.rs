@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 
 use anyhow::{Context, Result, anyhow};
-use baksmali_format::{BaksmaliFormatter, Resolver};
+use baksmali_format::{BaksmaliFormatter, Resolver, quote_string};
 use clap::{Parser, Subcommand};
 
 #[derive(Debug, Parser)]
@@ -542,7 +542,7 @@ fn list_classes(input: &Path) -> Result<()> {
 fn list_strings(input: &Path) -> Result<()> {
     for_primary_loaded_dex(input, |dex, _data| {
         for string in &dex.strings {
-            println!("{string}");
+            println!("{}", quote_string(string));
         }
         Ok(())
     })

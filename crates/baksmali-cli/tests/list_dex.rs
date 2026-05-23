@@ -82,6 +82,19 @@ fn supports_java_style_list_aliases() {
 }
 
 #[test]
+fn list_strings_quotes_references_like_java_baksmali() {
+    let mut command = Command::cargo_bin("baksmali").unwrap();
+
+    command
+        .args(["list", "strings", "../../tests/fixtures/hello.dex"])
+        .assert()
+        .success()
+        .stdout(
+            "\"()V\"\n\"<init>\"\n\"Hello.java\"\n\"LHello;\"\n\"Ljava/lang/Object;\"\n\"V\"\n",
+        );
+}
+
+#[test]
 fn lists_zip_dex_entries() {
     let mut command = Command::cargo_bin("baksmali").unwrap();
 
