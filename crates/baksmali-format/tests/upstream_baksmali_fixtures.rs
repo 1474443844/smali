@@ -3,6 +3,8 @@ use baksmali_format::BaksmaliFormatter;
 const CONSTRUCTOR_TEST_DEX_FILE: &[u8] = include_bytes!(
     "../../../tests/fixtures/upstream/baksmali/resources/ConstructorTest/classes.dex"
 );
+const DUPLICATE_TEST_DEX_FILE: &[u8] =
+    include_bytes!("../../../tests/fixtures/upstream/baksmali/resources/DuplicateTest/classes.dex");
 const LOCAL_TEST_DEX_FILE: &[u8] =
     include_bytes!("../../../tests/fixtures/upstream/baksmali/resources/LocalTest/classes.dex");
 
@@ -21,6 +23,45 @@ fn formats_upstream_baksmali_fixture() {
     assert!(text.contains("    if-eqz p0, :cond_3\n"));
     assert!(text.contains("    invoke-direct {p0}, Ljava/lang/Object;-><init>()V\n"));
     assert!(!text.contains("v3"));
+}
+
+fn format_duplicate_test_class(name: &str) -> String {
+    let dex = dex_reader::parse_dex(DUPLICATE_TEST_DEX_FILE).unwrap();
+    let formatter = BaksmaliFormatter::new(&dex, DUPLICATE_TEST_DEX_FILE);
+    let class_def = dex
+        .class_defs
+        .iter()
+        .find(|class_def| formatter.class_file_name(class_def).unwrap() == name)
+        .unwrap();
+
+    formatter.format_class(class_def).unwrap()
+}
+
+#[test]
+fn comments_duplicate_fields_like_java_baksmali() {
+    let text = format_duplicate_test_class("DuplicateStaticInstanceFields.smali");
+
+    assert!(text.contains("# duplicate field ignored\n# .field public static blah:I\n"));
+    assert!(text.contains("# duplicate field ignored\n# .field public blah:I\n"));
+    assert!(text.contains("# There is both a static and instance field with this signature.\n"));
+    assert!(
+        text.contains("# You will need to rename one of these fields, including all references.\n")
+    );
+}
+
+#[test]
+fn comments_duplicate_methods_like_java_baksmali() {
+    let text = format_duplicate_test_class("DuplicateDirectVirtualMethods.smali");
+
+    assert!(text.contains("# duplicate method ignored\n# .method private blah()V\n"));
+    assert!(text.contains("#     .registers 1\n#\n#     return-void\n# .end method\n"));
+    assert!(text.contains("# duplicate method ignored\n# .method public blah()V\n"));
+    assert!(text.contains("# There is both a direct and virtual method with this signature.\n"));
+    assert!(
+        text.contains(
+            "# You will need to rename one of these methods, including all references.\n"
+        )
+    );
 }
 
 #[test]

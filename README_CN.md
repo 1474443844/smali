@@ -162,6 +162,7 @@ tests/fixtures/upstream/baksmali/smali/      # 复制自 Java baksmali src/test/
 - `.field`
 - static field 初始值，包括 Java baksmali 风格处理在 `<clinit>` 中赋值的 `static final` field。
 - `.method`
+- Java baksmali 风格重复成员处理：完全重复的 field/method 会被注释输出，static/instance field 或 direct/virtual method 签名冲突会输出警告注释。
 - `.registers`，以及可选的 Java baksmali 风格 `.locals`
 - 已支持 operand format 的 decoded instruction。
 - class、field、method annotation，并像 Java dexlib2 一样拒绝非法 visibility 值；method annotation 的位置也按 Java baksmali 放在 register/parameter 声明之后。
@@ -270,6 +271,7 @@ baksmali list-dex <input.dex|input.apk|input.jar|input.zip>
 - class interface formatting，包括 Java 风格 `# interfaces` section ordering。
 - static field initial value formatting。
 - class、field、method 和 method parameter annotation formatting。
+- Java 风格重复 field/method 输出，包括注释掉重复定义，以及 static/instance 或 direct/virtual 签名冲突警告。
 - debug directive formatting，包括 Java 风格缺失 name 或 type 的 partial `.local`，以及 epilogue-begin debug item 的 Java 兼容 `.prologue` 输出。
 - basic try/catch directive formatting。
 - method handle 和 call site table parsing。

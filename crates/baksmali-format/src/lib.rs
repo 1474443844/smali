@@ -390,10 +390,17 @@ impl<'a> BaksmaliFormatter<'a> {
                 .position(|candidate| candidate.class_idx == class_def.class_idx)
                 .and_then(|index| self.dex.hidden_api_class_data.get(index));
             if !class_data.static_fields.is_empty() {
+                let mut written_static_fields = BTreeSet::new();
                 writeln!(out, "# static fields").unwrap();
                 for (index, field) in class_data.static_fields.iter().enumerate() {
+                    let field_descriptor = self.short_field_descriptor(field.field_idx)?;
+                    let is_duplicate = !written_static_fields.insert(field_descriptor.clone());
+                    if is_duplicate {
+                        writeln!(out, "# duplicate field ignored").unwrap();
+                    }
+                    let mut field_out = String::new();
                     self.format_field(
-                        &mut out,
+                        &mut field_out,
                         field,
                         static_values.get(index),
                         annotation_directory.as_ref(),
@@ -403,17 +410,71 @@ impl<'a> BaksmaliFormatter<'a> {
                             index,
                         ),
                         class_descriptor,
-                        fields_set_in_static_constructor
-                            .contains(&self.short_field_descriptor(field.field_idx)?),
+                        !is_duplicate
+                            && fields_set_in_static_constructor.contains(&field_descriptor),
                     )?;
+                    if is_duplicate {
+                        write_commented_block(&mut out, &field_out);
+                    } else {
+                        out.push_str(&field_out);
+                    }
                     writeln!(out).unwrap();
                 }
-            }
-            if !class_data.instance_fields.is_empty() {
+                if !class_data.instance_fields.is_empty() {
+                    writeln!(out, "# instance fields").unwrap();
+                    let mut written_instance_fields = BTreeSet::new();
+                    for (index, field) in class_data.instance_fields.iter().enumerate() {
+                        let field_descriptor = self.short_field_descriptor(field.field_idx)?;
+                        let is_duplicate =
+                            !written_instance_fields.insert(field_descriptor.clone());
+                        if is_duplicate {
+                            writeln!(out, "# duplicate field ignored").unwrap();
+                        } else if written_static_fields.contains(&field_descriptor) {
+                            writeln!(
+                                out,
+                                "# There is both a static and instance field with this signature."
+                            )
+                            .unwrap();
+                            writeln!(
+                                out,
+                                "# You will need to rename one of these fields, including all references."
+                            )
+                            .unwrap();
+                        }
+                        let mut field_out = String::new();
+                        self.format_field(
+                            &mut field_out,
+                            field,
+                            None,
+                            annotation_directory.as_ref(),
+                            current_hidden_api_flags(
+                                hidden_api,
+                                HiddenApiMemberKind::InstanceField,
+                                index,
+                            ),
+                            class_descriptor,
+                            false,
+                        )?;
+                        if is_duplicate {
+                            write_commented_block(&mut out, &field_out);
+                        } else {
+                            out.push_str(&field_out);
+                        }
+                        writeln!(out).unwrap();
+                    }
+                }
+            } else if !class_data.instance_fields.is_empty() {
                 writeln!(out, "# instance fields").unwrap();
+                let mut written_instance_fields = BTreeSet::new();
                 for (index, field) in class_data.instance_fields.iter().enumerate() {
+                    let field_descriptor = self.short_field_descriptor(field.field_idx)?;
+                    let is_duplicate = !written_instance_fields.insert(field_descriptor);
+                    if is_duplicate {
+                        writeln!(out, "# duplicate field ignored").unwrap();
+                    }
+                    let mut field_out = String::new();
                     self.format_field(
-                        &mut out,
+                        &mut field_out,
                         field,
                         None,
                         annotation_directory.as_ref(),
@@ -425,14 +486,26 @@ impl<'a> BaksmaliFormatter<'a> {
                         class_descriptor,
                         false,
                     )?;
+                    if is_duplicate {
+                        write_commented_block(&mut out, &field_out);
+                    } else {
+                        out.push_str(&field_out);
+                    }
                     writeln!(out).unwrap();
                 }
             }
             if !class_data.direct_methods.is_empty() {
+                let mut written_direct_methods = BTreeSet::new();
                 writeln!(out, "# direct methods").unwrap();
                 for (index, method) in class_data.direct_methods.iter().enumerate() {
+                    let method_descriptor = self.short_method_descriptor(method.method_idx)?;
+                    let is_duplicate = !written_direct_methods.insert(method_descriptor);
+                    if is_duplicate {
+                        writeln!(out, "# duplicate method ignored").unwrap();
+                    }
+                    let mut method_out = String::new();
                     self.format_method(
-                        &mut out,
+                        &mut method_out,
                         method,
                         annotation_directory.as_ref(),
                         current_hidden_api_flags(
@@ -442,13 +515,64 @@ impl<'a> BaksmaliFormatter<'a> {
                         ),
                         class_descriptor,
                     )?;
+                    if is_duplicate {
+                        write_commented_block(&mut out, &method_out);
+                    } else {
+                        out.push_str(&method_out);
+                    }
                 }
-            }
-            if !class_data.virtual_methods.is_empty() {
+                if !class_data.virtual_methods.is_empty() {
+                    writeln!(out, "# virtual methods").unwrap();
+                    let mut written_virtual_methods = BTreeSet::new();
+                    for (index, method) in class_data.virtual_methods.iter().enumerate() {
+                        let method_descriptor = self.short_method_descriptor(method.method_idx)?;
+                        let is_duplicate =
+                            !written_virtual_methods.insert(method_descriptor.clone());
+                        if is_duplicate {
+                            writeln!(out, "# duplicate method ignored").unwrap();
+                        } else if written_direct_methods.contains(&method_descriptor) {
+                            writeln!(
+                                out,
+                                "# There is both a direct and virtual method with this signature."
+                            )
+                            .unwrap();
+                            writeln!(
+                                out,
+                                "# You will need to rename one of these methods, including all references."
+                            )
+                            .unwrap();
+                        }
+                        let mut method_out = String::new();
+                        self.format_method(
+                            &mut method_out,
+                            method,
+                            annotation_directory.as_ref(),
+                            current_hidden_api_flags(
+                                hidden_api,
+                                HiddenApiMemberKind::VirtualMethod,
+                                index,
+                            ),
+                            class_descriptor,
+                        )?;
+                        if is_duplicate {
+                            write_commented_block(&mut out, &method_out);
+                        } else {
+                            out.push_str(&method_out);
+                        }
+                    }
+                }
+            } else if !class_data.virtual_methods.is_empty() {
                 writeln!(out, "# virtual methods").unwrap();
+                let mut written_virtual_methods = BTreeSet::new();
                 for (index, method) in class_data.virtual_methods.iter().enumerate() {
+                    let method_descriptor = self.short_method_descriptor(method.method_idx)?;
+                    let is_duplicate = !written_virtual_methods.insert(method_descriptor);
+                    if is_duplicate {
+                        writeln!(out, "# duplicate method ignored").unwrap();
+                    }
+                    let mut method_out = String::new();
                     self.format_method(
-                        &mut out,
+                        &mut method_out,
                         method,
                         annotation_directory.as_ref(),
                         current_hidden_api_flags(
@@ -458,6 +582,11 @@ impl<'a> BaksmaliFormatter<'a> {
                         ),
                         class_descriptor,
                     )?;
+                    if is_duplicate {
+                        write_commented_block(&mut out, &method_out);
+                    } else {
+                        out.push_str(&method_out);
+                    }
                 }
             }
         }
@@ -501,6 +630,16 @@ impl<'a> BaksmaliFormatter<'a> {
             "{}:{}",
             self.resolver.string(field.name_idx)?,
             self.resolver.type_descriptor(field.type_idx as u32)?
+        ))
+    }
+
+    fn short_method_descriptor(&self, method_idx: u32) -> Result<String> {
+        let method = self.resolver.method_id(method_idx)?;
+        Ok(format!(
+            "{}{}",
+            self.resolver.string(method.name_idx)?,
+            self.resolver
+                .proto_descriptor_by_index(method.proto_idx as u32)?
         ))
     }
 
@@ -1558,6 +1697,16 @@ impl<'a> BaksmaliFormatter<'a> {
 const MAX_FILENAME_LENGTH: usize = 255;
 const NUMERIC_SUFFIX_RESERVE: usize = 6;
 const MAX_CLASS_FILE_PATH_COMPONENT_BYTES: usize = MAX_FILENAME_LENGTH - NUMERIC_SUFFIX_RESERVE;
+
+fn write_commented_block(out: &mut String, block: &str) {
+    for line in block.lines() {
+        if line.is_empty() {
+            writeln!(out, "#").unwrap();
+        } else {
+            writeln!(out, "# {line}").unwrap();
+        }
+    }
+}
 
 fn validate_class_file_descriptor(descriptor: &str) -> Result<&str> {
     let Some(name) = descriptor

@@ -80,6 +80,7 @@ Rust 工作区包含 4 个 crate：
 - Java baksmali 风格 section header：`# interfaces`, `# static fields`, `# instance fields`, `# direct methods`, `# virtual methods`。
 - `.field`，含静态初始值，并按 Java baksmali 处理在 `<clinit>` 中赋值的 `static final` field。
 - `.method`, `.registers`，以及 Java baksmali 风格可选 `.locals`。
+- Java baksmali 风格重复成员处理：完全重复的 field/method 会作为注释输出，static/instance field 或 direct/virtual method 签名冲突会输出警告注释。
 - 当前类 field/method 声明中的 descriptor 省略，例如 `<init>()V` 而不是 `LHello;-><init>()V`。
 - class/field/method/parameter annotation 的基础输出，并像 Java dexlib2 一样拒绝非法 annotation visibility；method annotation 的位置按 Java baksmali 放在 register/parameter 声明之后。
 - encoded value array 与 subannotation 的基础输出，包括 Java baksmali 风格十六进制整数值、enum 前缀、`.subannotation` 和 array 逗号分隔。
@@ -145,7 +146,7 @@ reference 解析当前覆盖：
 - 基础 disassemble 流程。
 - 若干 list 命令：classes/strings/types/fields/methods/dex。
 - 基础 class/field/method/instruction/debug/annotation 输出。
-- 部分 Java baksmali layout parity：section header、当前类成员声明省略、常见 branch/payload label、array/switch 数字格式、likely float/double 和 resource-id 注释。
+- 部分 Java baksmali layout parity：section header、当前类成员声明省略、重复成员注释输出、常见 branch/payload label、array/switch 数字格式、likely float/double 和 resource-id 注释。
 - method handle 与 call site 的可读 reference 输出。
 
 未覆盖或明显不完整：

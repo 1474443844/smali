@@ -162,6 +162,7 @@ Implemented smali text output for:
 - `.field`
 - static field initial values, including Java baksmali-style handling for `static final` fields set in `<clinit>`.
 - `.method`, `.registers`, and optional Java baksmali-style `.locals`.
+- Java baksmali-style duplicate member handling: exact duplicate fields/methods are commented out, and static/instance field or direct/virtual method signature conflicts emit warning comments.
 - decoded instructions for supported operand formats.
 - class, field, and method annotations, with invalid visibility values rejected like Java dexlib2 and method annotations placed after register/parameter declarations like Java baksmali.
 - encoded value arrays and subannotations, with Java baksmali-style hex integral values, enum prefixes, `.subannotation`, and array comma separators.
@@ -269,6 +270,7 @@ Current test coverage includes:
 - class interface formatting with Java-style `# interfaces` section ordering.
 - static field initial value formatting.
 - class, field, method, and method parameter annotation formatting.
+- Java-style duplicate field/method rendering, including commented-out duplicate definitions and static/instance or direct/virtual signature conflict warnings.
 - debug directive formatting, including Java-style partial `.local` entries with missing name or type and Java-compatible `.prologue` output for epilogue-begin debug items.
 - basic try/catch directive formatting.
 - method handle and call site table parsing.
